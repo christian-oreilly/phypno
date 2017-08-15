@@ -1,0 +1,847 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.attr.annotations &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.attr.annotations</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.attr.annotations</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module to keep track of the user-made annotations and sleep scoring.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">csv</span> <span class="k">import</span> <span class="n">writer</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">ceil</span>
+<span class="kn">from</span> <span class="nn">re</span> <span class="k">import</span> <span class="n">search</span><span class="p">,</span> <span class="n">sub</span>
+<span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">import</span> <span class="n">Element</span><span class="p">,</span> <span class="n">SubElement</span><span class="p">,</span> <span class="n">tostring</span><span class="p">,</span> <span class="n">parse</span>
+<span class="kn">from</span> <span class="nn">xml.dom.minidom</span> <span class="k">import</span> <span class="n">parseString</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">VERSION</span> <span class="o">=</span> <span class="s1">&#39;5&#39;</span>
+
+
+<div class="viewcode-block" id="parse_iso_datetime"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.parse_iso_datetime">[docs]</a><span class="k">def</span> <span class="nf">parse_iso_datetime</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_empty_annotations"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.create_empty_annotations">[docs]</a><span class="k">def</span> <span class="nf">create_empty_annotations</span><span class="p">(</span><span class="n">xml_file</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create an empty annotation file.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Dates are made time-zone unaware.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s1">&#39;annotations&#39;</span><span class="p">)</span>
+    <span class="n">root</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">,</span> <span class="n">VERSION</span><span class="p">)</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;dataset&#39;</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s1">&#39;filename&#39;</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s1">&#39;path&#39;</span><span class="p">)</span>  <span class="c1"># not to be relied on</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s1">&#39;start_time&#39;</span><span class="p">)</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+
+    <span class="n">first_sec</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">last_sec</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;n_samples&#39;</span><span class="p">]</span> <span class="o">/</span>
+                   <span class="n">dataset</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;s_freq&#39;</span><span class="p">])</span>  <span class="c1"># in s</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s1">&#39;first_second&#39;</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">first_sec</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s1">&#39;last_second&#39;</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">last_sec</span><span class="p">)</span>
+
+    <span class="n">xml</span> <span class="o">=</span> <span class="n">parseString</span><span class="p">(</span><span class="n">tostring</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">xml_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">xml</span><span class="o">.</span><span class="n">toxml</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="Annotations"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations">[docs]</a><span class="k">class</span> <span class="nc">Annotations</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Class to return nicely formatted information from xml.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xml_file</span><span class="p">,</span> <span class="n">rater_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">xml_file</span> <span class="o">=</span> <span class="n">xml_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rater_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rater</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;rater&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_rater</span><span class="p">(</span><span class="n">rater_name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Annotations.load"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load xml from file.&quot;&quot;&quot;</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml_file</span><span class="p">))</span>
+        <span class="n">update_annotation_version</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml_file</span><span class="p">)</span>
+
+        <span class="n">xml</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml_file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">xml</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Annotations.save"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save xml to file.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;modified&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+
+        <span class="n">xml</span> <span class="o">=</span> <span class="n">parseString</span><span class="p">(</span><span class="n">tostring</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">xml</span><span class="o">.</span><span class="n">toxml</span><span class="p">())</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;dataset/path&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">parse_iso_datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;dataset/start_time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">first_second</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;dataset/first_second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">last_second</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;dataset/last_second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">current_rater</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;No rater in the annotations&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">raters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">rater</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">rater</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="s1">&#39;rater&#39;</span><span class="p">)]</span>
+
+<div class="viewcode-block" id="Annotations.get_rater"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.get_rater">[docs]</a>    <span class="k">def</span> <span class="nf">get_rater</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rater_name</span><span class="p">):</span>
+        <span class="c1"># get xml root for one rater</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">rater</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="s1">&#39;rater&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">rater</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">rater_name</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rater</span> <span class="o">=</span> <span class="n">rater</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">rater_name</span> <span class="o">+</span> <span class="s1">&#39; not in the list of raters (&#39;</span> <span class="o">+</span>
+                           <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raters</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Annotations.add_rater"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.add_rater">[docs]</a>    <span class="k">def</span> <span class="nf">add_rater</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rater_name</span><span class="p">,</span> <span class="n">epoch_length</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">rater_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raters</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;rater &#39;</span> <span class="o">+</span> <span class="n">rater_name</span> <span class="o">+</span> <span class="s1">&#39; already exists, selecting it&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_rater</span><span class="p">(</span><span class="n">rater_name</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># add one rater + subtree</span>
+        <span class="n">rater</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;rater&#39;</span><span class="p">)</span>
+        <span class="n">rater</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">rater_name</span><span class="p">)</span>
+        <span class="n">rater</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;created&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_rater</span><span class="p">(</span><span class="n">rater_name</span><span class="p">)</span>
+
+        <span class="c1"># create subtree</span>
+        <span class="n">SubElement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="p">,</span> <span class="s1">&#39;bookmarks&#39;</span><span class="p">)</span>
+        <span class="n">SubElement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="p">,</span> <span class="s1">&#39;events&#39;</span><span class="p">)</span>
+        <span class="n">SubElement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="p">,</span> <span class="s1">&#39;stages&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_epochs</span><span class="p">(</span><span class="n">epoch_length</span><span class="o">=</span><span class="n">epoch_length</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Annotations.remove_rater"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.remove_rater">[docs]</a>    <span class="k">def</span> <span class="nf">remove_rater</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rater_name</span><span class="p">):</span>
+        <span class="c1"># remove one rater</span>
+        <span class="k">for</span> <span class="n">rater</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="s1">&#39;rater&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">rater</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">rater_name</span><span class="p">:</span>
+
+                <span class="c1"># here we deal with the current rater</span>
+                <span class="k">if</span> <span class="n">rater</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="p">:</span>
+                    <span class="n">all_raters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;rater&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_raters</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">rater</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">idx</span> <span class="o">=</span> <span class="n">all_raters</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="p">)</span>
+                        <span class="n">idx</span> <span class="o">-=</span> <span class="mi">1</span>  <span class="c1"># select the previous rater</span>
+                        <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                            <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># rater to delete is 0</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">rater</span> <span class="o">=</span> <span class="n">all_raters</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">rater</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Annotations.add_bookmark"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.add_bookmark">[docs]</a>    <span class="k">def</span> <span class="nf">add_bookmark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a new bookmark</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            name of the bookmark</span>
+<span class="sd">        time : (float, float)</span>
+<span class="sd">            float with start and end time in s</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        IndexError</span>
+<span class="sd">            When there is no selected rater</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bookmarks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bookmarks&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;You need to have at least one rater&#39;</span><span class="p">)</span>
+        <span class="n">new_bookmark</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">bookmarks</span><span class="p">,</span> <span class="s1">&#39;bookmark&#39;</span><span class="p">)</span>
+        <span class="n">bookmark_name</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">new_bookmark</span><span class="p">,</span> <span class="s1">&#39;bookmark_name&#39;</span><span class="p">)</span>
+        <span class="n">bookmark_name</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">bookmark_time</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">new_bookmark</span><span class="p">,</span> <span class="s1">&#39;bookmark_start&#39;</span><span class="p">)</span>
+        <span class="n">bookmark_time</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">bookmark_time</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">new_bookmark</span><span class="p">,</span> <span class="s1">&#39;bookmark_end&#39;</span><span class="p">)</span>
+        <span class="n">bookmark_time</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chan</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">chan</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+        <span class="n">event_chan</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">new_bookmark</span><span class="p">,</span> <span class="s1">&#39;bookmark_chan&#39;</span><span class="p">)</span>
+        <span class="n">event_chan</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">chan</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Annotations.remove_bookmark"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.remove_bookmark">[docs]</a>    <span class="k">def</span> <span class="nf">remove_bookmark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;if you call it without arguments, it removes ALL the bookmarks.&quot;&quot;&quot;</span>
+        <span class="n">bookmarks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bookmarks&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">bookmarks</span><span class="p">:</span>
+
+            <span class="n">bookmark_name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bookmark_name&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+            <span class="n">bookmark_start</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bookmark_start&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">bookmark_end</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bookmark_end&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">bookmark_chan</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bookmark_chan&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+            <span class="k">if</span> <span class="n">bookmark_chan</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># xml doesn&#39;t store empty string</span>
+                <span class="n">bookmark_chan</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">name_cond</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">name_cond</span> <span class="o">=</span> <span class="n">bookmark_name</span> <span class="o">==</span> <span class="n">name</span>
+
+            <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">time_cond</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">time_cond</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">bookmark_end</span> <span class="ow">and</span>
+                             <span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">bookmark_start</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">chan</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">chan_cond</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">chan_cond</span> <span class="o">=</span> <span class="n">bookmark_chan</span> <span class="o">==</span> <span class="n">chan</span>
+
+            <span class="k">if</span> <span class="n">name_cond</span> <span class="ow">and</span> <span class="n">time_cond</span> <span class="ow">and</span> <span class="n">chan_cond</span><span class="p">:</span>
+                <span class="n">bookmarks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Annotations.get_bookmarks"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.get_bookmarks">[docs]</a>    <span class="k">def</span> <span class="nf">get_bookmarks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        IndexError</span>
+<span class="sd">            When there is no selected rater</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get bookmarks inside window</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bookmarks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bookmarks&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;You need to have at least one rater&#39;</span><span class="p">)</span>
+
+        <span class="n">mrks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">bookmarks</span><span class="p">:</span>
+
+            <span class="n">bookmark_start</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bookmark_start&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">bookmark_end</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bookmark_end&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">bookmark_chan</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bookmark_chan&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+            <span class="k">if</span> <span class="n">bookmark_chan</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># xml doesn&#39;t store empty string</span>
+                <span class="n">bookmark_chan</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+            <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">time_cond</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">time_cond</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">bookmark_end</span> <span class="ow">and</span>
+                             <span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">bookmark_start</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">chan</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">chan_cond</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">chan_cond</span> <span class="o">=</span> <span class="n">bookmark_chan</span> <span class="o">==</span> <span class="n">chan</span>
+
+            <span class="k">if</span> <span class="n">time_cond</span> <span class="ow">and</span> <span class="n">chan_cond</span><span class="p">:</span>
+                <span class="n">one_mrk</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bookmark_name&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+                           <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">bookmark_start</span><span class="p">,</span>
+                           <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">bookmark_end</span><span class="p">,</span>
+                           <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="n">bookmark_chan</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">),</span>  <span class="c1"># always a list</span>
+                           <span class="p">}</span>
+                <span class="n">mrks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_mrk</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mrks</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">event_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        IndexError</span>
+<span class="sd">            When there is no selected rater</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;events&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;You need to have at least one rater&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">events</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Annotations.add_event_type"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.add_event_type">[docs]</a>    <span class="k">def</span> <span class="nf">add_event_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        IndexError</span>
+<span class="sd">            When there is no selected rater</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_types</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Event type &#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; exists already.&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;events&#39;</span><span class="p">)</span>
+        <span class="n">new_event_type</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="s1">&#39;event_type&#39;</span><span class="p">)</span>
+        <span class="n">new_event_type</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Annotations.remove_event_type"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.remove_event_type">[docs]</a>    <span class="k">def</span> <span class="nf">remove_event_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove event type based on name.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_types</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Event type &#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; was not found.&#39;</span><span class="p">)</span>
+
+        <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;events&#39;</span><span class="p">)</span>
+
+        <span class="c1"># list is necessary so that it does not remove in place</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="n">events</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Annotations.add_event"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.add_event">[docs]</a>    <span class="k">def</span> <span class="nf">add_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        IndexError</span>
+<span class="sd">            When there is no rater / epochs at all</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_types</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_event_type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;events&#39;</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;event_type[@type=&#39;&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&#39;]&quot;</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+        <span class="n">new_event</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">event_type</span><span class="p">,</span> <span class="s1">&#39;event&#39;</span><span class="p">)</span>
+        <span class="n">event_start</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">new_event</span><span class="p">,</span> <span class="s1">&#39;event_start&#39;</span><span class="p">)</span>
+        <span class="n">event_start</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">event_end</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">new_event</span><span class="p">,</span> <span class="s1">&#39;event_end&#39;</span><span class="p">)</span>
+        <span class="n">event_end</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chan</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">chan</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+        <span class="n">event_chan</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">new_event</span><span class="p">,</span> <span class="s1">&#39;event_chan&#39;</span><span class="p">)</span>
+        <span class="n">event_chan</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">chan</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Annotations.remove_event"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.remove_event">[docs]</a>    <span class="k">def</span> <span class="nf">remove_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;get events inside window.&quot;&quot;&quot;</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;events&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;event_type[@type=&#39;&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&#39;]&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;event_type&quot;</span>
+
+        <span class="k">if</span> <span class="n">chan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chan</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+                <span class="n">chan</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">e_type</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="n">pattern</span><span class="p">)):</span>
+
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">e_type</span><span class="p">:</span>
+
+                <span class="n">event_start</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;event_start&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="n">event_end</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;event_end&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="n">event_chan</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;event_chan&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+
+                <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">time_cond</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">time_cond</span> <span class="o">=</span> <span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">event_start</span> <span class="ow">and</span> <span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">event_end</span>
+
+                <span class="k">if</span> <span class="n">chan</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">chan_cond</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">chan_cond</span> <span class="o">=</span> <span class="n">event_chan</span> <span class="o">==</span> <span class="n">chan</span>
+
+                <span class="k">if</span> <span class="n">time_cond</span> <span class="ow">and</span> <span class="n">chan_cond</span><span class="p">:</span>
+                    <span class="n">e_type</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Annotations.get_events"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.get_events">[docs]</a>    <span class="k">def</span> <span class="nf">get_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get list of events in the file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str, optional</span>
+<span class="sd">            name of the event of interest</span>
+<span class="sd">        time : tuple of two float, optional</span>
+<span class="sd">            start and end time of the period of interest</span>
+<span class="sd">        chan : tuple of str, optional</span>
+<span class="sd">            list of channels of interests</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of dict</span>
+<span class="sd">            where each dict has &#39;name&#39; (name of the event), &#39;start&#39; (start</span>
+<span class="sd">            time), &#39;end&#39; (end time), &#39;chan&#39; (channels of interest, can be</span>
+<span class="sd">            empty)</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        IndexError</span>
+<span class="sd">            When there is no rater / epochs at all</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get events inside window</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;events&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;event_type[@type=&#39;&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&#39;]&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;event_type&quot;</span>
+
+        <span class="k">if</span> <span class="n">chan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chan</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+                <span class="n">chan</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+
+        <span class="n">ev</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">e_type</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="n">pattern</span><span class="p">):</span>
+
+            <span class="n">event_name</span> <span class="o">=</span> <span class="n">e_type</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">e_type</span><span class="p">:</span>
+
+                <span class="n">event_start</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;event_start&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="n">event_end</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;event_end&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="n">event_chan</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;event_chan&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                <span class="k">if</span> <span class="n">event_chan</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># xml doesn&#39;t store empty string</span>
+                    <span class="n">event_chan</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+                <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">time_cond</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">time_cond</span> <span class="o">=</span> <span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">event_end</span> <span class="ow">and</span> <span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">event_start</span>
+
+                <span class="k">if</span> <span class="n">chan</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">chan_cond</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">chan_cond</span> <span class="o">=</span> <span class="n">event_chan</span> <span class="o">==</span> <span class="n">chan</span>
+
+                <span class="k">if</span> <span class="n">time_cond</span> <span class="ow">and</span> <span class="n">chan_cond</span><span class="p">:</span>
+                    <span class="n">one_ev</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">event_name</span><span class="p">,</span>
+                              <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">event_start</span><span class="p">,</span>
+                              <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">event_end</span><span class="p">,</span>
+                              <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="n">event_chan</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">),</span>  <span class="c1"># always a list</span>
+                              <span class="p">}</span>
+                    <span class="n">ev</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_ev</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ev</span></div>
+
+<div class="viewcode-block" id="Annotations.create_epochs"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.create_epochs">[docs]</a>    <span class="k">def</span> <span class="nf">create_epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch_length</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+        <span class="n">last_sec</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">last_second</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_second</span><span class="p">)</span> <span class="o">/</span>
+                        <span class="n">epoch_length</span><span class="p">)</span> <span class="o">*</span> <span class="n">epoch_length</span>
+
+        <span class="n">stages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;stages&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">epoch_beg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">first_second</span><span class="p">,</span> <span class="n">last_sec</span><span class="p">,</span> <span class="n">epoch_length</span><span class="p">):</span>
+            <span class="n">epoch</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">stages</span><span class="p">,</span> <span class="s1">&#39;epoch&#39;</span><span class="p">)</span>
+
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="s1">&#39;epoch_start&#39;</span><span class="p">)</span>
+            <span class="n">start_time</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">epoch_beg</span><span class="p">)</span>
+
+            <span class="n">end_time</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="s1">&#39;epoch_end&#39;</span><span class="p">)</span>
+            <span class="n">end_time</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">epoch_beg</span> <span class="o">+</span> <span class="n">epoch_length</span><span class="p">)</span>
+
+            <span class="n">stage</span> <span class="o">=</span> <span class="n">SubElement</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="s1">&#39;stage&#39;</span><span class="p">)</span>
+            <span class="n">stage</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Unknown&#39;</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get epochs as generator</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of dict</span>
+<span class="sd">            each epoch is defined by start_time and end_time (in s in reference</span>
+<span class="sd">            to the start of the recordings) and a string of the sleep stage.</span>
+<span class="sd">            If you specify stages_of_interest, only epochs belonging to those</span>
+<span class="sd">            stages will be included (can be an empty list).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        IndexError</span>
+<span class="sd">            When there is no rater / epochs at all</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;You need to have at least one rater&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">one_epoch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="s1">&#39;stages/epoch&#39;</span><span class="p">):</span>
+            <span class="n">epoch</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">one_epoch</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;epoch_start&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">),</span>
+                     <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">one_epoch</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;epoch_end&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">),</span>
+                     <span class="s1">&#39;stage&#39;</span><span class="p">:</span> <span class="n">one_epoch</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;stage&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+                     <span class="p">}</span>
+            <span class="k">yield</span> <span class="n">epoch</span>
+
+<div class="viewcode-block" id="Annotations.get_stage_for_epoch"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.get_stage_for_epoch">[docs]</a>    <span class="k">def</span> <span class="nf">get_stage_for_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch_start</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return stage for one specific epoch.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        id_epoch : str</span>
+<span class="sd">            index of the epoch</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        stage : str</span>
+<span class="sd">            description of the stage.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">epoch</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">epoch_start</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">epoch</span><span class="p">[</span><span class="s1">&#39;stage&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Annotations.time_in_stage"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.time_in_stage">[docs]</a>    <span class="k">def</span> <span class="nf">time_in_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return time (in seconds) in the selected stage.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        stage : str</span>
+<span class="sd">            one of the sleep stages</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            time spent in one stage, in seconds.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span>
+                   <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;stage&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">stage</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Annotations.set_stage_for_epoch"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.set_stage_for_epoch">[docs]</a>    <span class="k">def</span> <span class="nf">set_stage_for_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch_start</span><span class="p">,</span> <span class="n">stage</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Change the stage for one specific epoch.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        id_epoch : str</span>
+<span class="sd">            index of the epoch</span>
+<span class="sd">        stage : str</span>
+<span class="sd">            description of the stage.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        KeyError</span>
+<span class="sd">            When the id_epoch is not in the list of epochs.</span>
+<span class="sd">        IndexError</span>
+<span class="sd">            When there is no rater / epochs at all</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;You need to have at least one rater&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">one_epoch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rater</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="s1">&#39;stages/epoch&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">one_epoch</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;epoch_start&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">==</span> <span class="n">epoch_start</span><span class="p">:</span>
+                <span class="n">one_epoch</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;stage&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">stage</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;epoch starting at &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">epoch_start</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; not found&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Annotations.export"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.Annotations.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_to_export</span><span class="p">,</span> <span class="n">stages</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Export annotations to csv file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        file_to_export : path to file</span>
+<span class="sd">            csv file to write to</span>
+<span class="sd">        stages : bool, optional</span>
+<span class="sd">            if you want to write down the sleep stages</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_to_export</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">csv_file</span> <span class="o">=</span> <span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">stages</span><span class="p">:</span>
+                <span class="n">csv_file</span><span class="o">.</span><span class="n">writerow</span><span class="p">((</span><span class="s1">&#39;clock start time&#39;</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;stage&#39;</span><span class="p">))</span>
+
+                <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">:</span>
+                    <span class="n">epoch_time</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+</span>
+                                  <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">epoch</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]))</span>
+                    <span class="n">csv_file</span><span class="o">.</span><span class="n">writerow</span><span class="p">((</span><span class="n">epoch_time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H:%M:%S&#39;</span><span class="p">),</span>
+                                       <span class="n">epoch</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span>
+                                       <span class="n">epoch</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                                       <span class="n">epoch</span><span class="p">[</span><span class="s1">&#39;stage&#39;</span><span class="p">]))</span></div></div>
+
+
+<div class="viewcode-block" id="update_annotation_version"><a class="viewcode-back" href="../../../api/phypno.attr.annotations.html#phypno.attr.annotations.update_annotation_version">[docs]</a><span class="k">def</span> <span class="nf">update_annotation_version</span><span class="p">(</span><span class="n">xml_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Update the fields that have changed over different versions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xml_file : path to file</span>
+<span class="sd">        xml file with the sleep scoring</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    new in version 4: use &#39;marker_name&#39; instead of simply &#39;name&#39; etc</span>
+
+<span class="sd">    new in version 5: use &#39;bookmark&#39; instead of &#39;marker&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">xml_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span><span class="s1">&#39;&lt;annotations version=&quot;([0-9]*)&quot;&gt;&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">current</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&lt;marker&gt;&lt;name&gt;(.*?)&lt;/name&gt;&lt;time&gt;(.*?)&lt;/time&gt;&lt;/marker&gt;&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;&lt;marker&gt;&lt;marker_name&gt;\g&lt;1&gt;&lt;/marker_name&gt;&lt;marker_start&gt;\g&lt;2&gt;&lt;/marker_start&gt;&lt;marker_end&gt;\g&lt;2&gt;&lt;/marker_end&gt;&lt;marker_chan/&gt;&lt;/marker&gt;&#39;</span><span class="p">,</span>
+                 <span class="n">s</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">current</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;marker&#39;</span><span class="p">,</span> <span class="s1">&#39;bookmark&#39;</span><span class="p">)</span>
+
+        <span class="c1"># note indentation</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&lt;annotations version=&quot;[0-9]*&quot;&gt;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;&lt;annotations version=&quot;5&quot;&gt;&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">xml_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

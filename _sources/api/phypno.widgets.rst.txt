@@ -1,0 +1,25 @@
+phypno\.widgets package
+=======================
+
+.. automodule:: phypno.widgets
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+
+   phypno.widgets.channels
+   phypno.widgets.creation
+   phypno.widgets.info
+   phypno.widgets.labels
+   phypno.widgets.notes
+   phypno.widgets.overview
+   phypno.widgets.settings
+   phypno.widgets.spectrum
+   phypno.widgets.traces
+   phypno.widgets.utils
+   phypno.widgets.video
+

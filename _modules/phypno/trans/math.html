@@ -1,0 +1,411 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.trans.math &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.trans.math</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.trans.math</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Convenient module to convert data based on simple mathematical operations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">getfullargspec</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+
+<span class="c1"># for Math</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="p">(</span><span class="n">absolute</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">median</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span>
+                   <span class="n">square</span><span class="p">,</span> <span class="nb">sum</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="k">import</span> <span class="n">detrend</span><span class="p">,</span> <span class="n">hilbert</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">mode</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">NOKEEPDIM</span> <span class="o">=</span> <span class="p">(</span><span class="n">median</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="math"><a class="viewcode-back" href="../../../api/phypno.trans.math.html#phypno.trans.math.math">[docs]</a><span class="k">def</span> <span class="nf">math</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">operator_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply mathematical operation to each trial and channel individually.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : instance of DataTime, DataFreq, or DataTimeFreq</span>
+
+<span class="sd">    operator : function or tuple of functions, optional</span>
+<span class="sd">        function(s) to run on the data.</span>
+<span class="sd">    operator_name : str or tuple of str, optional</span>
+<span class="sd">        name of the function(s) to run on the data.</span>
+<span class="sd">    axis : str, optional</span>
+<span class="sd">        for functions that accept it, which axis you should run it on.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    instance of Data</span>
+<span class="sd">        data where the trials underwent operator.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If you pass both operator and operator_name.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        When you try to operate on an axis that has already been removed.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    operator and operator_name are mutually exclusive. operator_name is given</span>
+<span class="sd">    as shortcut for most common operations.</span>
+
+<span class="sd">    If a function accepts an &#39;axis&#39; argument, you need to pass &#39;axis&#39; to the</span>
+<span class="sd">    constructor. In this way, it&#39;ll apply the function to the correct</span>
+<span class="sd">    dimension.</span>
+
+<span class="sd">    The possible point-wise operator_name are:</span>
+<span class="sd">    &#39;absolute&#39;, &#39;angle&#39;, &#39;exp&#39;, &#39;log&#39;, &#39;sqrt&#39;, &#39;square&#39;, &#39;unwrap&#39;</span>
+
+<span class="sd">    The operator_name&#39;s that need an axis, but do not remove it:</span>
+<span class="sd">    &#39;hilbert&#39;, &#39;diff&#39;, &#39;detrend&#39;</span>
+
+<span class="sd">    The operator_name&#39;s that need an axis and remove it:</span>
+<span class="sd">    &#39;mean&#39;, &#39;median&#39;, &#39;mode&#39;, &#39;std&#39;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    You can pass a single value or a tuple. The order starts from left to</span>
+<span class="sd">    right, so abs of the hilbert transform, should be:</span>
+
+<span class="sd">    &gt;&gt;&gt; rms = math(data, operator_name=(&#39;hilbert&#39;, &#39;abs&#39;), axis=&#39;time&#39;)</span>
+
+<span class="sd">    If you want to pass the power of three, use lambda (or partial):</span>
+
+<span class="sd">    &gt;&gt;&gt; p3 = lambda x: power(x, 3)</span>
+<span class="sd">    &gt;&gt;&gt; data_p3 = math(data, operator=p3)</span>
+
+<span class="sd">    Note that lambdas are fine with point-wise operation, but if you want them</span>
+<span class="sd">    to operate on axis, you need to pass &#39;&#39;axis&#39;&#39; as well, so that:</span>
+
+<span class="sd">    &gt;&gt;&gt; std_ddof = lambda x, axis: std(x, axis, ddof=1)</span>
+<span class="sd">    &gt;&gt;&gt; data_std = math(data, operator=std_ddof)</span>
+
+<span class="sd">    If you don&#39;t pass &#39;axis&#39; in lambda, it&#39;ll never know on which axis the</span>
+<span class="sd">    function should be applied and you&#39;ll get unpredictable results.</span>
+
+<span class="sd">    If you want to pass a function that operates on an axis and removes it (for</span>
+<span class="sd">    example, if you want the max value over time), you need to add an argument</span>
+<span class="sd">    in your function called &#39;&#39;keepdims&#39;&#39; (the values won&#39;t be used):</span>
+
+<span class="sd">    &gt;&gt;&gt; def func(x, axis, keepdims=None):</span>
+<span class="sd">    &gt;&gt;&gt;     return nanmax(x, axis=axis)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">operator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">operator_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Parameters &quot;operator&quot; and &quot;operator_name&quot; are &#39;</span>
+                        <span class="s1">&#39;mutually exclusive&#39;</span><span class="p">)</span>
+
+    <span class="c1"># turn input into a tuple of functions in operators</span>
+    <span class="k">if</span> <span class="n">operator_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">operator_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">operator_name</span> <span class="o">=</span> <span class="p">(</span><span class="n">operator_name</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="n">operators</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">one_operator_name</span> <span class="ow">in</span> <span class="n">operator_name</span><span class="p">:</span>
+            <span class="n">operators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">one_operator_name</span><span class="p">))</span>
+        <span class="n">operator</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">operators</span><span class="p">)</span>
+
+    <span class="c1"># make it an iterable</span>
+    <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">operator</span><span class="p">):</span>
+        <span class="n">operator</span> <span class="o">=</span> <span class="p">(</span><span class="n">operator</span><span class="p">,</span> <span class="p">)</span>
+
+    <span class="n">operations</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">one_operator</span> <span class="ow">in</span> <span class="n">operator</span><span class="p">:</span>
+        <span class="n">on_axis</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">keepdims</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">getfullargspec</span><span class="p">(</span><span class="n">one_operator</span><span class="p">)</span><span class="o">.</span><span class="n">args</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;func &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">one_operator</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; is not a Python &#39;</span>
+                     <span class="s1">&#39;function&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;axis&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="n">on_axis</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;You need to specify an axis if you &#39;</span>
+                                    <span class="s1">&#39;use &#39;</span> <span class="o">+</span> <span class="n">one_operator</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span>
+                                    <span class="s1">&#39; (which applies to an axis)&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s1">&#39;keepdims&#39;</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">or</span> <span class="n">one_operator</span> <span class="ow">in</span> <span class="n">NOKEEPDIM</span><span class="p">:</span>
+                <span class="n">keepdims</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">operations</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">one_operator</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                           <span class="s1">&#39;func&#39;</span><span class="p">:</span> <span class="n">one_operator</span><span class="p">,</span>
+                           <span class="s1">&#39;on_axis&#39;</span><span class="p">:</span> <span class="n">on_axis</span><span class="p">,</span>
+                           <span class="s1">&#39;keepdims&#39;</span><span class="p">:</span> <span class="n">keepdims</span><span class="p">,</span>
+                           <span class="p">})</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">idx_axis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index_of</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+
+    <span class="n">first_op</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">operations</span><span class="p">:</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;running operator: &#39;</span> <span class="o">+</span> <span class="n">op</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">op</span><span class="p">[</span><span class="s1">&#39;func&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">func</span> <span class="o">==</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">mode</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">)):</span>
+            
+            <span class="c1"># don&#39;t copy original data, but use data if it&#39;s the first operation</span>
+            <span class="k">if</span> <span class="n">first_op</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">output</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">op</span><span class="p">[</span><span class="s1">&#39;on_axis&#39;</span><span class="p">]:</span>
+                <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;running &#39;</span> <span class="o">+</span> <span class="n">op</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; on &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx_axis</span><span class="p">))</span>
+               
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">func</span> <span class="o">==</span> <span class="n">diff</span><span class="p">:</span>
+                        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Diff has one-point of zero padding&#39;</span><span class="p">)</span>
+                        <span class="n">x</span> <span class="o">=</span> <span class="n">_pad_one_axis_one_value</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">idx_axis</span><span class="p">)</span>
+                    <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">idx_axis</span><span class="p">)</span>
+
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The axis &#39;</span> <span class="o">+</span> <span class="n">axis</span> <span class="o">+</span> <span class="s1">&#39; does not &#39;</span>
+                                     <span class="s1">&#39;exist in [&#39;</span> <span class="o">+</span>
+                                     <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;running &#39;</span> <span class="o">+</span> <span class="n">op</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; on each datapoint&#39;</span><span class="p">)</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">first_op</span> <span class="o">=</span> <span class="kc">False</span> 
+        
+        <span class="k">if</span> <span class="n">op</span><span class="p">[</span><span class="s1">&#39;on_axis&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">op</span><span class="p">[</span><span class="s1">&#39;keepdims&#39;</span><span class="p">]:</span>
+            <span class="k">del</span> <span class="n">output</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="_pad_one_axis_one_value"><a class="viewcode-back" href="../../../api/phypno.trans.math.html#phypno.trans.math._pad_one_axis_one_value">[docs]</a><span class="k">def</span> <span class="nf">_pad_one_axis_one_value</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">idx_axis</span><span class="p">):</span>
+    <span class="n">pad_width</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">pad_width</span><span class="p">[</span><span class="n">idx_axis</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pad</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">pad_width</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,410 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.source.linear &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.source.linear</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.source.linear</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module to convert from electrode to sources using linear matrices</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">Pool</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="p">(</span><span class="n">arange</span><span class="p">,</span> <span class="n">asarray</span><span class="p">,</span> <span class="n">atleast_2d</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">isnan</span><span class="p">,</span> <span class="n">NaN</span><span class="p">,</span>
+                   <span class="n">nansum</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="k">import</span> <span class="n">norm</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="k">import</span> <span class="n">csr_matrix</span> <span class="k">as</span> <span class="n">sparse</span>
+    <span class="c1"># test if csr_matrix is the fastest approach</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">sparse</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">gauss</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="n">exp</span><span class="p">(</span><span class="o">-.</span><span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">s</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="Linear"><a class="viewcode-back" href="../../../api/phypno.source.linear.html#phypno.source.linear.Linear">[docs]</a><span class="k">class</span> <span class="nc">Linear</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TODO</span>
+<span class="sd">    ----</span>
+<span class="sd">    both hemispheres</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surf</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">inverse</span> <span class="o">=</span> <span class="n">calc_xyz2surf</span><span class="p">(</span><span class="n">surf</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">return_xyz</span><span class="p">(),</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
+                                <span class="n">exponent</span><span class="o">=</span><span class="n">exponent</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="n">std</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inv</span> <span class="o">=</span> <span class="n">sparse</span><span class="p">(</span><span class="n">inverse</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chan</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">return_label</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="s1">&#39;chan&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        TODO</span>
+<span class="sd">        ----</span>
+<span class="sd">        return_xyz should follow channel order</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># TODO: probably not the best way</span>
+        <span class="k">del</span> <span class="n">output</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="n">parameter</span><span class="p">]</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;surf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+
+        <span class="n">exclude_vert</span> <span class="o">=</span> <span class="o">~</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inv</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">one_trl</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;surf&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inv</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">exclude_vert</span><span class="p">,</span> <span class="p">]</span> <span class="o">=</span> <span class="n">NaN</span>
+
+        <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="calc_xyz2surf"><a class="viewcode-back" href="../../../api/phypno.source.linear.html#phypno.source.linear.calc_xyz2surf">[docs]</a><span class="k">def</span> <span class="nf">calc_xyz2surf</span><span class="p">(</span><span class="n">surf</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate transformation matrix from xyz values to vertices.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    surf : instance of phypno.attr.Surf</span>
+<span class="sd">        the surface of only one hemisphere.</span>
+<span class="sd">    xyz : numpy.ndarray</span>
+<span class="sd">        nChan x 3 matrix, with the locations in x, y, z.</span>
+<span class="sd">    std : float</span>
+<span class="sd">        distance in mm of the Gaussian kernel</span>
+<span class="sd">    exponent : int</span>
+<span class="sd">        inverse law (1-&gt; direct inverse, 2-&gt; inverse square, 3-&gt; inverse cube)</span>
+<span class="sd">    threshold : float</span>
+<span class="sd">        distance in mm for a vertex to pick up electrode activity (if distance</span>
+<span class="sd">        is above the threshold, one electrode does not affect a vertex).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        nVertices X xyz.shape[0] matrix</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function is a helper when plotting onto brain surface, by creating a</span>
+<span class="sd">    transformation matrix from the values in space (f.e. at each electrode) to</span>
+<span class="sd">    the position of the vertices (used to show the brain surface).</span>
+
+<span class="sd">    There are many ways to move from values to vertices. The crucial parameter</span>
+<span class="sd">    is the function at which activity decreases in respect to the distance. You</span>
+<span class="sd">    can have an inverse relationship by specifying &#39;exponent&#39;. If &#39;exponent&#39; is</span>
+<span class="sd">    2, then the activity will decrease as inverse square of the distance. The</span>
+<span class="sd">    function can be a Gaussian. With std, you specify the width of the gaussian</span>
+<span class="sd">    kernel in mm.</span>
+<span class="sd">    For each vertex, it uses a threshold based on the distance (&#39;threshold&#39;</span>
+<span class="sd">    value, in mm). Finally, it normalizes the contribution of all the channels</span>
+<span class="sd">    to 1, so that the sum of the coefficients for each vertex is 1.</span>
+
+<span class="sd">    You can also create your own matrix (and skip calc_xyz2surf altogether) and</span>
+<span class="sd">    pass it as attribute to the main figure.</span>
+<span class="sd">    Because it&#39;s a loop over all the vertices, this function is pretty slow,</span>
+<span class="sd">    but if you calculate it once, you can reuse it.</span>
+<span class="sd">    We take advantage of multiprocessing, which speeds it up considerably.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">exponent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">std</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">exponent</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">exponent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Vertex values based on inverse-law, with exponent &#39;</span> <span class="o">+</span>
+                 <span class="nb">str</span><span class="p">(</span><span class="n">exponent</span><span class="p">))</span>
+        <span class="n">funct</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">calc_one_vert_inverse</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="n">xyz</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="n">exponent</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Vertex values based on gaussian, with s.d. &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">std</span><span class="p">))</span>
+        <span class="n">funct</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">calc_one_vert_gauss</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="n">xyz</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="n">std</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">Pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+        <span class="n">xyz2surf</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">funct</span><span class="p">,</span> <span class="n">surf</span><span class="o">.</span><span class="n">vert</span><span class="p">)</span>
+
+    <span class="n">xyz2surf</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">xyz2surf</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">exponent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">threshold_value</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">threshold</span> <span class="o">**</span> <span class="n">exponent</span><span class="p">))</span>
+        <span class="n">external_threshold_value</span> <span class="o">=</span> <span class="n">threshold_value</span>
+    <span class="k">elif</span> <span class="n">std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">threshold_value</span> <span class="o">=</span> <span class="n">gauss</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
+        <span class="n">external_threshold_value</span> <span class="o">=</span> <span class="n">gauss</span><span class="p">(</span><span class="n">std</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span> <span class="c1"># this is around 0.607</span>
+    <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Values thresholded at &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">threshold_value</span><span class="p">))</span>
+
+    <span class="n">xyz2surf</span><span class="p">[</span><span class="n">xyz2surf</span> <span class="o">&lt;</span> <span class="n">threshold_value</span><span class="p">]</span> <span class="o">=</span> <span class="n">NaN</span>
+
+    <span class="c1"># here we deal with vertices that are within the threshold value but far</span>
+    <span class="c1"># from a single electrodes, so those remain empty</span>
+    <span class="n">sumval</span> <span class="o">=</span> <span class="n">nansum</span><span class="p">(</span><span class="n">xyz2surf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">sumval</span><span class="p">[</span><span class="n">sumval</span> <span class="o">&lt;</span> <span class="n">external_threshold_value</span><span class="p">]</span> <span class="o">=</span> <span class="n">NaN</span>
+
+    <span class="c1"># normalize by the number of electrodes</span>
+    <span class="n">xyz2surf</span> <span class="o">/=</span> <span class="n">atleast_2d</span><span class="p">(</span><span class="n">sumval</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">xyz2surf</span><span class="p">[</span><span class="n">isnan</span><span class="p">(</span><span class="n">xyz2surf</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">xyz2surf</span></div>
+
+
+<div class="viewcode-block" id="calc_one_vert_inverse"><a class="viewcode-back" href="../../../api/phypno.source.linear.html#phypno.source.linear.calc_one_vert_inverse">[docs]</a><span class="k">def</span> <span class="nf">calc_one_vert_inverse</span><span class="p">(</span><span class="n">one_vert</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate how many electrodes influence one vertex, using the inverse</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    one_vert : ndarray</span>
+<span class="sd">        vector of xyz position of a vertex</span>
+<span class="sd">    xyz : ndarray</span>
+<span class="sd">        nChan X 3 with the position of all the channels</span>
+<span class="sd">    exponent : int</span>
+<span class="sd">        inverse law (1-&gt; direct inverse, 2-&gt; inverse square, 3-&gt; inverse cube)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        one vector with values for one vertex</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">xyz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">one_xyz</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">xyz</span><span class="p">):</span>
+        <span class="n">trans</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="n">one_vert</span> <span class="o">-</span> <span class="n">one_xyz</span><span class="p">)</span> <span class="o">**</span> <span class="n">exponent</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">trans</span></div>
+
+
+<div class="viewcode-block" id="calc_one_vert_gauss"><a class="viewcode-back" href="../../../api/phypno.source.linear.html#phypno.source.linear.calc_one_vert_gauss">[docs]</a><span class="k">def</span> <span class="nf">calc_one_vert_gauss</span><span class="p">(</span><span class="n">one_vert</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate how many electrodes influence one vertex, using a Gaussian</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    one_vert : ndarray</span>
+<span class="sd">        vector of xyz position of a vertex</span>
+<span class="sd">    xyz : ndarray</span>
+<span class="sd">        nChan X 3 with the position of all the channels</span>
+<span class="sd">    std : float</span>
+<span class="sd">        distance in mm of the Gaussian kernel</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        one vector with values for one vertex</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">xyz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">one_xyz</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">xyz</span><span class="p">):</span>
+        <span class="n">trans</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">gauss</span><span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="n">one_vert</span> <span class="o">-</span> <span class="n">one_xyz</span><span class="p">),</span> <span class="n">std</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">trans</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

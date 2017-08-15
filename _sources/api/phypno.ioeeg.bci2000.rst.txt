@@ -1,0 +1,7 @@
+phypno\.ioeeg\.bci2000 module
+=============================
+
+.. automodule:: phypno.ioeeg.bci2000
+    :members:
+    :undoc-members:
+    :show-inheritance:

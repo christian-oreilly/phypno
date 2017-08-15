@@ -1,0 +1,712 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.datatype &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.datatype</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.datatype</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module contains the different types of data formats.</span>
+
+<span class="sd">The main class is Data, all the other classes should depend on it. The other</span>
+<span class="sd">classes are given only as convenience, but they should not overwride</span>
+<span class="sd">Data.__call__, which needs to be very general.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">ix_</span><span class="p">,</span> <span class="n">NaN</span><span class="p">,</span> <span class="n">squeeze</span><span class="p">,</span> <span class="n">where</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Data"><a class="viewcode-back" href="../../api/phypno.datatype.html#phypno.datatype.Data">[docs]</a><span class="k">class</span> <span class="nc">Data</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;General class containing recordings.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : ndarray</span>
+<span class="sd">        one matrix with dimension matching the number of axes. You can pass</span>
+<span class="sd">        only one trial.</span>
+<span class="sd">    s_freq : int</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    axes : dict</span>
+<span class="sd">        dictionary where the key is the name of the axis and the values must be</span>
+<span class="sd">        a numpy vector with the actual values.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : ndarray (dtype=&#39;O&#39;)</span>
+<span class="sd">        the data as trials. Each trial is a ndarray (dtype=&#39;d&#39; or &#39;f&#39;)</span>
+<span class="sd">    axis : OrderedDict</span>
+<span class="sd">        dictionary with axiss (standard names are &#39;chan&#39;, &#39;time&#39;, &#39;freq&#39;);</span>
+<span class="sd">        values should be numpy array</span>
+<span class="sd">    s_freq : int</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    start_time : instance of datetime.datetime</span>
+<span class="sd">        the start time of the recording</span>
+<span class="sd">    attr : dict</span>
+<span class="sd">        contains additional information about the dataset, with keys:</span>
+<span class="sd">            - surf</span>
+<span class="sd">            - chan</span>
+<span class="sd">            - scores</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Something which is not immediately clear for chan. dtype=&#39;U&#39; (meaning</span>
+<span class="sd">    Unicode) actually creates string of type str\_, while if you use dtype=&#39;S&#39;</span>
+<span class="sd">    (meaning String) it creates strings of type bytes\_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">s_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">s_freq</span> <span class="o">=</span> <span class="n">s_freq</span>
+
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;temporary solution until PEP0468</span>
+<span class="sd">            kwargs is a dict, so no order. We try to reconstruct order based</span>
+<span class="sd">            on number of values for each value, but not 100% reliable.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">count_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">):</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">count_kwargs</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">count_kwargs</span><span class="p">)):</span>
+                <span class="n">lg</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Some arguments have the same length, so the order &#39;</span>
+                           <span class="s1">&#39;of the axes might be incorrect&#39;</span><span class="p">)</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">n_dim</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">axis_with_right_ndim</span> <span class="o">=</span> <span class="n">count_kwargs</span><span class="p">[</span><span class="n">n_dim</span><span class="p">]</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">axis_with_right_ndim</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">axis_with_right_ndim</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of dimensions in axis does not &#39;</span>
+                                     <span class="s1">&#39;match number of dimensions in data&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span><span class="mi">1</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="n">axis</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">attr</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;surf&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="s1">&#39;scores&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">axes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the recordings and their time stamps.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        trial : list of int or ndarray (dtype=&#39;i&#39;) or int</span>
+<span class="sd">            which trials you want (if it&#39;s one int, it returns the actual</span>
+<span class="sd">            matrix).</span>
+<span class="sd">        **axes</span>
+<span class="sd">            Arbitrary axiss to select from. You specify the axis and</span>
+<span class="sd">            the values as list or tuple of the values that you want.</span>
+<span class="sd">        tolerance : float</span>
+<span class="sd">            if one of the axiss is a number, it specifies the tolerance to</span>
+<span class="sd">            consider one value as chosen (take into account floating-precision</span>
+<span class="sd">            errors).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+<span class="sd">            ndarray containing the data with the same number of axiss as</span>
+<span class="sd">            the original data. The length of the axis is equal to the</span>
+<span class="sd">            length of the data, UNLESS you specify an axis with values. In</span>
+<span class="sd">            that case, the length is equal to the values that you want.</span>
+
+<span class="sd">            If you specify only one trial (as int, not as tuple or list), then</span>
+<span class="sd">            it returns the actual matrix. Otherwise, it returns a ndarray</span>
+<span class="sd">            (dtype=&#39;O&#39;) of length equal to the trials.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        You cannot specify intervals here, you can do it in Select.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">trial</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">trial</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">))</span>
+
+        <span class="n">squeeze_trial</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">iter</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>  <span class="c1"># &#39;int&#39; object is not iterable</span>
+            <span class="n">trial</span> <span class="o">=</span> <span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="p">)</span>
+            <span class="n">squeeze_trial</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trial</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">cnt</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trial</span><span class="p">):</span>
+
+            <span class="n">output_shape</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">idx_data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">idx_output</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">squeeze_axis</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">selected_values</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">selected_values</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span>
+                        <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selected_values</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+                        <span class="n">n_values</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">selected_values</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">n_values</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">selected_values</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="n">selected_values</span><span class="p">])</span>
+                        <span class="n">squeeze_axis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_of</span><span class="p">(</span><span class="n">axis</span><span class="p">))</span>
+
+                    <span class="n">idx</span> <span class="o">=</span> <span class="n">_get_indices</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                       <span class="n">selected_values</span><span class="p">,</span>
+                                       <span class="n">tolerance</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">lg</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No index was selected for &#39;</span> <span class="o">+</span> <span class="n">axis</span><span class="p">)</span>
+
+                    <span class="n">idx_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">idx_output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">n_values</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">idx_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="n">n_values</span><span class="p">))</span>
+                    <span class="n">idx_output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="n">n_values</span><span class="p">))</span>
+
+                <span class="n">output_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_values</span><span class="p">)</span>
+
+            <span class="n">output</span><span class="p">[</span><span class="n">cnt</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">output_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">output</span><span class="p">[</span><span class="n">cnt</span><span class="p">]</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">NaN</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">idx_data</span><span class="p">]):</span>
+                <span class="n">ix_output</span> <span class="o">=</span> <span class="n">ix_</span><span class="p">(</span><span class="o">*</span><span class="n">idx_output</span><span class="p">)</span>
+                <span class="n">ix_data</span> <span class="o">=</span> <span class="n">ix_</span><span class="p">(</span><span class="o">*</span><span class="n">idx_data</span><span class="p">)</span>
+                <span class="n">output</span><span class="p">[</span><span class="n">cnt</span><span class="p">][</span><span class="n">ix_output</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">ix_data</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">squeeze_axis</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">output</span><span class="p">[</span><span class="n">cnt</span><span class="p">]</span> <span class="o">=</span> <span class="n">squeeze</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="n">cnt</span><span class="p">],</span>
+                                      <span class="n">axis</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">squeeze_axis</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">squeeze_trial</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">output</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">list_of_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the name of all the axes in the data.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+<div class="viewcode-block" id="Data.index_of"><a class="viewcode-back" href="../../api/phypno.datatype.html#phypno.datatype.Data.index_of">[docs]</a>    <span class="k">def</span> <span class="nf">index_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the index of a axis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : str</span>
+<span class="sd">            Name of the axis (such as &#39;trial&#39;, &#39;time&#39;, etc)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int or ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">            number of trial (as int) or number of element in the selected</span>
+<span class="sd">            axis (if any of the other axiss) as 1d array.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the requested axis is not in the data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Data.number_of"><a class="viewcode-back" href="../../api/phypno.datatype.html#phypno.datatype.Data.number_of">[docs]</a>    <span class="k">def</span> <span class="nf">number_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the number of in one axis, as generally as possible.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : str</span>
+<span class="sd">            Name of the axis (such as &#39;trial&#39;, &#39;time&#39;, etc)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int or ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">            number of trial (as int) or number of element in the selected</span>
+<span class="sd">            axis (if any of the other axiss) as 1d array.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        KeyError</span>
+<span class="sd">            If the requested axis is not in the data.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        or is it better to catch the exception?</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="s1">&#39;trial&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_trial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">n_trial</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trial</span><span class="p">):</span>
+                <span class="n">output</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="n">axis</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="k">return</span> <span class="n">output</span></div>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">possible_axis</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the axis with a shorter syntax.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        possible_axis : str</span>
+<span class="sd">            one of the axes</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        value of the axis of interest</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        ------</span>
+<span class="sd">        The if-statement &quot;startswith&quot; is necessary to avoid recursionerror</span>
+<span class="sd">        when loading the class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">possible_axis</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">possible_axis</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="n">possible_axis</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">possible_axis</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement generator for each trial.</span>
+
+<span class="sd">        The generator returns the data for each trial. This is of course really</span>
+<span class="sd">        convenient for map and parallel processing.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from phypno.trans import math</span>
+<span class="sd">        &gt;&gt;&gt; for one_trial in iter(data):</span>
+<span class="sd">        &gt;&gt;&gt;     one_mean = math(one_trial, operator_name=&#39;mean&#39;, axis=&#39;time&#39;)</span>
+<span class="sd">        &gt;&gt;&gt;     print(one_mean.data[0])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">)):</span>
+
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">one_axis</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">:</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="n">one_axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+
+            <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">trial</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">one_axis</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">axis</span><span class="p">:</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="n">one_axis</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="n">one_axis</span><span class="p">][</span><span class="n">trial</span><span class="p">]</span>
+
+            <span class="k">yield</span> <span class="n">output</span>
+
+<div class="viewcode-block" id="Data._copy"><a class="viewcode-back" href="../../api/phypno.datatype.html#phypno.datatype.Data._copy">[docs]</a>    <span class="k">def</span> <span class="nf">_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a new instance of Data, but does not copy the data</span>
+<span class="sd">        necessarily.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : bool, optional</span>
+<span class="sd">            deep copy the axes (default: True)</span>
+<span class="sd">        attr : bool, optional</span>
+<span class="sd">            deep copy the attributes (default: True)</span>
+<span class="sd">        data : bool, optional</span>
+<span class="sd">            deep copy the data (default: False)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        instance of Data (or ChanTime, ChanFreq, ChanTimeFreq)</span>
+<span class="sd">            copy of the data, but without the actual data</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        It&#39;s important that we copy all the relevant information here. If you</span>
+<span class="sd">        add new attributes, you should add them here.</span>
+
+<span class="sd">        Remember that it deep-copies all the information, so if you copy data</span>
+<span class="sd">        the size might become really large.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cdata</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)()</span>  <span class="c1"># create instance of the same class</span>
+
+        <span class="n">cdata</span><span class="o">.</span><span class="n">s_freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_freq</span>
+        <span class="n">cdata</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
+
+        <span class="k">if</span> <span class="n">axis</span><span class="p">:</span>
+            <span class="n">cdata</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">attr</span><span class="p">:</span>
+            <span class="n">cdata</span><span class="o">.</span><span class="n">attr</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attr</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">cdata</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># empty data with the correct number of trials</span>
+            <span class="n">cdata</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cdata</span></div>
+
+<div class="viewcode-block" id="Data.export"><a class="viewcode-back" href="../../api/phypno.datatype.html#phypno.datatype.Data.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">export_format</span><span class="o">=</span><span class="s1">&#39;FieldTrip&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Export data in other formats.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : path to file</span>
+<span class="sd">            file to write</span>
+<span class="sd">        export_format : str, optional</span>
+<span class="sd">            supported export format is currently FieldTrip, EDF, FIFF, Phypno</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        EDF takes an optional argument &quot;physical_max&quot;, see write_edf.</span>
+
+<span class="sd">        Phypno takes an optional argument &quot;subj_id&quot;, see write_phypno.</span>
+<span class="sd">        Phypno format creates two files, one .phy with the dataset info as json</span>
+<span class="sd">        file and one .dat with the memmap recordings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">export_format</span> <span class="o">=</span> <span class="n">export_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">export_format</span> <span class="o">==</span> <span class="s1">&#39;edf&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">.ioeeg</span> <span class="k">import</span> <span class="n">write_edf</span>  <span class="c1"># avoid circular import</span>
+            <span class="n">write_edf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">export_format</span> <span class="o">==</span> <span class="s1">&#39;fieldtrip&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">.ioeeg</span> <span class="k">import</span> <span class="n">write_fieldtrip</span>  <span class="c1"># avoid circular import</span>
+            <span class="n">write_fieldtrip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">export_format</span> <span class="o">==</span> <span class="s1">&#39;mnefiff&#39;</span><span class="p">:</span>
+
+            <span class="kn">from</span> <span class="nn">.ioeeg</span> <span class="k">import</span> <span class="n">write_mnefiff</span>
+            <span class="n">write_mnefiff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">export_format</span> <span class="o">==</span> <span class="s1">&#39;phypno&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">.ioeeg</span> <span class="k">import</span> <span class="n">write_phypno</span>
+            <span class="n">write_phypno</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot export to &#39;</span> <span class="o">+</span> <span class="n">export_format</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ChanTime"><a class="viewcode-back" href="../../api/phypno.datatype.html#phypno.datatype.ChanTime">[docs]</a><span class="k">class</span> <span class="nc">ChanTime</span><span class="p">(</span><span class="n">Data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Specific class for chan-time recordings, with axes:</span>
+
+<span class="sd">    chan : ndarray (dtype=&#39;O&#39;)</span>
+<span class="sd">        for each trial, channels in the data (dtype=&#39;U&#39;)</span>
+<span class="sd">    time : ndarray (dtype=&#39;O&#39;)</span>
+<span class="sd">        for each trial, 1d matrix with the time stamp (dtype=&#39;f&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ChanFreq"><a class="viewcode-back" href="../../api/phypno.datatype.html#phypno.datatype.ChanFreq">[docs]</a><span class="k">class</span> <span class="nc">ChanFreq</span><span class="p">(</span><span class="n">Data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Specific class for channel-frequency recordings, with axes:</span>
+
+<span class="sd">    chan : ndarray (dtype=&#39;O&#39;)</span>
+<span class="sd">        for each trial, channels in the data (dtype=&#39;U&#39;)</span>
+<span class="sd">    freq : ndarray (dtype=&#39;O&#39;)</span>
+<span class="sd">        for each trial, 1d matrix with the frequency (dtype=&#39;f&#39;)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Conceptually, it is reasonable that each trial has the same frequency band,</span>
+<span class="sd">    so it might be more convenient to use only one array, but it can happen</span>
+<span class="sd">    that different trials have different frequency bands, so we keep the format</span>
+<span class="sd">    more open.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ChanTimeFreq"><a class="viewcode-back" href="../../api/phypno.datatype.html#phypno.datatype.ChanTimeFreq">[docs]</a><span class="k">class</span> <span class="nc">ChanTimeFreq</span><span class="p">(</span><span class="n">Data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Specific class for channel-time-frequency representation, with axes:</span>
+
+<span class="sd">    chan : ndarray (dtype=&#39;O&#39;)</span>
+<span class="sd">        for each trial, channels in the data (dtype=&#39;U&#39;)</span>
+<span class="sd">    time : ndarray (dtype=&#39;O&#39;)</span>
+<span class="sd">        for each trial, 1d matrix with the time stamp (dtype=&#39;f&#39;)</span>
+<span class="sd">    freq : ndarray (dtype=&#39;O&#39;)</span>
+<span class="sd">        for each trial, 1d matrix with the frequency (dtype=&#39;f&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_get_indices"><a class="viewcode-back" href="../../api/phypno.datatype.html#phypno.datatype._get_indices">[docs]</a><span class="k">def</span> <span class="nf">_get_indices</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">selected</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get indices based on user-selected values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    values : ndarray (any dtype)</span>
+<span class="sd">        values present in the axis.</span>
+<span class="sd">    selected : ndarray (any dtype) or tuple or list</span>
+<span class="sd">        values selected by the user</span>
+<span class="sd">    tolerance : float</span>
+<span class="sd">        avoid rounding errors.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    idx_data : list of int</span>
+<span class="sd">        indices of row/column to select the data</span>
+<span class="sd">    idx_output : list of int</span>
+<span class="sd">        indices of row/column to copy into output</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function is probably not very fast, but it&#39;s pretty robust. It keeps</span>
+<span class="sd">    the order, which is extremely important.</span>
+
+<span class="sd">    If you use values in the self.axis, you don&#39;t need to specify tolerance.</span>
+<span class="sd">    However, if you specify arbitrary points, floating point errors might</span>
+<span class="sd">    affect the actual values. Of course, using tolerance is much slower.</span>
+
+<span class="sd">    Maybe tolerance should be part of Select instead of here.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">idx_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">idx_output</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">idx_of_selected</span><span class="p">,</span> <span class="n">one_selected</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">selected</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">tolerance</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;U&#39;</span><span class="p">:</span>
+            <span class="n">idx_of_data</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">values</span> <span class="o">==</span> <span class="n">one_selected</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">idx_of_data</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">values</span> <span class="o">-</span> <span class="n">one_selected</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tolerance</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># actual use min</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx_of_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">idx_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_of_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">idx_output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_of_selected</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">idx_data</span><span class="p">,</span> <span class="n">idx_output</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

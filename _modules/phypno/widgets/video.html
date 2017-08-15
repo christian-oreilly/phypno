@@ -1,0 +1,405 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.widgets.video &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.widgets.video</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.widgets.video</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module to show video, if the file format supports it.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">platform</span> <span class="k">import</span> <span class="n">system</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="n">QTimer</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QFrame</span><span class="p">,</span>
+                             <span class="n">QGroupBox</span><span class="p">,</span>
+                             <span class="n">QPushButton</span><span class="p">,</span>
+                             <span class="n">QVBoxLayout</span><span class="p">,</span>
+                             <span class="n">QWidget</span><span class="p">,</span>
+                             <span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">vlc</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">vlc</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">.settings</span> <span class="k">import</span> <span class="n">Config</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ConfigVideo"><a class="viewcode-back" href="../../../api/phypno.widgets.video.html#phypno.widgets.video.ConfigVideo">[docs]</a><span class="k">class</span> <span class="nc">ConfigVideo</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;video&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConfigVideo.create_config"><a class="viewcode-back" href="../../../api/phypno.widgets.video.html#phypno.widgets.video.ConfigVideo.create_config">[docs]</a>    <span class="k">def</span> <span class="nf">create_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">box0</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Video&#39;</span><span class="p">)</span>
+
+        <span class="n">main_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">box0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_layout</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Video"><a class="viewcode-back" href="../../../api/phypno.widgets.video.html#phypno.widgets.video.Video">[docs]</a><span class="k">class</span> <span class="nc">Video</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Widget containing the movie, if available.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : instance of QMainWindow</span>
+<span class="sd">        the main window.</span>
+<span class="sd">    beg_diff : float</span>
+<span class="sd">        time in ms of the beginning of the first video</span>
+<span class="sd">    end_diff : float</span>
+<span class="sd">        time in ms of the end of the last video</span>
+<span class="sd">    cnt_video : int</span>
+<span class="sd">        index of the current mediasource</span>
+<span class="sd">    n_video : int</span>
+<span class="sd">        total number of videos to play</span>
+<span class="sd">    video : instance of MediaObject</span>
+<span class="sd">        the video to show.</span>
+<span class="sd">    idx_button : instance of QPushButton</span>
+<span class="sd">        button which starts and stops the video.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">ConfigVideo</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cnt_video</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_video</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mediaplayer</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_button</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">vlc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_video</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Video.create_video"><a class="viewcode-back" href="../../../api/phypno.widgets.video.html#phypno.widgets.video.Video.create_video">[docs]</a>    <span class="k">def</span> <span class="nf">create_video</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create video widget.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">vlc</span><span class="o">.</span><span class="n">Instance</span><span class="p">()</span>
+
+        <span class="n">video_widget</span> <span class="o">=</span> <span class="n">QFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mediaplayer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">media_player_new</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Linux&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mediaplayer</span><span class="o">.</span><span class="n">set_xwindow</span><span class="p">(</span><span class="n">video_widget</span><span class="o">.</span><span class="n">winId</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Windows&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mediaplayer</span><span class="o">.</span><span class="n">set_hwnd</span><span class="p">(</span><span class="n">video_widget</span><span class="o">.</span><span class="n">winId</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;darwin&#39;</span><span class="p">:</span>  <span class="c1"># to test</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mediaplayer</span><span class="o">.</span><span class="n">set_nsobject</span><span class="p">(</span><span class="n">video_widget</span><span class="o">.</span><span class="n">winId</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;unsupported system for video widget&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">medialistplayer</span> <span class="o">=</span> <span class="n">vlc</span><span class="o">.</span><span class="n">MediaListPlayer</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">medialistplayer</span><span class="o">.</span><span class="n">set_media_player</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mediaplayer</span><span class="p">)</span>
+        <span class="n">event_manager</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">medialistplayer</span><span class="o">.</span><span class="n">event_manager</span><span class="p">()</span>
+        <span class="n">event_manager</span><span class="o">.</span><span class="n">event_attach</span><span class="p">(</span><span class="n">vlc</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">MediaListPlayerNextItemSet</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">next_video</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;Start&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_stop_video</span><span class="p">)</span>
+
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">video_widget</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_button</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Video.stop_video"><a class="viewcode-back" href="../../../api/phypno.widgets.video.html#phypno.widgets.video.Video.stop_video">[docs]</a>    <span class="k">def</span> <span class="nf">stop_video</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tick</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop video if tick is more than the end, only for last file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tick : int</span>
+<span class="sd">            time in ms from the beginning of the file</span>
+
+<span class="sd">        useless?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cnt_video</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_video</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tick</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_diff</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idx_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;Start&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">video</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Video.check_if_finished"><a class="viewcode-back" href="../../../api/phypno.widgets.video.html#phypno.widgets.video.Video.check_if_finished">[docs]</a>    <span class="k">def</span> <span class="nf">check_if_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cnt_video</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_video</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mediaplayer</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">endsec</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">medialistplayer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Video.next_video"><a class="viewcode-back" href="../../../api/phypno.widgets.video.html#phypno.widgets.video.Video.next_video">[docs]</a>    <span class="k">def</span> <span class="nf">next_video</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Also runs when file is loaded, so index starts at 2.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cnt_video</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Update video to &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cnt_video</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Video.start_stop_video"><a class="viewcode-back" href="../../../api/phypno.widgets.video.html#phypno.widgets.video.Video.start_stop_video">[docs]</a>    <span class="k">def</span> <span class="nf">start_stop_video</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Start and stop the video, and change the button.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dataset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;No Dataset Loaded&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># &amp; is added automatically by PyQt, it seems</span>
+        <span class="k">if</span> <span class="s1">&#39;Start&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_button</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&amp;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_video</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">er</span><span class="p">:</span>
+                <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">er</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idx_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;Not Available / Start&#39;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">er</span><span class="p">:</span>
+                <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">er</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idx_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;NO VIDEO for this dataset&#39;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;Stop&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="s1">&#39;Stop&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_button</span><span class="o">.</span><span class="n">text</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;Start&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">medialistplayer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Video.update_video"><a class="viewcode-back" href="../../../api/phypno.widgets.video.html#phypno.widgets.video.Video.update_video">[docs]</a>    <span class="k">def</span> <span class="nf">update_video</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read list of files, convert to video time, and add video to queue.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">window_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span>
+        <span class="n">window_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dataset</span>
+
+        <span class="n">videos</span><span class="p">,</span> <span class="n">begsec</span><span class="p">,</span> <span class="n">endsec</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">read_videos</span><span class="p">(</span><span class="n">window_start</span><span class="p">,</span>
+                                               <span class="n">window_start</span> <span class="o">+</span> <span class="n">window_length</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endsec</span> <span class="o">=</span> <span class="n">endsec</span>
+        <span class="n">medialist</span> <span class="o">=</span> <span class="n">vlc</span><span class="o">.</span><span class="n">MediaList</span><span class="p">(</span><span class="n">videos</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">medialistplayer</span><span class="o">.</span><span class="n">set_media_list</span><span class="p">(</span><span class="n">medialist</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cnt_video</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_video</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">videos</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">QTimer</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">check_if_finished</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">medialistplayer</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mediaplayer</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">begsec</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

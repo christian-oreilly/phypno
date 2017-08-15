@@ -1,0 +1,497 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.datatype module &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="phypno package" href="phypno.html"/>
+        <link rel="next" title="phypno.graphoelement module" href="phypno.graphoelement.html"/>
+        <link rel="prev" title="phypno.dataset module" href="phypno.dataset.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="phypno.html">Modules, classes, functions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="phypno.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="phypno.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="phypno.dataset.html">phypno.dataset module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">phypno.datatype module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.graphoelement.html">phypno.graphoelement module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.scroll_data.html">phypno.scroll_data module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="phypno.html">phypno package</a> &raquo;</li>
+        
+      <li>phypno.datatype module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/phypno.datatype.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-phypno.datatype">
+<span id="phypno-datatype-module"></span><h1>phypno.datatype module<a class="headerlink" href="#module-phypno.datatype" title="Permalink to this headline">¶</a></h1>
+<p>Module contains the different types of data formats.</p>
+<p>The main class is Data, all the other classes should depend on it. The other
+classes are given only as convenience, but they should not overwride
+Data.__call__, which needs to be very general.</p>
+<dl class="class">
+<dt id="phypno.datatype.ChanFreq">
+<em class="property">class </em><code class="descclassname">phypno.datatype.</code><code class="descname">ChanFreq</code><a class="reference internal" href="../_modules/phypno/datatype.html#ChanFreq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.datatype.ChanFreq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#phypno.datatype.Data" title="phypno.datatype.Data"><code class="xref py py-class docutils literal"><span class="pre">phypno.datatype.Data</span></code></a></p>
+<p>Specific class for channel-frequency recordings, with axes:</p>
+<dl class="docutils">
+<dt>chan <span class="classifier-delimiter">:</span> <span class="classifier">ndarray (dtype=’O’)</span></dt>
+<dd>for each trial, channels in the data (dtype=’U’)</dd>
+<dt>freq <span class="classifier-delimiter">:</span> <span class="classifier">ndarray (dtype=’O’)</span></dt>
+<dd>for each trial, 1d matrix with the frequency (dtype=’f’)</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Conceptually, it is reasonable that each trial has the same frequency band,
+so it might be more convenient to use only one array, but it can happen
+that different trials have different frequency bands, so we keep the format
+more open.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.datatype.ChanTime">
+<em class="property">class </em><code class="descclassname">phypno.datatype.</code><code class="descname">ChanTime</code><a class="reference internal" href="../_modules/phypno/datatype.html#ChanTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.datatype.ChanTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#phypno.datatype.Data" title="phypno.datatype.Data"><code class="xref py py-class docutils literal"><span class="pre">phypno.datatype.Data</span></code></a></p>
+<p>Specific class for chan-time recordings, with axes:</p>
+<dl class="docutils">
+<dt>chan <span class="classifier-delimiter">:</span> <span class="classifier">ndarray (dtype=’O’)</span></dt>
+<dd>for each trial, channels in the data (dtype=’U’)</dd>
+<dt>time <span class="classifier-delimiter">:</span> <span class="classifier">ndarray (dtype=’O’)</span></dt>
+<dd>for each trial, 1d matrix with the time stamp (dtype=’f’)</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.datatype.ChanTimeFreq">
+<em class="property">class </em><code class="descclassname">phypno.datatype.</code><code class="descname">ChanTimeFreq</code><a class="reference internal" href="../_modules/phypno/datatype.html#ChanTimeFreq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.datatype.ChanTimeFreq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#phypno.datatype.Data" title="phypno.datatype.Data"><code class="xref py py-class docutils literal"><span class="pre">phypno.datatype.Data</span></code></a></p>
+<p>Specific class for channel-time-frequency representation, with axes:</p>
+<dl class="docutils">
+<dt>chan <span class="classifier-delimiter">:</span> <span class="classifier">ndarray (dtype=’O’)</span></dt>
+<dd>for each trial, channels in the data (dtype=’U’)</dd>
+<dt>time <span class="classifier-delimiter">:</span> <span class="classifier">ndarray (dtype=’O’)</span></dt>
+<dd>for each trial, 1d matrix with the time stamp (dtype=’f’)</dd>
+<dt>freq <span class="classifier-delimiter">:</span> <span class="classifier">ndarray (dtype=’O’)</span></dt>
+<dd>for each trial, 1d matrix with the frequency (dtype=’f’)</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.datatype.Data">
+<em class="property">class </em><code class="descclassname">phypno.datatype.</code><code class="descname">Data</code><span class="sig-paren">(</span><em>data=None</em>, <em>s_freq=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/datatype.html#Data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.datatype.Data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>General class containing recordings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>ndarray</em>) – one matrix with dimension matching the number of axes. You can pass
+only one trial.</li>
+<li><strong>s_freq</strong> (<em>int</em>) – sampling frequency</li>
+<li><strong>axes</strong> (<em>dict</em>) – dictionary where the key is the name of the axis and the values must be
+a numpy vector with the actual values.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="phypno.datatype.Data.data">
+<code class="descname">data</code><a class="headerlink" href="#phypno.datatype.Data.data" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarray (dtype=’O’)</em> – the data as trials. Each trial is a ndarray (dtype=’d’ or ‘f’)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.datatype.Data.axis">
+<code class="descname">axis</code><a class="headerlink" href="#phypno.datatype.Data.axis" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>OrderedDict</em> – dictionary with axiss (standard names are ‘chan’, ‘time’, ‘freq’);
+values should be numpy array</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.datatype.Data.s_freq">
+<code class="descname">s_freq</code><a class="headerlink" href="#phypno.datatype.Data.s_freq" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – sampling frequency</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.datatype.Data.start_time">
+<code class="descname">start_time</code><a class="headerlink" href="#phypno.datatype.Data.start_time" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of datetime.datetime</em> – the start time of the recording</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.datatype.Data.attr">
+<code class="descname">attr</code><a class="headerlink" href="#phypno.datatype.Data.attr" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> –</p>
+<dl class="docutils">
+<dt>contains additional information about the dataset, with keys:</dt>
+<dd><ul class="first last simple">
+<li>surf</li>
+<li>chan</li>
+<li>scores</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Something which is not immediately clear for chan. dtype=’U’ (meaning
+Unicode) actually creates string of type str_, while if you use dtype=’S’
+(meaning String) it creates strings of type bytes_.</p>
+<dl class="method">
+<dt id="phypno.datatype.Data._copy">
+<code class="descname">_copy</code><span class="sig-paren">(</span><em>axis=True</em>, <em>attr=True</em>, <em>data=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/datatype.html#Data._copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.datatype.Data._copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new instance of Data, but does not copy the data
+necessarily.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>axis</strong> (<em>bool</em><em>, </em><em>optional</em>) – deep copy the axes (default: True)</li>
+<li><strong>attr</strong> (<em>bool</em><em>, </em><em>optional</em>) – deep copy the attributes (default: True)</li>
+<li><strong>data</strong> (<em>bool</em><em>, </em><em>optional</em>) – deep copy the data (default: False)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>instance of Data (or ChanTime, ChanFreq, ChanTimeFreq)</em> – copy of the data, but without the actual data</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>It’s important that we copy all the relevant information here. If you
+add new attributes, you should add them here.</p>
+<p>Remember that it deep-copies all the information, so if you copy data
+the size might become really large.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.datatype.Data.export">
+<code class="descname">export</code><span class="sig-paren">(</span><em>filename</em>, <em>export_format=’FieldTrip’</em>, <em>**options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/datatype.html#Data.export"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.datatype.Data.export" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export data in other formats.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>path to file</em>) – file to write</li>
+<li><strong>export_format</strong> (<em>str</em><em>, </em><em>optional</em>) – supported export format is currently FieldTrip, EDF, FIFF, Phypno</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>EDF takes an optional argument “physical_max”, see write_edf.</p>
+<p>Phypno takes an optional argument “subj_id”, see write_phypno.
+Phypno format creates two files, one .phy with the dataset info as json
+file and one .dat with the memmap recordings.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.datatype.Data.index_of">
+<code class="descname">index_of</code><span class="sig-paren">(</span><em>axis</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/datatype.html#Data.index_of"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.datatype.Data.index_of" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the index of a axis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>axis</strong> (<em>str</em>) – Name of the axis (such as ‘trial’, ‘time’, etc)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>int or ndarray (dtype=’int’)</em> – number of trial (as int) or number of element in the selected
+axis (if any of the other axiss) as 1d array.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> – If the requested axis is not in the data.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.datatype.Data.list_of_axes">
+<code class="descname">list_of_axes</code><a class="headerlink" href="#phypno.datatype.Data.list_of_axes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of all the axes in the data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.datatype.Data.number_of">
+<code class="descname">number_of</code><span class="sig-paren">(</span><em>axis</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/datatype.html#Data.number_of"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.datatype.Data.number_of" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of in one axis, as generally as possible.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>axis</strong> (<em>str</em>) – Name of the axis (such as ‘trial’, ‘time’, etc)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>int or ndarray (dtype=’int’)</em> – number of trial (as int) or number of element in the selected
+axis (if any of the other axiss) as 1d array.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">KeyError</span></code> – If the requested axis is not in the data.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>or is it better to catch the exception?</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.datatype._get_indices">
+<code class="descclassname">phypno.datatype.</code><code class="descname">_get_indices</code><span class="sig-paren">(</span><em>values</em>, <em>selected</em>, <em>tolerance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/datatype.html#_get_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.datatype._get_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get indices based on user-selected values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>values</strong> (<em>ndarray</em><em> (</em><em>any dtype</em><em>)</em>) – values present in the axis.</li>
+<li><strong>selected</strong> (<em>ndarray</em><em> (</em><em>any dtype</em><em>) or </em><em>tuple</em><em> or </em><em>list</em>) – values selected by the user</li>
+<li><strong>tolerance</strong> (<em>float</em>) – avoid rounding errors.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>idx_data</strong> (<em>list of int</em>) – indices of row/column to select the data</li>
+<li><strong>idx_output</strong> (<em>list of int</em>) – indices of row/column to copy into output</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This function is probably not very fast, but it’s pretty robust. It keeps
+the order, which is extremely important.</p>
+<p>If you use values in the self.axis, you don’t need to specify tolerance.
+However, if you specify arbitrary points, floating point errors might
+affect the actual values. Of course, using tolerance is much slower.</p>
+<p>Maybe tolerance should be part of Select instead of here.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="phypno.graphoelement.html" class="btn btn-neutral float-right" title="phypno.graphoelement module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phypno.dataset.html" class="btn btn-neutral" title="phypno.dataset module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

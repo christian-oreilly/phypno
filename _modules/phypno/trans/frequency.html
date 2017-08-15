@@ -1,0 +1,609 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.trans.frequency &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.trans.frequency</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.trans.frequency</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module to compute frequency representation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="p">(</span><span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">inf</span><span class="p">,</span> <span class="nb">max</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span>
+                   <span class="n">swapaxes</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="k">import</span> <span class="n">norm</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="k">import</span> <span class="n">welch</span><span class="p">,</span> <span class="n">fftconvolve</span><span class="p">,</span> <span class="n">spectrogram</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">mne.time_frequency.multitaper</span> <span class="k">import</span> <span class="n">multitaper_psd</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="kn">from</span> <span class="nn">..datatype</span> <span class="k">import</span> <span class="n">ChanFreq</span><span class="p">,</span> <span class="n">ChanTimeFreq</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="frequency"><a class="viewcode-back" href="../../../api/phypno.trans.frequency.html#phypno.trans.frequency.frequency">[docs]</a><span class="k">def</span> <span class="nf">frequency</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;welch&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the power spectrum.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    method : str</span>
+<span class="sd">        the method to compute the power spectrum, such as &#39;welch&#39;</span>
+<span class="sd">    data : instance of ChanTime</span>
+<span class="sd">        one of the datatypes</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    instance of ChanFreq</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If the data does not have a &#39;time&#39; axis. It might work in the</span>
+<span class="sd">        future on other axes, but I cannot imagine how.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    It uses sampling frequency as specified in s_freq, it does not</span>
+<span class="sd">    recompute the sampling frequency based on the time axis.</span>
+
+<span class="sd">    For method &#39;welch&#39;, the following options should be specified:</span>
+<span class="sd">        duraton : int</span>
+<span class="sd">            duration of the window to compute the power spectrum, in s</span>
+<span class="sd">        overlap : int</span>
+<span class="sd">            amount of overlap (0 -&gt; no overlap, 1 -&gt; full overlap)</span>
+<span class="sd">        window : str or tuple or array</span>
+<span class="sd">            desired window to use</span>
+<span class="sd">        detrend : str or function or False</span>
+<span class="sd">            specifies how to detrend each segment</span>
+<span class="sd">        scaling : str</span>
+<span class="sd">            you can choose between density (V**2/Hz) or spectrum (V**2)</span>
+
+<span class="sd">        The output is real PSD, not complex, because of</span>
+<span class="sd">        https://github.com/scipy/scipy/issues/5757</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">implemented_methods</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;welch&#39;</span><span class="p">,</span> <span class="s1">&#39;multitaper&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">implemented_methods</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Method &#39;</span> <span class="o">+</span> <span class="n">method</span> <span class="o">+</span> <span class="s1">&#39; is not implemented yet.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                         <span class="s1">&#39;Currently implemented methods are &#39;</span> <span class="o">+</span>
+                         <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">implemented_methods</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;welch&#39;</span><span class="p">:</span>
+        <span class="n">default_options</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                           <span class="s1">&#39;overlap&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+                           <span class="s1">&#39;window&#39;</span><span class="p">:</span> <span class="s1">&#39;hann&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;detrend&#39;</span><span class="p">:</span> <span class="s1">&#39;constant&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;scaling&#39;</span><span class="p">:</span> <span class="s1">&#39;density&#39;</span><span class="p">,</span>
+                           <span class="p">}</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;multitaper&#39;</span><span class="p">:</span>
+        <span class="n">default_options</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;fmin&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                           <span class="s1">&#39;fmax&#39;</span><span class="p">:</span> <span class="n">inf</span><span class="p">,</span>
+                           <span class="s1">&#39;bandwidth&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="s1">&#39;adaptive&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                           <span class="s1">&#39;low_bias&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                           <span class="s1">&#39;normalization&#39;</span><span class="p">:</span> <span class="s1">&#39;full&#39;</span><span class="p">,</span>
+                           <span class="p">}</span>
+
+    <span class="n">default_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="n">default_options</span>
+
+    <span class="k">if</span> <span class="s1">&#39;time&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">list_of_axes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">time</span><span class="se">\&#39;</span><span class="s1"> is not in the axis &#39;</span> <span class="o">+</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">list_of_axes</span><span class="p">))</span>
+    <span class="n">idx_time</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index_of</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+
+    <span class="n">freq</span> <span class="o">=</span> <span class="n">ChanFreq</span><span class="p">()</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">s_freq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">s_freq</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">start_time</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+    <span class="n">freq</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;welch&#39;</span><span class="p">:</span>
+            <span class="n">nperseg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">s_freq</span><span class="p">)</span>
+            <span class="n">noverlap</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;overlap&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">nperseg</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">,</span> <span class="n">Pxx</span> <span class="o">=</span> <span class="n">welch</span><span class="p">(</span><span class="n">data</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="n">i</span><span class="p">),</span>
+                           <span class="n">fs</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">s_freq</span><span class="p">,</span>
+                           <span class="n">nperseg</span><span class="o">=</span><span class="n">nperseg</span><span class="p">,</span>
+                           <span class="n">noverlap</span><span class="o">=</span><span class="n">noverlap</span><span class="p">,</span>
+                           <span class="n">scaling</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;scaling&#39;</span><span class="p">],</span>
+                           <span class="n">axis</span><span class="o">=</span><span class="n">idx_time</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;multitaper&#39;</span><span class="p">:</span>
+            <span class="n">Pxx</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">multitaper_psd</span><span class="p">(</span><span class="n">data</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="n">i</span><span class="p">),</span>
+                                    <span class="n">sfreq</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">s_freq</span><span class="p">,</span>
+                                    <span class="n">fmin</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;fmin&#39;</span><span class="p">],</span>
+                                    <span class="n">fmax</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;fmax&#39;</span><span class="p">],</span>
+                                    <span class="n">bandwidth</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;bandwidth&#39;</span><span class="p">],</span>
+                                    <span class="n">adaptive</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;adaptive&#39;</span><span class="p">],</span>
+                                    <span class="n">low_bias</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;low_bias&#39;</span><span class="p">],</span>
+                                    <span class="n">normalization</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;normalization&#39;</span><span class="p">],</span>
+                                    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">freq</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="n">freq</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pxx</span>
+
+    <span class="k">return</span> <span class="n">freq</span></div>
+
+
+<div class="viewcode-block" id="timefrequency"><a class="viewcode-back" href="../../../api/phypno.trans.frequency.html#phypno.trans.frequency.timefrequency">[docs]</a><span class="k">def</span> <span class="nf">timefrequency</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;morlet&#39;</span><span class="p">,</span> <span class="n">time_skip</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the power spectrum over time.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        the method to compute the time-frequency representation, such as</span>
+<span class="sd">        &#39;morlet&#39; (wavelet using complex morlet window), &#39;spectrogram&#39; (relies</span>
+<span class="sd">        on scipy implementation)</span>
+<span class="sd">    options : dict</span>
+<span class="sd">        Options depends on the method.</span>
+<span class="sd">    data : instance of ChanTime</span>
+<span class="sd">        data to analyze</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    instance of ChanTimeFreq</span>
+<span class="sd">        data in time-frequency representation.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The data in ChanTimeFreq are complex and they should stay that way. You</span>
+<span class="sd">    can also get the magnitude or power the easy way using Math.</span>
+
+<span class="sd">    &gt;&gt;&gt; from phypno.trans import math, timefreq</span>
+<span class="sd">    &gt;&gt;&gt; tf = timefreq(data, foi=(8, 10))</span>
+<span class="sd">    &gt;&gt;&gt; tf_abs = math(tf, operator_name=&#39;abs&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; tf_abs.data[0][0, 0, 0]</span>
+<span class="sd">    1737.4662329214384)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    It uses sampling frequency as specified in s_freq, it does not</span>
+<span class="sd">    recompute the sampling frequency based on the time axis.</span>
+
+<span class="sd">    For method &#39;morlet&#39;, the following options should be specified:</span>
+<span class="sd">        foi : ndarray or list or tuple</span>
+<span class="sd">            vector with frequency of interest</span>
+<span class="sd">        ratio : float</span>
+<span class="sd">            ratio for a wavelet family ( = freq / sigma_f)</span>
+<span class="sd">        sigma_f : float</span>
+<span class="sd">            standard deviation of the wavelet in frequency domain</span>
+<span class="sd">        dur_in_sd : float</span>
+<span class="sd">            duration of the wavelet, given as number of the standard deviation</span>
+<span class="sd">            in the time domain, in one side.</span>
+<span class="sd">        dur_in_s : float</span>
+<span class="sd">            total duration of the wavelet, two-sided (i.e. from start to</span>
+<span class="sd">            finish)</span>
+<span class="sd">        time_skip : int, in samples</span>
+<span class="sd">            number of time points to skip (it runs convolution on all the</span>
+<span class="sd">            data points, but you don&#39;t need to store them all)</span>
+<span class="sd">        normalization : str</span>
+<span class="sd">            &#39;area&#39; means that energy is normalized to 1, &#39;peak&#39; means that the</span>
+<span class="sd">            peak of the wavelet is set at 1, &#39;max&#39; is a normalization used by</span>
+<span class="sd">            nitime where the max value of the output of the convolution remains</span>
+<span class="sd">            the same even if you change the sigma_f.</span>
+<span class="sd">        zero_mean : bool</span>
+<span class="sd">            make sure that the wavelet has zero mean (only relevant if ratio</span>
+<span class="sd">            &lt; 5)</span>
+
+<span class="sd">    For method &#39;spectrogram&#39;, the following options should be specified:</span>
+<span class="sd">        duraton : int</span>
+<span class="sd">            duration of the window to compute the power spectrum, in s</span>
+<span class="sd">        overlap : int</span>
+<span class="sd">            amount of overlap (0 -&gt; no overlap, 1 -&gt; full overlap)</span>
+<span class="sd">        window : str or tuple or array</span>
+<span class="sd">            desired window to use</span>
+<span class="sd">        detrend : str or function or False</span>
+<span class="sd">            specifies how to detrend each segment</span>
+<span class="sd">        scaling : str</span>
+<span class="sd">            you can choose between density (V**2/Hz) or spectrum (V**2)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">implemented_methods</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;morlet&#39;</span><span class="p">,</span> <span class="s1">&#39;spectrogram&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">implemented_methods</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Method &#39;</span> <span class="o">+</span> <span class="n">method</span> <span class="o">+</span> <span class="s1">&#39; is not implemented yet.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                         <span class="s1">&#39;Currently implemented methods are &#39;</span> <span class="o">+</span>
+                         <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">implemented_methods</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;morlet&#39;</span><span class="p">:</span>
+        <span class="n">default_options</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;foi&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="s1">&#39;ratio&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                           <span class="s1">&#39;sigma_f&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="s1">&#39;dur_in_sd&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+                           <span class="s1">&#39;dur_in_s&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="s1">&#39;normalization&#39;</span><span class="p">:</span> <span class="s1">&#39;area&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;zero_mean&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                           <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;spectrogram&#39;</span><span class="p">:</span>
+        <span class="n">default_options</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                           <span class="s1">&#39;overlap&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+                           <span class="s1">&#39;window&#39;</span><span class="p">:</span> <span class="s1">&#39;hann&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;detrend&#39;</span><span class="p">:</span> <span class="s1">&#39;constant&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;scaling&#39;</span><span class="p">:</span> <span class="s1">&#39;density&#39;</span><span class="p">,</span>
+                           <span class="p">}</span>
+
+    <span class="n">default_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="n">default_options</span>
+
+    <span class="n">timefreq</span> <span class="o">=</span> <span class="n">ChanTimeFreq</span><span class="p">()</span>
+    <span class="n">timefreq</span><span class="o">.</span><span class="n">s_freq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">s_freq</span>
+    <span class="n">timefreq</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">start_time</span>
+    <span class="n">timefreq</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span>
+    <span class="n">timefreq</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+    <span class="n">timefreq</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+    <span class="n">timefreq</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;morlet&#39;</span><span class="p">:</span>
+
+        <span class="n">wavelets</span> <span class="o">=</span> <span class="n">_create_morlet</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">options</span><span class="p">),</span> <span class="n">data</span><span class="o">.</span><span class="n">s_freq</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">)):</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Processing trial # </span><span class="si">{0: 6}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="n">timefreq</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;foi&#39;</span><span class="p">])</span>
+            <span class="n">timefreq</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">][::</span><span class="n">time_skip</span><span class="p">]</span>
+
+            <span class="n">timefreq</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;chan&#39;</span><span class="p">)[</span><span class="n">i</span><span class="p">],</span>
+                                      <span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span> <span class="o">//</span> <span class="n">time_skip</span><span class="p">,</span>
+                                      <span class="nb">len</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;foi&#39;</span><span class="p">])),</span>
+                                     <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;complex&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i_c</span><span class="p">,</span> <span class="n">chan</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]):</span>
+                <span class="n">dat</span> <span class="o">=</span> <span class="n">data</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="n">chan</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i_f</span><span class="p">,</span> <span class="n">wavelet</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wavelets</span><span class="p">):</span>
+                    <span class="n">tf</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">wavelet</span><span class="p">,</span> <span class="s1">&#39;same&#39;</span><span class="p">)</span>
+                    <span class="n">timefreq</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i_c</span><span class="p">,</span> <span class="p">:,</span> <span class="n">i_f</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span><span class="p">[::</span><span class="n">time_skip</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">time_skip</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;sampling frequency in s_freq refers to the input data, &#39;</span>
+                 <span class="s1">&#39;not to the timefrequency output&#39;</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;spectrogram&#39;</span><span class="p">:</span>
+        <span class="n">nperseg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">s_freq</span><span class="p">)</span>
+        <span class="n">noverlap</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;overlap&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">nperseg</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">trial</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">f</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">Sxx</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="p">(</span><span class="n">trial</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">fs</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">s_freq</span><span class="p">,</span>
+                                    <span class="n">window</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;window&#39;</span><span class="p">],</span>
+                                    <span class="n">nperseg</span><span class="o">=</span><span class="n">nperseg</span><span class="p">,</span>
+                                    <span class="n">noverlap</span><span class="o">=</span><span class="n">noverlap</span><span class="p">,</span>
+                                    <span class="n">detrend</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;detrend&#39;</span><span class="p">],</span>
+                                    <span class="n">scaling</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;scaling&#39;</span><span class="p">],</span>
+                                    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;complex&#39;</span><span class="p">,</span>
+                                    <span class="n">axis</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">index_of</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+
+            <span class="c1"># the last axis of Sxx corresponds to the segment times</span>
+            <span class="n">timefreq</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">swapaxes</span><span class="p">(</span><span class="n">Sxx</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">::</span><span class="n">time_skip</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># add offset</span>
+            <span class="n">timefreq</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="p">[::</span><span class="n">time_skip</span><span class="p">]</span> <span class="o">+</span> <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">timefreq</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+
+    <span class="k">return</span> <span class="n">timefreq</span></div>
+
+
+<div class="viewcode-block" id="_create_morlet"><a class="viewcode-back" href="../../../api/phypno.trans.frequency.html#phypno.trans.frequency._create_morlet">[docs]</a><span class="k">def</span> <span class="nf">_create_morlet</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create morlet wavelets, with scipy.signal doing the actual computation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    foi : ndarray or list or tuple</span>
+<span class="sd">        vector with frequency of interest</span>
+<span class="sd">    s_freq : int or float</span>
+<span class="sd">        sampling frequency of the data</span>
+<span class="sd">    options : dict</span>
+<span class="sd">        with &#39;M_in_s&#39; (duration of the wavelet in seconds) and &#39;w&#39; (Omega0)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        nFreq X nSamples matrix containing the complex Morlet wavelets.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wavelets</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">foi</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;foi&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">foi</span><span class="p">:</span>
+        <span class="n">wavelets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">morlet</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">wavelets</span></div>
+
+
+<div class="viewcode-block" id="morlet"><a class="viewcode-back" href="../../../api/phypno.trans.frequency.html#phypno.trans.frequency.morlet">[docs]</a><span class="k">def</span> <span class="nf">morlet</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sigma_f</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dur_in_sd</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">dur_in_s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+           <span class="n">normalization</span><span class="o">=</span><span class="s1">&#39;peak&#39;</span><span class="p">,</span> <span class="n">zero_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a Morlet wavelet.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    freq : float</span>
+<span class="sd">        central frequency of the wavelet</span>
+<span class="sd">    s_freq : int</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    ratio : float</span>
+<span class="sd">        ratio for a wavelet family ( = freq / sigma_f)</span>
+<span class="sd">    sigma_f : float</span>
+<span class="sd">        standard deviation of the wavelet in frequency domain</span>
+<span class="sd">    dur_in_sd : float</span>
+<span class="sd">        duration of the wavelet, given as number of the standard deviation in</span>
+<span class="sd">        the time domain, in one side.</span>
+<span class="sd">    dur_in_s : float</span>
+<span class="sd">        total duration of the wavelet, two-sided (i.e. from start to finish)</span>
+<span class="sd">    normalization : str</span>
+<span class="sd">        &#39;area&#39; means that energy is normalized to 1, &#39;peak&#39; means that the peak</span>
+<span class="sd">        is set at 1, &#39;max&#39; is a normalization used by nitime which does not</span>
+<span class="sd">        change max value of output when you change sigma_f.</span>
+<span class="sd">    zero_mean : bool</span>
+<span class="sd">        make sure that the wavelet has zero mean (only relevant if ratio &lt; 5)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        vector containing the complex Morlet wavelets</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    &#39;ratio&#39; and &#39;sigma_f&#39; are mutually exclusive. If you use &#39;sigma_f&#39;, the</span>
+<span class="sd">    standard deviation stays the same for all the frequency. It&#39;s more common</span>
+<span class="sd">    to specify a constant ratio for the wavelet family, so that the frequency</span>
+<span class="sd">    resolution changes with the frequency of interest.</span>
+
+<span class="sd">    &#39;dur_in_sd&#39; and &#39;dur_in_s&#39; are mutually exclusive. &#39;dur_in_s&#39; specifies the</span>
+<span class="sd">    total duration (from start to finish) of the window. &#39;dur_in_sd&#39; calculates</span>
+<span class="sd">    the total duration as the length in standard deviations in the time domain:</span>
+<span class="sd">    dur_in_s = dur_in_sd * 2 * sigma_t, with sigma_t = 1 / (2 * pi * sigma_f)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">sigma_f</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sigma_f</span> <span class="o">=</span> <span class="n">freq</span> <span class="o">/</span> <span class="n">ratio</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="n">freq</span> <span class="o">/</span> <span class="n">sigma_f</span>
+    <span class="n">sigma_t</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">sigma_f</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ratio</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">zero_mean</span><span class="p">:</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;The wavelet won</span><span class="se">\&#39;</span><span class="s1">t have zero mean, set zero_mean=True to &#39;</span>
+                <span class="s1">&#39;correct it&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dur_in_s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dur_in_s</span> <span class="o">=</span> <span class="n">sigma_t</span> <span class="o">*</span> <span class="n">dur_in_sd</span> <span class="o">*</span> <span class="mi">2</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">dur_in_s</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dur_in_s</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">s_freq</span><span class="p">)</span>
+
+    <span class="n">w</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">freq</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">zero_mean</span><span class="p">:</span>
+        <span class="n">w</span> <span class="o">-=</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">ratio</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">w</span> <span class="o">*=</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sigma_t</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">normalization</span> <span class="o">==</span> <span class="s1">&#39;area&#39;</span><span class="p">:</span>
+        <span class="n">w</span> <span class="o">/=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigma_t</span> <span class="o">*</span> <span class="n">s_freq</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">normalization</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
+        <span class="n">w</span> <span class="o">/=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">sigma_t</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="n">s_freq</span>
+    <span class="k">elif</span> <span class="n">normalization</span> <span class="o">==</span> <span class="s1">&#39;peak&#39;</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;At freq </span><span class="si">{0: 9.3f}</span><span class="s1">Hz, sigma_f=</span><span class="si">{1: 9.3f}</span><span class="s1">Hz, sigma_t=</span><span class="si">{2: 9.3f}</span><span class="s1">s, &#39;</span>
+            <span class="s1">&#39;total duration=</span><span class="si">{3: 9.3f}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">sigma_f</span><span class="p">,</span> <span class="n">sigma_t</span><span class="p">,</span>
+                                               <span class="n">dur_in_s</span><span class="p">))</span>
+    <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;    Real peak=</span><span class="si">{0: 9.3f}</span><span class="s1">, Mean=</span><span class="si">{1: 12.6f}</span><span class="s1">, &#39;</span>
+             <span class="s1">&#39;Energy=</span><span class="si">{2: 9.3f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">real</span><span class="p">(</span><span class="n">w</span><span class="p">)),</span> <span class="n">mean</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="n">norm</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">w</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

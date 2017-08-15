@@ -1,0 +1,756 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.widgets.settings module &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="phypno.widgets package" href="phypno.widgets.html"/>
+        <link rel="next" title="phypno.widgets.spectrum module" href="phypno.widgets.spectrum.html"/>
+        <link rel="prev" title="phypno.widgets.overview module" href="phypno.widgets.overview.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="phypno.html">Modules, classes, functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="phypno.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="phypno.attr.html">phypno.attr package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.detect.html">phypno.detect package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.ioeeg.html">phypno.ioeeg package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.source.html">phypno.source package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.trans.html">phypno.trans package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.utils.html">phypno.utils package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="phypno.widgets.html">phypno.widgets package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="phypno.widgets.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phypno.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="phypno.html">phypno package</a> &raquo;</li>
+        
+          <li><a href="phypno.widgets.html">phypno.widgets package</a> &raquo;</li>
+        
+      <li>phypno.widgets.settings module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/phypno.widgets.settings.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-phypno.widgets.settings">
+<span id="phypno-widgets-settings-module"></span><h1>phypno.widgets.settings module<a class="headerlink" href="#module-phypno.widgets.settings" title="Permalink to this headline">¶</a></h1>
+<p>Large and simple widget to indicate settings/Settings.</p>
+<dl class="class">
+<dt id="phypno.widgets.settings.Config">
+<em class="property">class </em><code class="descclassname">phypno.widgets.settings.</code><code class="descname">Config</code><span class="sig-paren">(</span><em>widget</em>, <em>update_widget</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtWidgets.QWidget</span></code></p>
+<p>Base class for widgets used in the Settings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>widget</strong> (<em>str</em>) – name of the widget</li>
+<li><strong>update_widget</strong> (<em>function</em>) – function to run to update the main window with new values</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="phypno.widgets.settings.Config.modified">
+<code class="descname">modified</code><a class="headerlink" href="#phypno.widgets.settings.Config.modified" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – if the preference widget has been changed</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.settings.Config.value">
+<code class="descname">value</code><a class="headerlink" href="#phypno.widgets.settings.Config.value" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> – dictionary with the actual current values</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.settings.Config.index">
+<code class="descname">index</code><a class="headerlink" href="#phypno.widgets.settings.Config.index" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> – dictionary with the instances of the small widgets</p>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>You’ll need to implement create_config with the QGroupBox and layouts</p>
+<dl class="method">
+<dt id="phypno.widgets.settings.Config.create_config">
+<code class="descname">create_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#Config.create_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.Config.create_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Placeholder: it’ll be replaced with actual layout.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.Config.create_indices">
+<code class="descname">create_indices</code><span class="sig-paren">(</span><em>value_names</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#Config.create_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.Config.create_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create empty indices as None. They’ll be created by create_config.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.Config.create_values">
+<code class="descname">create_values</code><span class="sig-paren">(</span><em>value_names</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#Config.create_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.Config.create_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read original values from the settings or the defaults.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value_names</strong> (<em>list of str</em>) – list of value names to read</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>dict</em> – dictionary with the value names as keys</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.Config.get_values">
+<code class="descname">get_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#Config.get_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.Config.get_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get values from the GUI and save them in preference file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.Config.put_values">
+<code class="descname">put_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#Config.put_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.Config.put_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put values to the GUI.</p>
+<p class="rubric">Notes</p>
+<p>In addition, when one small widget has been changed, it calls
+set_modified, so that we know that the preference widget was modified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.Config.set_modified">
+<code class="descname">set_modified</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#Config.set_modified"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.Config.set_modified" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply mark that the preference widget was modified.</p>
+<p class="rubric">Notes</p>
+<p>You cannot use lambda because they don’t accept assignments.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.widgets.settings.ConfigUtils">
+<em class="property">class </em><code class="descclassname">phypno.widgets.settings.</code><code class="descname">ConfigUtils</code><span class="sig-paren">(</span><em>update_widget</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#ConfigUtils"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.ConfigUtils" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#phypno.widgets.settings.Config" title="phypno.widgets.settings.Config"><code class="xref py py-class docutils literal"><span class="pre">phypno.widgets.settings.Config</span></code></a></p>
+<dl class="method">
+<dt id="phypno.widgets.settings.ConfigUtils.create_config">
+<code class="descname">create_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#ConfigUtils.create_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.ConfigUtils.create_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.widgets.settings.FormBool">
+<em class="property">class </em><code class="descclassname">phypno.widgets.settings.</code><code class="descname">FormBool</code><span class="sig-paren">(</span><em>checkbox_label</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormBool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormBool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtWidgets.QCheckBox</span></code></p>
+<p>Subclass QCheckBox to have a more consistent API across widgets.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>checkbox_label</strong> (<em>str</em>) – label next to checkbox</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="phypno.widgets.settings.FormBool.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>funct</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormBool.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormBool.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call funct when user ticks the box.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>funct</strong> (<em>function</em>) – function that broadcasts a change.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.FormBool.get_value">
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>default=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormBool.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormBool.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of the QCheckBox, as boolean.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>default</strong> (<em>bool</em>) – not used</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>bool</em> – state of the checkbox</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.FormBool.set_value">
+<code class="descname">set_value</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormBool.set_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormBool.set_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set value of the checkbox.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) – value for the checkbox</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.widgets.settings.FormDir">
+<em class="property">class </em><code class="descclassname">phypno.widgets.settings.</code><code class="descname">FormDir</code><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormDir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtWidgets.QPushButton</span></code></p>
+<p>Subclass QPushButton for str to have a more consistent API across widgets.</p>
+<p class="rubric">Notes</p>
+<p>It calls to open the directory three times, but I don’t understand why</p>
+<dl class="method">
+<dt id="phypno.widgets.settings.FormDir.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>funct</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormDir.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormDir.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call funct when the text was changed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>funct</strong> (<em>function</em>) – function that broadcasts a change.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>There is something wrong here. When you run this function, it calls
+for opening a directory three or four times. This is obviously wrong
+but I don’t understand why this happens three times. Traceback did not
+help.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.FormDir.get_value">
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>default=’‘</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormDir.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormDir.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get int from widget.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>default</strong> (<em>str</em>) – not used</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>str</em> – the value in text</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.FormDir.set_value">
+<code class="descname">set_value</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormDir.set_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormDir.set_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set value of the string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>str</em>) – value for the line edit</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.widgets.settings.FormFloat">
+<em class="property">class </em><code class="descclassname">phypno.widgets.settings.</code><code class="descname">FormFloat</code><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormFloat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormFloat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtWidgets.QLineEdit</span></code></p>
+<p>Subclass QLineEdit for float to have a more consistent API across
+widgets.</p>
+<dl class="method">
+<dt id="phypno.widgets.settings.FormFloat.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>funct</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormFloat.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormFloat.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call funct when the text was changed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>funct</strong> (<em>function</em>) – function that broadcasts a change.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.FormFloat.get_value">
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>default=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormFloat.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormFloat.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get float from widget.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>default</strong> (<em>float</em>) – default value for the parameter in case it fails</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>float</em> – the value in text or default</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.FormFloat.set_value">
+<code class="descname">set_value</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormFloat.set_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormFloat.set_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set value of the float.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) – value for the line edit</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.widgets.settings.FormInt">
+<em class="property">class </em><code class="descclassname">phypno.widgets.settings.</code><code class="descname">FormInt</code><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormInt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormInt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtWidgets.QLineEdit</span></code></p>
+<p>Subclass QLineEdit for int to have a more consistent API across widgets.</p>
+<dl class="method">
+<dt id="phypno.widgets.settings.FormInt.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>funct</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormInt.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormInt.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call funct when the text was changed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>funct</strong> (<em>function</em>) – function that broadcasts a change.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.FormInt.get_value">
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>default=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormInt.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormInt.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get int from widget.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>default</strong> (<em>int</em>) – default value for the parameter in case it fails</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>int</em> – the value in text or default</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.FormInt.set_value">
+<code class="descname">set_value</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormInt.set_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormInt.set_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set value of the int.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) – value for the line edit</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.widgets.settings.FormList">
+<em class="property">class </em><code class="descclassname">phypno.widgets.settings.</code><code class="descname">FormList</code><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtWidgets.QLineEdit</span></code></p>
+<p>Subclass QLineEdit for lists to have a more consistent API across
+widgets.</p>
+<dl class="method">
+<dt id="phypno.widgets.settings.FormList.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>funct</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormList.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormList.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call funct when the text was changed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>funct</strong> (<em>function</em>) – function that broadcasts a change.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.FormList.get_value">
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormList.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormList.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get int from widget.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>default</strong> (<em>list</em>) – list with widgets</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>list</em> – list that might contain int or str or float etc</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.FormList.set_value">
+<code class="descname">set_value</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormList.set_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormList.set_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set value of the list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>list</em>) – value for the line edit</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.widgets.settings.FormStr">
+<em class="property">class </em><code class="descclassname">phypno.widgets.settings.</code><code class="descname">FormStr</code><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormStr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormStr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtWidgets.QLineEdit</span></code></p>
+<p>Subclass QLineEdit for str to have a more consistent API across widgets.</p>
+<dl class="method">
+<dt id="phypno.widgets.settings.FormStr.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>funct</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormStr.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormStr.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call funct when the text was changed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>funct</strong> (<em>function</em>) – function that broadcasts a change.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.FormStr.get_value">
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>default=’‘</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormStr.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormStr.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get int from widget.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>default</strong> (<em>str</em>) – not used</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>str</em> – the value in text</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.FormStr.set_value">
+<code class="descname">set_value</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#FormStr.set_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.FormStr.set_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set value of the string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>str</em>) – value for the line edit</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.widgets.settings.Settings">
+<em class="property">class </em><code class="descclassname">phypno.widgets.settings.</code><code class="descname">Settings</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#Settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.Settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtWidgets.QDialog</span></code></p>
+<p>Window showing the Settings/settings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parent</strong> (<em>instance of QMainWindow</em>) – the main window</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="phypno.widgets.settings.Settings.button_clicked">
+<code class="descname">button_clicked</code><span class="sig-paren">(</span><em>button</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#Settings.button_clicked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.Settings.button_clicked" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action when button was clicked.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>button</strong> (<em>instance of QPushButton</em>) – which button was pressed</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.Settings.change_widget">
+<code class="descname">change_widget</code><span class="sig-paren">(</span><em>new_row</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#Settings.change_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.Settings.change_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the widget on the right side.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>new_row</strong> (<em>int</em>) – index of the widgets</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.settings.Settings.create_settings">
+<code class="descname">create_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#Settings.create_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.Settings.create_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the widget, organized in two parts.</p>
+<p class="rubric">Notes</p>
+<p>When you add widgets in config, remember to update show_settings too</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.widgets.settings.read_settings">
+<code class="descclassname">phypno.widgets.settings.</code><code class="descname">read_settings</code><span class="sig-paren">(</span><em>widget</em>, <em>value_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/settings.html#read_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.settings.read_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read Settings information, either from INI or from default values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>widget</strong> (<em>str</em>) – name of the widget</li>
+<li><strong>value_name</strong> (<em>str</em>) – name of the value of interest.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>multiple types</em> – type depends on the type in the default values.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="phypno.widgets.spectrum.html" class="btn btn-neutral float-right" title="phypno.widgets.spectrum module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phypno.widgets.overview.html" class="btn btn-neutral" title="phypno.widgets.overview module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

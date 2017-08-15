@@ -1,0 +1,640 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.attr.chan &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.attr.chan</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.attr.chan</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module to work with channels.</span>
+
+<span class="sd">It provides a general class to work with channels. Channels is the general term</span>
+<span class="sd">that refers to the points where signal comes from, it&#39;s an abstract concept.</span>
+<span class="sd">Electrodes, magnetometer, axiometers and gradiometers are the actual recording</span>
+<span class="sd">devices measuring the signal. For example, in the case of EEG, you need two</span>
+<span class="sd">electrodes to have one signal, where one signal is the difference between the</span>
+<span class="sd">two electrodes.</span>
+
+<span class="sd">In other words, the channel is where you want to plot the signal.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">splitext</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">asarray</span>
+
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="k">import</span> <span class="n">UnrecognizedFormat</span>
+
+
+<span class="n">mu</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\N{GREEK SMALL LETTER MU}</span><span class="s1">&#39;</span>
+
+
+<div class="viewcode-block" id="_convert_unit"><a class="viewcode-back" href="../../../api/phypno.attr.chan.html#phypno.attr.chan._convert_unit">[docs]</a><span class="k">def</span> <span class="nf">_convert_unit</span><span class="p">(</span><span class="n">unit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert different names into SI units.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    unit : str</span>
+<span class="sd">        unit to convert to SI</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        unit in SI format.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    SI unit such as mV (milliVolt, mVolt), μV (microVolt, muV).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="n">prefix</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">unit</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;milli&#39;</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;m&#39;</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span>
+    <span class="k">elif</span> <span class="n">unit</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;micro&#39;</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">mu</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span>
+    <span class="k">elif</span> <span class="n">unit</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;mu&#39;</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">mu</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+
+    <span class="k">if</span> <span class="n">unit</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;volt&#39;</span><span class="p">:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;V&#39;</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">prefix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span>
+    <span class="k">elif</span> <span class="n">prefix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span> <span class="o">+</span> <span class="n">suffix</span>
+    <span class="k">elif</span> <span class="n">prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">unit</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">suffix</span>
+
+    <span class="k">return</span> <span class="n">unit</span></div>
+
+
+<div class="viewcode-block" id="_read_separated_values"><a class="viewcode-back" href="../../../api/phypno.attr.chan.html#phypno.attr.chan._read_separated_values">[docs]</a><span class="k">def</span> <span class="nf">_read_separated_values</span><span class="p">(</span><span class="n">elec_file</span><span class="p">,</span> <span class="n">sep</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    TODO</span>
+<span class="sd">    ----</span>
+<span class="sd">    add documentation to _read_separated_values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">chan_label</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">elec_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">num_lines</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">)</span>
+    <span class="n">chan_pos</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">num_lines</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">elec_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">((</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                          <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sep</span><span class="p">))]</span>
+            <span class="n">chan_label</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">chan_pos</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">chan_label</span><span class="p">,</span> <span class="n">chan_pos</span></div>
+
+
+<div class="viewcode-block" id="detect_format"><a class="viewcode-back" href="../../../api/phypno.attr.chan.html#phypno.attr.chan.detect_format">[docs]</a><span class="k">def</span> <span class="nf">detect_format</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Detect file format of the channels based on extension.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        name of the filename</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        file format</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;.csv&#39;</span><span class="p">:</span>
+        <span class="n">recformat</span> <span class="o">=</span> <span class="s1">&#39;csv&#39;</span>
+    <span class="k">elif</span> <span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;.sfp&#39;</span><span class="p">:</span>
+        <span class="n">recformat</span> <span class="o">=</span> <span class="s1">&#39;sfp&#39;</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">recformat</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span>
+
+    <span class="k">return</span> <span class="n">recformat</span></div>
+
+
+<div class="viewcode-block" id="Chan"><a class="viewcode-back" href="../../../api/phypno.attr.chan.html#phypno.attr.chan.Chan">[docs]</a><span class="k">class</span> <span class="nc">Chan</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Provide class Chan, for individual channels.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    label : str</span>
+<span class="sd">        name of the channel</span>
+<span class="sd">    xyz : numpy.ndarray or list or tuple</span>
+<span class="sd">        1d vector of 3 elements</span>
+<span class="sd">    chtype : str, optional</span>
+<span class="sd">        channel type (can be any string)</span>
+<span class="sd">    unit : str, optional</span>
+<span class="sd">        units, using SI</span>
+<span class="sd">    attr : dict</span>
+<span class="sd">        dictionary where you can store additional information per channel. Use</span>
+<span class="sd">        chan.attr.update({&#39;new_key&#39;: new_value})</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">_convert_unit</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attr</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attr</span> <span class="o">=</span> <span class="n">attr</span></div>
+
+
+<div class="viewcode-block" id="Channels"><a class="viewcode-back" href="../../../api/phypno.attr.chan.html#phypno.attr.chan.Channels">[docs]</a><span class="k">class</span> <span class="nc">Channels</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Provide class Chan, generic class for channel location.</span>
+
+<span class="sd">    You can read from a file, and then you pass only one argument.</span>
+<span class="sd">    Or you can directly assign the chan names and the coordinates.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    chan : list of instance of Chan</span>
+<span class="sd">        list of channels (which are instances of Chan)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    chan_input : various formats</span>
+<span class="sd">        information about the channels</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    labels : list of str</span>
+<span class="sd">        the name of the channel</span>
+<span class="sd">    coords : numpy.ndarray</span>
+<span class="sd">       location in 3D, with shape (n_chan, 3)</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    chan : list of instance of phypno.attr.chan.Chan</span>
+<span class="sd">        list of channels</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    UnrecognizedFormat</span>
+<span class="sd">        If the format is not recognized</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    chan_input can be a csv file without header and with format:</span>
+<span class="sd">    label, x-pos, y-pos, z-pos</span>
+<span class="sd">    or an sfp file without header and with format:</span>
+<span class="sd">    label x-pos y-pos z-pos</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chan</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chan</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="n">labels</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">xyz</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">format_</span> <span class="o">=</span> <span class="n">detect_format</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s1">&#39;csv&#39;</span><span class="p">:</span>
+                    <span class="n">labels</span><span class="p">,</span> <span class="n">xyz</span> <span class="o">=</span> <span class="n">_read_separated_values</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;,&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">format_</span> <span class="o">==</span> <span class="s1">&#39;sfp&#39;</span><span class="p">:</span>
+                    <span class="n">labels</span><span class="p">,</span> <span class="n">xyz</span> <span class="o">=</span> <span class="n">_read_separated_values</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">UnrecognizedFormat</span><span class="p">(</span><span class="s1">&#39;Unrecognized format (&quot;&#39;</span> <span class="o">+</span>
+                                             <span class="n">format_</span> <span class="o">+</span> <span class="s1">&#39;&quot;)&#39;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">labels</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">xyz</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Incorrect shape: the second dimension &#39;</span>
+                                     <span class="s1">&#39;should be 3, not &#39;</span> <span class="o">+</span>
+                                     <span class="nb">str</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">one_label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Chan</span><span class="p">(</span><span class="n">one_label</span><span class="p">,</span> <span class="n">xyz</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]))</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a new instance of Channels, with a subset of channels.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        func : function</span>
+<span class="sd">            function to execute on each instance of Chan, should return True or</span>
+<span class="sd">            False (include the channel or not).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        new instance of Channels</span>
+<span class="sd">            new instance of Channels, but instances of Chan are not deep-copied</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chans</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">one_chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">func</span><span class="p">(</span><span class="n">one_chan</span><span class="p">):</span>
+                <span class="n">chans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_chan</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Channels</span><span class="p">(</span><span class="n">chans</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Channels.return_label"><a class="viewcode-back" href="../../../api/phypno.attr.chan.html#phypno.attr.chan.Channels.return_label">[docs]</a>    <span class="k">def</span> <span class="nf">return_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the labels for all the channels.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of str</span>
+<span class="sd">            list of the channel labels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Channels.return_xy"><a class="viewcode-back" href="../../../api/phypno.attr.chan.html#phypno.attr.chan.Channels.return_xy">[docs]</a>    <span class="k">def</span> <span class="nf">return_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the location in xy for some channels.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        labels : list of str, optional</span>
+<span class="sd">            the names of the channels.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            a 2xn vector with the position of a channel.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Simplest implementation. We should at least use project onto a 2D plane</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">xyz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_xyz</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+        <span class="n">xy</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">xyz</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">xy</span></div>
+
+<div class="viewcode-block" id="Channels.return_xyz"><a class="viewcode-back" href="../../../api/phypno.attr.chan.html#phypno.attr.chan.Channels.return_xyz">[docs]</a>    <span class="k">def</span> <span class="nf">return_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the location in xy for some channels.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        labels : list of str, optional</span>
+<span class="sd">            the names of the channels.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            a 3xn vector with the position of a channel.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_label</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">all_labels</span>
+
+        <span class="n">xyz</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">one_label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">all_labels</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">one_label</span><span class="p">)</span>
+            <span class="n">xyz</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Channels.return_attr"><a class="viewcode-back" href="../../../api/phypno.attr.chan.html#phypno.attr.chan.Channels.return_attr">[docs]</a>    <span class="k">def</span> <span class="nf">return_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;return the attributes for each channels.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        attr : str</span>
+<span class="sd">            attribute specified in Chan.attr.keys()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_label</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">all_labels</span>
+
+        <span class="n">all_attr</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">one_label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">all_labels</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">one_label</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">all_attr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">attr</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">possible_attr</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;key &quot;</span><span class="si">{}</span><span class="s1">&quot; not found, &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="o">+</span>
+                         <span class="s1">&#39;possible keys are </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">possible_attr</span><span class="p">))</span>
+                <span class="n">all_attr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">all_attr</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_chan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the number of channels.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Channels.export"><a class="viewcode-back" href="../../../api/phypno.attr.chan.html#phypno.attr.chan.Channels.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elec_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Export channel name and location to file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        elec_file : str</span>
+<span class="sd">            path to file where to save csv</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="n">elec_file</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.csv&#39;</span><span class="p">:</span>
+            <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span>
+        <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.sfp&#39;</span><span class="p">:</span>
+            <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">elec_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">one_chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">:</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">([</span><span class="n">one_chan</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="p">]</span> <span class="o">+</span>
+                          <span class="p">[</span><span class="s1">&#39;</span><span class="si">{:.3f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">one_chan</span><span class="o">.</span><span class="n">xyz</span><span class="p">])</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="assign_region_to_channels"><a class="viewcode-back" href="../../../api/phypno.attr.chan.html#phypno.attr.chan.assign_region_to_channels">[docs]</a><span class="k">def</span> <span class="nf">assign_region_to_channels</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="n">anat</span><span class="p">,</span> <span class="n">parc_type</span><span class="o">=</span><span class="s1">&#39;aparc&#39;</span><span class="p">,</span> <span class="n">max_approx</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                              <span class="n">exclude_regions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Assign a brain region based on the channel location.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    channels : instance of phypno.attr.chan.Channels</span>
+<span class="sd">        channels to assign regions to</span>
+<span class="sd">    anat : instance of phypno.attr.anat.Freesurfer</span>
+<span class="sd">        anatomical information taken from freesurfer.</span>
+<span class="sd">    parc_type : str</span>
+<span class="sd">        &#39;aparc&#39;, &#39;aparc.a2009s&#39;, &#39;BA&#39;, &#39;BA.thresh&#39;, or &#39;aparc.DKTatlas40&#39;</span>
+<span class="sd">        &#39;aparc.DKTatlas40&#39; is only for recent freesurfer versions</span>
+<span class="sd">    max_approx : int, optional</span>
+<span class="sd">        approximation to define position of the electrode.</span>
+<span class="sd">    exclude_regions : list of str or empty list</span>
+<span class="sd">        do not report regions if they contain these substrings. None means</span>
+<span class="sd">        that it does not exclude any region. For example, to exclude white</span>
+<span class="sd">        matter regions and unknown regions you can use</span>
+<span class="sd">        exclude_regions=(&#39;White&#39;, &#39;WM&#39;, &#39;Unknown&#39;)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    instance of phypno.attr.chan.Channels</span>
+<span class="sd">        same instance as before, now Chan have attr &#39;region&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">one_chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="o">.</span><span class="n">chan</span><span class="p">:</span>
+        <span class="n">one_region</span><span class="p">,</span> <span class="n">approx</span> <span class="o">=</span> <span class="n">anat</span><span class="o">.</span><span class="n">find_brain_region</span><span class="p">(</span><span class="n">one_chan</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span>
+                                                    <span class="n">parc_type</span><span class="p">,</span>
+                                                    <span class="n">max_approx</span><span class="p">,</span>
+                                                    <span class="n">exclude_regions</span><span class="p">)</span>
+        <span class="n">one_chan</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;region&#39;</span><span class="p">:</span> <span class="n">one_region</span><span class="p">,</span> <span class="s1">&#39;approx&#39;</span><span class="p">:</span> <span class="n">approx</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">channels</span></div>
+
+
+<div class="viewcode-block" id="find_chan_in_region"><a class="viewcode-back" href="../../../api/phypno.attr.chan.html#phypno.attr.chan.find_chan_in_region">[docs]</a><span class="k">def</span> <span class="nf">find_chan_in_region</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="n">anat</span><span class="p">,</span> <span class="n">region_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find which channels are in a specific region.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    channels : instance of phypno.attr.chan.Channels</span>
+<span class="sd">        channels, that have locations</span>
+<span class="sd">    anat : instance of phypno.attr.anat.Freesurfer</span>
+<span class="sd">        anatomical information taken from freesurfer.</span>
+<span class="sd">    region_name : str</span>
+<span class="sd">        the name of the region, according to FreeSurferColorLUT.txt</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    chan_in_region : list of str</span>
+<span class="sd">        list of the channels that are in one region.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;region&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">channels</span><span class="o">.</span><span class="n">chan</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Computing region for each channel.&#39;</span><span class="p">)</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="n">assign_region_to_channels</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="n">anat</span><span class="p">)</span>
+
+    <span class="n">chan_in_region</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">one_chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="o">.</span><span class="n">chan</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">region_name</span> <span class="ow">in</span> <span class="n">one_chan</span><span class="o">.</span><span class="n">attr</span><span class="p">[</span><span class="s1">&#39;region&#39;</span><span class="p">]:</span>
+            <span class="n">chan_in_region</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_chan</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">chan_in_region</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

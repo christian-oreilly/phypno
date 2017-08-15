@@ -1,0 +1,414 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.ioeeg.moberg &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.ioeeg.moberg</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.ioeeg.moberg</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">getsize</span><span class="p">,</span> <span class="n">join</span>
+<span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">import</span> <span class="n">parse</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">NaN</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="n">reshape</span><span class="p">,</span> <span class="n">zeros</span>
+
+<span class="n">TIMEZONE</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">utc</span>
+<span class="c1"># 24bit precision</span>
+<span class="n">DATA_PRECISION</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="n">EEG_FILE</span> <span class="o">=</span> <span class="s1">&#39;EEG,Composite,SampleSeries,Composite,MRIAmp,data&#39;</span>
+<span class="n">SETTINGS_FILE</span> <span class="o">=</span> <span class="s1">&#39;EEG,Composite,SampleSeries,Composite,MRIAmp,settings&#39;</span>
+
+
+<div class="viewcode-block" id="Moberg"><a class="viewcode-back" href="../../../api/phypno.ioeeg.moberg.html#phypno.ioeeg.moberg.Moberg">[docs]</a><span class="k">class</span> <span class="nc">Moberg</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Basic class to read the data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : path to file</span>
+<span class="sd">        the name of the filename or directory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_chan</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_smp</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Moberg.return_hdr"><a class="viewcode-back" href="../../../api/phypno.ioeeg.moberg.html#phypno.ioeeg.moberg.Moberg.return_hdr">[docs]</a>    <span class="k">def</span> <span class="nf">return_hdr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the header for further use.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        subj_id : str</span>
+<span class="sd">            subject identification code</span>
+<span class="sd">        start_time : datetime</span>
+<span class="sd">            start time of the dataset</span>
+<span class="sd">        s_freq : float</span>
+<span class="sd">            sampling frequency</span>
+<span class="sd">        chan_name : list of str</span>
+<span class="sd">            list of all the channels</span>
+<span class="sd">        n_samples : int</span>
+<span class="sd">            number of samples in the dataset</span>
+<span class="sd">        orig : dict</span>
+<span class="sd">            additional information taken directly from the header</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        the time is probably in &quot;local&quot; Unix Time, which is in the local time</span>
+<span class="sd">        zone, so we read it as &quot;UTC&quot; (meaning, do not apply timezone</span>
+<span class="sd">        transformation) and then remove timezone info.</span>
+<span class="sd">        The only doubt I have is how to interpret the &quot;SystemOffset&quot; time.</span>
+<span class="sd">        I assume it&#39;s in s, and that would fix most of the time zone problems,</span>
+<span class="sd">        but it does not take into account DST. Or maybe &quot;SystemOffset&quot; is in</span>
+<span class="sd">        micros and we need to apply the correct time zone to TimeStamp Unix</span>
+<span class="sd">        time. This needs to be tested with a Moberg system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">subj_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
+        <span class="n">patient</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;patient.info&#39;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">patientname</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;PatientFirstName&#39;</span><span class="p">,</span> <span class="s1">&#39;PatientLastName&#39;</span><span class="p">]:</span>
+            <span class="n">subj_id</span> <span class="o">+=</span> <span class="n">patient</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">patientname</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="n">unix_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;TimeStamp&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">/</span> <span class="mf">1e6</span>
+        <span class="n">system_offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;SystemOffset&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">unix_time</span><span class="p">,</span> <span class="n">TIMEZONE</span><span class="p">)</span> <span class="o">+</span>
+                      <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">system_offset</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">s_freq</span> <span class="o">=</span> <span class="mi">256</span>  <span class="c1"># could not find it in the text files</span>
+
+        <span class="n">montage</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;Montage.xml&#39;</span><span class="p">))</span>
+        <span class="n">mont</span> <span class="o">=</span> <span class="n">montage</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Montage&#39;</span><span class="p">)</span>
+        <span class="n">chan_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lead&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">mont</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;Channel&#39;</span><span class="p">)</span>
+                     <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;role&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;REFERENTIAL_INPUT&#39;</span><span class="p">]</span>
+
+        <span class="n">data_size</span> <span class="o">=</span> <span class="n">getsize</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">EEG_FILE</span><span class="p">))</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">data_size</span> <span class="o">/</span> <span class="n">DATA_PRECISION</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">chan_name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_smp</span> <span class="o">=</span> <span class="n">n_samples</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_chan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chan_name</span><span class="p">)</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">SETTINGS_FILE</span><span class="p">))</span>
+        <span class="n">conversion</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;SampleConversion&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="n">dig_min</span><span class="p">,</span> <span class="n">dig_max</span><span class="p">,</span> <span class="n">anl_min</span><span class="p">,</span> <span class="n">anl_max</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span>
+                                              <span class="n">conversion</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="n">dig_max</span> <span class="o">==</span> <span class="o">-</span><span class="n">dig_min</span> <span class="ow">and</span> <span class="n">anl_max</span> <span class="o">==</span> <span class="o">-</span><span class="n">anl_min</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">convertion</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">dat</span><span class="p">:</span> <span class="n">dat</span> <span class="o">/</span> <span class="n">dig_max</span> <span class="o">*</span> <span class="n">anl_max</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">convertion</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">dat</span><span class="p">:</span> <span class="p">((</span><span class="n">dat</span> <span class="o">+</span> <span class="n">dig_min</span><span class="p">)</span> <span class="o">/</span>
+                                           <span class="p">(</span><span class="n">dig_max</span> <span class="o">-</span> <span class="n">dig_min</span><span class="p">)</span> <span class="o">*</span>
+                                           <span class="p">(</span><span class="n">anl_max</span> <span class="o">-</span> <span class="n">anl_min</span><span class="p">)</span> <span class="o">+</span> <span class="n">anl_min</span><span class="p">)</span>
+
+        <span class="n">orig</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;patient&#39;</span><span class="p">:</span> <span class="n">patient</span><span class="p">,</span>
+                <span class="s1">&#39;montage&#39;</span><span class="p">:</span> <span class="n">montage</span><span class="p">,</span>
+                <span class="s1">&#39;settings&#39;</span><span class="p">:</span> <span class="n">settings</span><span class="p">,</span>
+                <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">subj_id</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">chan_name</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">orig</span></div>
+
+<div class="viewcode-block" id="Moberg.return_dat"><a class="viewcode-back" href="../../../api/phypno.ioeeg.moberg.html#phypno.ioeeg.moberg.Moberg.return_dat">[docs]</a>    <span class="k">def</span> <span class="nf">return_dat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">begsam</span><span class="p">,</span> <span class="n">endsam</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the data as 2D numpy.ndarray.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        chan : int or list</span>
+<span class="sd">            index (indices) of the channels to read</span>
+<span class="sd">        begsam : int</span>
+<span class="sd">            index of the first sample</span>
+<span class="sd">        endsam : int</span>
+<span class="sd">            index of the last sample</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            A 2d matrix, with dimension chan X samples</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">begsam</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">begpad</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">begsam</span>
+            <span class="n">begsam</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">begpad</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="n">endsam</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_smp</span><span class="p">:</span>
+            <span class="n">endpad</span> <span class="o">=</span> <span class="n">endsam</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_smp</span>
+            <span class="n">endsam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_smp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">endpad</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">first_sam</span> <span class="o">=</span> <span class="n">DATA_PRECISION</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_chan</span> <span class="o">*</span> <span class="n">begsam</span>
+        <span class="n">toread_sam</span> <span class="o">=</span> <span class="n">DATA_PRECISION</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_chan</span> <span class="o">*</span> <span class="p">(</span><span class="n">endsam</span> <span class="o">-</span> <span class="n">begsam</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">EEG_FILE</span><span class="p">),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">first_sam</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">toread_sam</span><span class="p">)</span>
+
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">_read_dat</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">reshape</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_chan</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;F&#39;</span><span class="p">)</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convertion</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="n">chan</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">pad</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">begpad</span><span class="p">,</span> <span class="n">endpad</span><span class="p">)),</span>
+                  <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="n">NaN</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dat</span></div>
+
+<div class="viewcode-block" id="Moberg.return_markers"><a class="viewcode-back" href="../../../api/phypno.ioeeg.moberg.html#phypno.ioeeg.moberg.Moberg.return_markers">[docs]</a>    <span class="k">def</span> <span class="nf">return_markers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return all the markers (also called triggers or events).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of dict</span>
+<span class="sd">            where each dict contains &#39;name&#39; as str, &#39;start&#39; and &#39;end&#39; as float</span>
+<span class="sd">            in seconds from the start of the recordings, and &#39;chan&#39; as list of</span>
+<span class="sd">            str with the channels involved (if not of relevance, it&#39;s None).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        FileNotFoundError</span>
+<span class="sd">            when it cannot read the events for some reason (don&#39;t use other</span>
+<span class="sd">            exceptions).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">markers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">markers</span></div></div>
+
+
+<div class="viewcode-block" id="_read_dat"><a class="viewcode-back" href="../../../api/phypno.ioeeg.moberg.html#phypno.ioeeg.moberg._read_dat">[docs]</a><span class="k">def</span> <span class="nf">_read_dat</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;read 24bit binary data and convert them to numpy.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : bytes</span>
+<span class="sd">        bytes (length should be divisible by 3)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy vector</span>
+<span class="sd">        vector with the signed 24bit values</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    It&#39;s pretty slow but it&#39;s pretty a PITA to read 24bit as far as I can tell.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_smp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">DATA_PRECISION</span><span class="p">)</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">n_smp</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_smp</span><span class="p">):</span>
+        <span class="n">i0</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">DATA_PRECISION</span>
+        <span class="n">i1</span> <span class="o">=</span> <span class="n">i0</span> <span class="o">+</span> <span class="n">DATA_PRECISION</span>
+        <span class="n">dat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">],</span> <span class="n">byteorder</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dat</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

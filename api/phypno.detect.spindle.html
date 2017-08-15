@@ -1,0 +1,824 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.detect.spindle module &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="phypno.detect package" href="phypno.detect.html"/>
+        <link rel="next" title="phypno.ioeeg package" href="phypno.ioeeg.html"/>
+        <link rel="prev" title="phypno.detect.slowwave module" href="phypno.detect.slowwave.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="phypno.html">Modules, classes, functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="phypno.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="phypno.attr.html">phypno.attr package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="phypno.detect.html">phypno.detect package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="phypno.detect.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.ioeeg.html">phypno.ioeeg package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.source.html">phypno.source package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.trans.html">phypno.trans package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.utils.html">phypno.utils package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.widgets.html">phypno.widgets package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phypno.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="phypno.html">phypno package</a> &raquo;</li>
+        
+          <li><a href="phypno.detect.html">phypno.detect package</a> &raquo;</li>
+        
+      <li>phypno.detect.spindle module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/phypno.detect.spindle.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-phypno.detect.spindle">
+<span id="phypno-detect-spindle-module"></span><h1>phypno.detect.spindle module<a class="headerlink" href="#module-phypno.detect.spindle" title="Permalink to this headline">¶</a></h1>
+<p>Module to detect spindles.</p>
+<dl class="class">
+<dt id="phypno.detect.spindle.DetectSpindle">
+<em class="property">class </em><code class="descclassname">phypno.detect.spindle.</code><code class="descname">DetectSpindle</code><span class="sig-paren">(</span><em>method=’UCSD’</em>, <em>frequency=None</em>, <em>duration=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#DetectSpindle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.DetectSpindle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Design spindle detection on a single channel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>method</strong> (<em>str</em>) – one of the predefined methods (see below ‘housestyle’)</li>
+<li><strong>frequency</strong> (<em>tuple of float</em>) – low and high frequency of spindle band</li>
+<li><strong>duration</strong> (<em>tuple of float</em>) – min and max duration of spindles</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle._detect_start_end">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">_detect_start_end</code><span class="sig-paren">(</span><em>true_values</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#_detect_start_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle._detect_start_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>From ndarray of bool values, return intervals of True values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>true_values</strong> (<em>ndarray</em><em> (</em><em>dtype='bool'</em><em>)</em>) – array with bool values</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>ndarray (dtype=’int’)</em> – N x 2 matrix with starting and ending times.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle._realwavelets">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">_realwavelets</code><span class="sig-paren">(</span><em>s_freq</em>, <em>freqs</em>, <em>dur</em>, <em>width</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#_realwavelets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle._realwavelets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create real wavelets, for UCSD.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s_freq</strong> (<em>int</em>) – sampling frequency</li>
+<li><strong>freqs</strong> (<em>ndarray</em>) – vector with frequencies of interest</li>
+<li><strong>dur</strong> (<em>float</em>) – duration of the wavelets in s</li>
+<li><strong>width</strong> (<em>float</em>) – parameter controlling gaussian shape</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>ndarray</em> – wavelets</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle._remove_duplicate">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">_remove_duplicate</code><span class="sig-paren">(</span><em>old_events</em>, <em>dat</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#_remove_duplicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle._remove_duplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove duplicates from the events.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>old_events</strong> (<em>ndarray</em><em> (</em><em>dtype='int'</em><em>)</em>) – N x 3 matrix with start, peak, end samples</li>
+<li><strong>dat</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the data after detection-transformation (to compute peak)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>ndarray (dtype=’int’)</em> – vector of indices of the events to keep</li>
+<li><em>ndarray (dtype=’int’)</em> – N x 3 matrix with start, peak, end samples</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>old_events is assumed to be sorted. It only checks for the start time and
+end time. When two (or more) events have the same start time and the same
+end time, then it takes the largest peak.</p>
+<p>There is no tolerance, indices need to be identical.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle._select_period">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">_select_period</code><span class="sig-paren">(</span><em>detected</em>, <em>true_values</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#_select_period"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle._select_period" title="Permalink to this definition">¶</a></dt>
+<dd><p>For the detected values, we check when it goes below the selection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>detected</strong> (<em>ndarray</em><em> (</em><em>dtype='int'</em><em>)</em>) – N x 3 matrix with starting and ending times.</li>
+<li><strong>true_values</strong> (<em>ndarray</em><em> (</em><em>dtype='bool'</em><em>)</em>) – array with bool values</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>ndarray (dtype=’int’)</em> – N x 2 matrix with starting and ending times, but these periods are
+usually larger than those of the input, because the selection window is
+usually more lenient (lower threshold) than the detection window.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Both start and end time points are inclusive (not python convention, but
+matlab convention) because these values are converted to time points later.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle._wmorlet">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">_wmorlet</code><span class="sig-paren">(</span><em>f0</em>, <em>sd</em>, <em>sampling_rate</em>, <em>ns=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#_wmorlet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle._wmorlet" title="Permalink to this definition">¶</a></dt>
+<dd><p>adapted from nitime</p>
+<p>returns a complex morlet wavelet in the time domain</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>f0</strong> (<em>center frequency</em>) – </li>
+<li><strong>sd</strong> (<em>standard deviation of frequency</em>) – </li>
+<li><strong>sampling_rate</strong> (<em>samplingrate</em>) – </li>
+<li><strong>ns</strong> (<em>window length in number of standard deviations</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle.define_threshold">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">define_threshold</code><span class="sig-paren">(</span><em>dat</em>, <em>s_freq</em>, <em>method</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#define_threshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.define_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the value of the threshold based on relative values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dat</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the data after selection-transformation</li>
+<li><strong>s_freq</strong> (<em>float</em>) – sampling frequency</li>
+<li><strong>method</strong> (<em>str</em>) – one of ‘mean’, ‘median’, ‘std’, ‘mean+std’, ‘median+std’</li>
+<li><strong>value</strong> (<em>float</em>) – value to multiply the values for</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>float</em> – threshold in useful units.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle.detect_Ferrarelli2007">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">detect_Ferrarelli2007</code><span class="sig-paren">(</span><em>dat_orig</em>, <em>s_freq</em>, <em>time</em>, <em>opts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#detect_Ferrarelli2007"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.detect_Ferrarelli2007" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spindle detection based on Ferrarelli et al. 2007</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dat_orig</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the data for one channel</li>
+<li><strong>s_freq</strong> (<em>float</em>) – sampling frequency</li>
+<li><strong>time</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the time points for each sample</li>
+<li><strong>opts</strong> (<em>instance of 'DetectSpindle'</em>) – <dl class="docutils">
+<dt>‘det_cheby2’ <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>parameters for ‘cheby2’,</dd>
+<dt>’det_thresh’ <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>detection threshold</dd>
+<dt>’sel_thresh’ <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>selection threshold</dd>
+<dt>’duration’ <span class="classifier-delimiter">:</span> <span class="classifier">tuple of float</span></dt>
+<dd>min and max duration of spindles</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>list of dict</em> – list of detected spindles</li>
+<li><em>dict</em> – ‘det_value’ with detection value, ‘sel_value’ with selection value</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The original article does not specify a filter, but cheby2 seems the best
+to me.</p>
+<p class="rubric">References</p>
+<p>Ferrarelli, F. et al. Am. J. Psychiatry 164, 483-92 (2007).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle.detect_Nir2011">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">detect_Nir2011</code><span class="sig-paren">(</span><em>dat_orig</em>, <em>s_freq</em>, <em>time</em>, <em>opts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#detect_Nir2011"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.detect_Nir2011" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spindle detection based on Nir et al. 2011</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dat_orig</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the data for one channel</li>
+<li><strong>s_freq</strong> (<em>float</em>) – sampling frequency</li>
+<li><strong>time</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the time points for each sample</li>
+<li><strong>opts</strong> (<em>instance of 'DetectSpindle'</em>) – <dl class="docutils">
+<dt>‘det_butter’ <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>parameters for ‘butter’,</dd>
+<dt>’det_thresh’ <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>detection threshold</dd>
+<dt>’sel_thresh’ <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>selection threshold</dd>
+<dt>’duration’ <span class="classifier-delimiter">:</span> <span class="classifier">tuple of float</span></dt>
+<dd>min and max duration of spindles</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>list of dict</em> – list of detected spindles</li>
+<li><em>dict</em> – ‘det_value’ with detection value, ‘sel_value’ with selection value</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This paper also selects channels carefully:
+‘First, the channels with spindle activity in NREM sleep were
+chosen for further analysis.’</p>
+<p>‘Third, those channels, in which an increase in spectral power
+within the detected events was restricted to the spindle-frequency
+range (10-16 Hz) rather than broadband.’</p>
+<p class="rubric">References</p>
+<p>Nir, Y. et al. Neuron 70, 153-69 (2011).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle.detect_UCSD">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">detect_UCSD</code><span class="sig-paren">(</span><em>dat_orig</em>, <em>s_freq</em>, <em>time</em>, <em>opts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#detect_UCSD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.detect_UCSD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spindle detection based on the UCSD method</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dat_orig</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the data for one channel</li>
+<li><strong>s_freq</strong> (<em>float</em>) – sampling frequency</li>
+<li><strong>time</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the time points for each sample</li>
+<li><strong>opts</strong> (<em>instance of 'DetectSpindle'</em>) – <dl class="docutils">
+<dt>det_wavelet <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>parameters for ‘wavelet_real’,</dd>
+<dt>det_thres’ <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>detection threshold</dd>
+<dt>sel_thresh <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>selection threshold</dd>
+<dt>duration <span class="classifier-delimiter">:</span> <span class="classifier">tuple of float</span></dt>
+<dd>min and max duration of spindles</dd>
+<dt>frequency <span class="classifier-delimiter">:</span> <span class="classifier">tuple of float</span></dt>
+<dd>low and high frequency of spindle band (for power ratio)</dd>
+<dt>ratio_thresh <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>ratio between power inside and outside spindle band to accept them</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>list of dict</em> – list of detected spindles</li>
+<li><em>dict</em> – ‘det_value’ with detection value, ‘sel_value’ is selection value</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle.detect_Wamsley2012">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">detect_Wamsley2012</code><span class="sig-paren">(</span><em>dat_orig</em>, <em>s_freq</em>, <em>time</em>, <em>opts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#detect_Wamsley2012"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.detect_Wamsley2012" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spindle detection based on Wamsley et al. 2012</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dat_orig</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the data for one channel</li>
+<li><strong>s_freq</strong> (<em>float</em>) – sampling frequency</li>
+<li><strong>time</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the time points for each sample</li>
+<li><strong>opts</strong> (<em>instance of 'DetectSpindle'</em>) – <dl class="docutils">
+<dt>‘det_wavelet’ <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>parameters for ‘morlet’,</dd>
+<dt>’det_thresh’ <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>detection threshold</dd>
+<dt>’sel_thresh’ <span class="classifier-delimiter">:</span> <span class="classifier">nan</span></dt>
+<dd>not used, but keep it for consistency with the other methods</dd>
+<dt>’duration’ <span class="classifier-delimiter">:</span> <span class="classifier">tuple of float</span></dt>
+<dd>min and max duration of spindles</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>list of dict</em> – list of detected spindles</li>
+<li><em>dict</em> – ‘det_value’ with detection value, ‘sel_value’ is nan (for consistency
+with other methods)</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<p>Wamsley, E. J. et al. Biol. Psychiatry 71, 154-61 (2012).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle.detect_events">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">detect_events</code><span class="sig-paren">(</span><em>dat</em>, <em>method</em>, <em>value=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#detect_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.detect_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detect events using ‘threshold’ or ‘maxima’ method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dat</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the data after selection-transformation</li>
+<li><strong>method</strong> (<em>str</em>) – ‘threshold’ or ‘maxima’</li>
+<li><strong>value</strong> (<em>float</em>) – for ‘threshold’, it’s the value of threshold for the event detection
+for ‘maxima’, it’s the distance in s from the peak to find a minimum</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>ndarray (dtype=’int’)</em> – N x 3 matrix with start, peak, end samples</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle.make_spindles">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">make_spindles</code><span class="sig-paren">(</span><em>events</em>, <em>power_peaks</em>, <em>dat</em>, <em>time</em>, <em>s_freq</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#make_spindles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.make_spindles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create dict for each spindle, based on events of time points.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>events</strong> (<em>ndarray</em><em> (</em><em>dtype='int'</em><em>)</em>) – N x 3 matrix with start, peak, end samples, and peak frequency</li>
+<li><strong>power_peaks</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – peak in power spectrum for each event</li>
+<li><strong>dat</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the data after detection-transformation (to compute peak)</li>
+<li><strong>time</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with time points</li>
+<li><strong>s_freq</strong> (<em>float</em>) – sampling frequency</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>list of dict</em> – list of all the spindles, with information about start_time, peak_time,
+end_time (s), peak_val (signal units), area_under_curve
+(signal units * s), peak_freq (Hz)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle.peak_in_power">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">peak_in_power</code><span class="sig-paren">(</span><em>events</em>, <em>dat</em>, <em>s_freq</em>, <em>method</em>, <em>value=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#peak_in_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.peak_in_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define peak in power of the signal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>events</strong> (<em>ndarray</em><em> (</em><em>dtype='int'</em><em>)</em>) – N x 3 matrix with start, peak, end samples</li>
+<li><strong>dat</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the original data</li>
+<li><strong>s_freq</strong> (<em>float</em>) – sampling frequency</li>
+<li><strong>method</strong> (<em>str</em><em> or </em><em>None</em>) – ‘peak’ or ‘interval’. If None, values will be all NaN</li>
+<li><strong>value</strong> (<em>float</em>) – size of the window around peak, or nothing (for ‘interval’)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>ndarray (dtype=’float’)</em> – vector with peak frequency</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle.power_ratio">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">power_ratio</code><span class="sig-paren">(</span><em>events</em>, <em>dat</em>, <em>s_freq</em>, <em>limits</em>, <em>ratio_thresh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#power_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.power_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate the ratio in power between spindle band and lower frequencies.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>events</strong> (<em>ndarray</em><em> (</em><em>dtype='int'</em><em>)</em>) – N x 3 matrix with start, peak, end samples</li>
+<li><strong>dat</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the original data</li>
+<li><strong>s_freq</strong> (<em>float</em>) – sampling frequency</li>
+<li><strong>limits</strong> (<em>tuple of float</em>) – high and low frequencies for spindle band</li>
+<li><strong>ratio_thresh</strong> (<em>float</em>) – ratio between spindle vs non-spindle amplitude</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>ndarray (dtype=’int’)</em> – N x 3 matrix with start, peak, end samples</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>In the original matlab script, it uses amplitude, not power.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle.select_events">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">select_events</code><span class="sig-paren">(</span><em>dat</em>, <em>detected</em>, <em>method</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#select_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.select_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select start sample and end sample of the events.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dat</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with the data after selection-transformation</li>
+<li><strong>detected</strong> (<em>ndarray</em><em> (</em><em>dtype='int'</em><em>)</em>) – N x 3 matrix with start, peak, end samples</li>
+<li><strong>method</strong> (<em>str</em>) – ‘threshold’</li>
+<li><strong>value</strong> (<em>float</em>) – for ‘threshold’, it’s the value of threshold for the spindle selection.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>ndarray (dtype=’int’)</em> – N x 3 matrix with start, peak, end samples</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle.transform_signal">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">transform_signal</code><span class="sig-paren">(</span><em>dat</em>, <em>s_freq</em>, <em>method</em>, <em>method_opt=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#transform_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.transform_signal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform the data using different methods.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dat</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with all the data for one channel</li>
+<li><strong>s_freq</strong> (<em>float</em>) – sampling frequency</li>
+<li><strong>method</strong> (<em>str</em>) – one of ‘cheby2’, ‘butter’, ‘morlet’, ‘morlet_real’, ‘hilbert’, ‘abs’,
+‘moving_avg’</li>
+<li><strong>method_opt</strong> (<em>dict</em>) – depends on methods</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>ndarray (dtype=’float’)</em> – vector with all the data for one channel</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Wavelets pass only absolute values already, it does not make sense to store
+the complex values.</p>
+<dl class="method">
+<dt>
+<code class="descname">cheby2 has parameters:</code></dt>
+<dd><dl class="docutils">
+<dt>freq <span class="classifier-delimiter">:</span> <span class="classifier">tuple of float</span></dt>
+<dd>high and low values for bandpass</dd>
+<dt>order <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>filter order</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">butter has parameters:</code></dt>
+<dd><dl class="docutils">
+<dt>freq <span class="classifier-delimiter">:</span> <span class="classifier">tuple of float</span></dt>
+<dd>high and low values for bandpass</dd>
+<dt>order <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>filter order</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">morlet has parameters:</code></dt>
+<dd><dl class="docutils">
+<dt>f0 <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>center frequency in Hz</dd>
+<dt>sd <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>standard deviation of frequency</dd>
+<dt>dur <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>window length in number of standard deviations</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">morlet_real has parameters:</code></dt>
+<dd><dl class="docutils">
+<dt>freqs <span class="classifier-delimiter">:</span> <span class="classifier">ndarray</span></dt>
+<dd>vector of wavelet frequencies for spindle detection</dd>
+<dt>dur <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>duration of the wavelet (sec)</dd>
+<dt>width <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>wavelet width</dd>
+<dt>win <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>moving average window length (sec) of wavelet convolution</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">moving_avg has parameters:</code></dt>
+<dd><dl class="docutils">
+<dt>dur <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>duration of the window (sec)</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle.tukeywin">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">tukeywin</code><span class="sig-paren">(</span><em>window_length</em>, <em>alpha=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#tukeywin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.tukeywin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Taken from <a class="reference external" href="http://leohart.wordpress.com/2006/01/29/hello-world/">http://leohart.wordpress.com/2006/01/29/hello-world/</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.detect.spindle.within_duration">
+<code class="descclassname">phypno.detect.spindle.</code><code class="descname">within_duration</code><span class="sig-paren">(</span><em>events</em>, <em>time</em>, <em>limits</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/detect/spindle.html#within_duration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.detect.spindle.within_duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether spindle is within time limits.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>events</strong> (<em>ndarray</em><em> (</em><em>dtype='int'</em><em>)</em>) – N x 3 matrix with start, peak, end samples</li>
+<li><strong>time</strong> (<em>ndarray</em><em> (</em><em>dtype='float'</em><em>)</em>) – vector with time points</li>
+<li><strong>limits</strong> (<em>tuple of float</em>) – low and high limit for spindle duration</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>ndarray (dtype=’int’)</em> – N x 3 matrix with start, peak, end samples</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="phypno.ioeeg.html" class="btn btn-neutral float-right" title="phypno.ioeeg package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phypno.detect.slowwave.html" class="btn btn-neutral" title="phypno.detect.slowwave module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

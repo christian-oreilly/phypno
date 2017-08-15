@@ -1,0 +1,362 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.ioeeg.fieldtrip module &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="phypno.ioeeg package" href="phypno.ioeeg.html"/>
+        <link rel="next" title="phypno.ioeeg.ieeg_org module" href="phypno.ioeeg.ieeg_org.html"/>
+        <link rel="prev" title="phypno.ioeeg.egimff module" href="phypno.ioeeg.egimff.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="phypno.html">Modules, classes, functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="phypno.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="phypno.attr.html">phypno.attr package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.detect.html">phypno.detect package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="phypno.ioeeg.html">phypno.ioeeg package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="phypno.ioeeg.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.source.html">phypno.source package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.trans.html">phypno.trans package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.utils.html">phypno.utils package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.widgets.html">phypno.widgets package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phypno.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="phypno.html">phypno package</a> &raquo;</li>
+        
+          <li><a href="phypno.ioeeg.html">phypno.ioeeg package</a> &raquo;</li>
+        
+      <li>phypno.ioeeg.fieldtrip module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/phypno.ioeeg.fieldtrip.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-phypno.ioeeg.fieldtrip">
+<span id="phypno-ioeeg-fieldtrip-module"></span><h1>phypno.ioeeg.fieldtrip module<a class="headerlink" href="#module-phypno.ioeeg.fieldtrip" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="phypno.ioeeg.fieldtrip.FieldTrip">
+<em class="property">class </em><code class="descclassname">phypno.ioeeg.fieldtrip.</code><code class="descname">FieldTrip</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/fieldtrip.html#FieldTrip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.fieldtrip.FieldTrip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Basic class to read the data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>path to file</em>) – the name of the filename or directory</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="phypno.ioeeg.fieldtrip.FieldTrip.return_dat">
+<code class="descname">return_dat</code><span class="sig-paren">(</span><em>chan</em>, <em>begsam</em>, <em>endsam</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/fieldtrip.html#FieldTrip.return_dat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.fieldtrip.FieldTrip.return_dat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the data as 2D numpy.ndarray.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>chan</strong> (<em>int</em><em> or </em><em>list</em>) – index (indices) of the channels to read</li>
+<li><strong>begsam</strong> (<em>int</em>) – index of the first sample</li>
+<li><strong>endsam</strong> (<em>int</em>) – index of the last sample</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>numpy.ndarray</em> – A 2d matrix, with dimension chan X samples</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.ioeeg.fieldtrip.FieldTrip.return_hdr">
+<code class="descname">return_hdr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/fieldtrip.html#FieldTrip.return_hdr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.fieldtrip.FieldTrip.return_hdr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the header for further use.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>subj_id</strong> (<em>str</em>) – subject identification code</li>
+<li><strong>start_time</strong> (<em>datetime</em>) – start time of the dataset</li>
+<li><strong>s_freq</strong> (<em>float</em>) – sampling frequency</li>
+<li><strong>chan_name</strong> (<em>list of str</em>) – list of all the channels</li>
+<li><strong>n_samples</strong> (<em>int</em>) – number of samples in the dataset</li>
+<li><strong>orig</strong> (<em>dict</em>) – additional information taken directly from the header</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>It only reads hdf5 matlab files and the VARiable needs to be called
+‘data’</p>
+<p>h5py is necessary for this function</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.ioeeg.fieldtrip.FieldTrip.return_markers">
+<code class="descname">return_markers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/fieldtrip.html#FieldTrip.return_markers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.fieldtrip.FieldTrip.return_markers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all the markers (also called triggers or events).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>list of dict</em> – where each dict contains ‘name’ as str, ‘start’ and ‘end’ as float
+in seconds from the start of the recordings, and ‘chan’ as list of
+str with the channels involved (if not of relevance, it’s None).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">FileNotFoundError</span></code> – when it cannot read the events for some reason (don’t use other
+exceptions).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.fieldtrip.write_fieldtrip">
+<code class="descclassname">phypno.ioeeg.fieldtrip.</code><code class="descname">write_fieldtrip</code><span class="sig-paren">(</span><em>data</em>, <em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/fieldtrip.html#write_fieldtrip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.fieldtrip.write_fieldtrip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export data to FieldTrip.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>instance of ChanTime</em>) – data with only one trial</li>
+<li><strong>filename</strong> (<em>path to file</em>) – file to export to (include ‘.mat’)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>It saves mat file using Version 6 (‘-v7’) because it relies on scipy.io
+functions. Therefore it cannot store data larger than 2 GB.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="phypno.ioeeg.ieeg_org.html" class="btn btn-neutral float-right" title="phypno.ioeeg.ieeg_org module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phypno.ioeeg.egimff.html" class="btn btn-neutral" title="phypno.ioeeg.egimff module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

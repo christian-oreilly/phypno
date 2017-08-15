@@ -1,0 +1,7 @@
+phypno\.widgets\.channels module
+================================
+
+.. automodule:: phypno.widgets.channels
+    :members:
+    :undoc-members:
+    :show-inheritance:

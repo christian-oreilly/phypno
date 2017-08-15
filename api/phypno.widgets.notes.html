@@ -1,0 +1,593 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.widgets.notes module &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="phypno.widgets package" href="phypno.widgets.html"/>
+        <link rel="next" title="phypno.widgets.overview module" href="phypno.widgets.overview.html"/>
+        <link rel="prev" title="phypno.widgets.labels module" href="phypno.widgets.labels.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="phypno.html">Modules, classes, functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="phypno.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="phypno.attr.html">phypno.attr package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.detect.html">phypno.detect package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.ioeeg.html">phypno.ioeeg package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.source.html">phypno.source package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.trans.html">phypno.trans package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.utils.html">phypno.utils package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="phypno.widgets.html">phypno.widgets package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="phypno.widgets.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phypno.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="phypno.html">phypno package</a> &raquo;</li>
+        
+          <li><a href="phypno.widgets.html">phypno.widgets package</a> &raquo;</li>
+        
+      <li>phypno.widgets.notes module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/phypno.widgets.notes.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-phypno.widgets.notes">
+<span id="phypno-widgets-notes-module"></span><h1>phypno.widgets.notes module<a class="headerlink" href="#module-phypno.widgets.notes" title="Permalink to this headline">¶</a></h1>
+<p>Widgets containing notes (such as markers, events, and stages).</p>
+<blockquote>
+<div><ul class="simple">
+<li>bookmarks are unique (might have the same text), are not mutually
+exclusive, have variable duration</li>
+<li>events are not unique, are not mutually exclusive, have variable duration</li>
+<li>stages are not unique, are mutually exclusive, have fixed duration</li>
+</ul>
+</div></blockquote>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">maybe it’s better to disable options related to annotations, but it’s a bit
+too complicated. If you do that, you can remove all “if self.annot is None”
+that are marked with “# remove if buttons are disabled”</p>
+</div>
+<dl class="class">
+<dt id="phypno.widgets.notes.ConfigNotes">
+<em class="property">class </em><code class="descclassname">phypno.widgets.notes.</code><code class="descname">ConfigNotes</code><span class="sig-paren">(</span><em>update_widget</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#ConfigNotes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.ConfigNotes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="phypno.widgets.settings.html#phypno.widgets.settings.Config" title="phypno.widgets.settings.Config"><code class="xref py py-class docutils literal"><span class="pre">phypno.widgets.settings.Config</span></code></a></p>
+<p>Widget with preferences in Settings window for the Annotations.</p>
+<dl class="method">
+<dt id="phypno.widgets.notes.ConfigNotes.create_config">
+<code class="descname">create_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#ConfigNotes.create_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.ConfigNotes.create_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.widgets.notes.Notes">
+<em class="property">class </em><code class="descclassname">phypno.widgets.notes.</code><code class="descname">Notes</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtWidgets.QTabWidget</span></code></p>
+<p>Widget that contains information about sleep scoring.</p>
+<dl class="attribute">
+<dt id="phypno.widgets.notes.Notes.parent">
+<code class="descname">parent</code><a class="headerlink" href="#phypno.widgets.notes.Notes.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QMainWindow</em> – the main window.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.notes.Notes.config">
+<code class="descname">config</code><a class="headerlink" href="#phypno.widgets.notes.Notes.config" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ConfigNotes</em> – preferences for this widget</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.notes.Notes.annot">
+<code class="descname">annot</code><a class="headerlink" href="#phypno.widgets.notes.Notes.annot" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Annotations</em> – contains the annotations made by the user</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.notes.Notes.idx_marker">
+<code class="descname">idx_marker</code><a class="headerlink" href="#phypno.widgets.notes.Notes.idx_marker" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QTableWidget</em> – table with the markers in the dataset</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.notes.Notes.idx_summary">
+<code class="descname">idx_summary</code><a class="headerlink" href="#phypno.widgets.notes.Notes.idx_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QVBoxLayout</em> – layout of the “Summary” tab (we add and remove the “Recap” box)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.notes.Notes.idx_annotations">
+<code class="descname">idx_annotations</code><a class="headerlink" href="#phypno.widgets.notes.Notes.idx_annotations" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QPushButton</em> – push button with the text of the annotation file</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.notes.Notes.idx_rater">
+<code class="descname">idx_rater</code><a class="headerlink" href="#phypno.widgets.notes.Notes.idx_rater" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QLabel</em> – name of the current rater</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.notes.Notes.idx_stats">
+<code class="descname">idx_stats</code><a class="headerlink" href="#phypno.widgets.notes.Notes.idx_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QFormLayout</em> – layout of the stage statistics</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.notes.Notes.idx_eventtype_scroll">
+<code class="descname">idx_eventtype_scroll</code><a class="headerlink" href="#phypno.widgets.notes.Notes.idx_eventtype_scroll" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QScrollArea</em> – area to which you add the QGroupBox with the list of events as checkbox</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.notes.Notes.idx_eventtype_list">
+<code class="descname">idx_eventtype_list</code><a class="headerlink" href="#phypno.widgets.notes.Notes.idx_eventtype_list" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of QCheckBox</em> – list of checkboxes with the event types</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.notes.Notes.idx_annot_list">
+<code class="descname">idx_annot_list</code><a class="headerlink" href="#phypno.widgets.notes.Notes.idx_annot_list" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QTableWidget</em> – table with the bookmarks and events in the annotations</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.notes.Notes.idx_eventtype">
+<code class="descname">idx_eventtype</code><a class="headerlink" href="#phypno.widgets.notes.Notes.idx_eventtype" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QComboBox</em> – Combo box of the event types for the toolbar</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.notes.Notes.idx_stage">
+<code class="descname">idx_stage</code><a class="headerlink" href="#phypno.widgets.notes.Notes.idx_stage" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QComboBox</em> – Combo box of the stages for the toolbar</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.add_bookmark">
+<code class="descname">add_bookmark</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.add_bookmark"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.add_bookmark" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run this function when user adds a new bookmark.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> (<em>tuple of float</em>) – start and end of the new bookmark, in s</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.add_event">
+<code class="descname">add_event</code><span class="sig-paren">(</span><em>name</em>, <em>time</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.add_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.add_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action: add a single event.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.clear_annot">
+<code class="descname">clear_annot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.clear_annot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.clear_annot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action: clear all the annotations (ask for confirmation first).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.create">
+<code class="descname">create</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the widget layout with all the annotations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.create_action">
+<code class="descname">create_action</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.create_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.create_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create actions associated with Annotations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.delete_eventtype">
+<code class="descname">delete_eventtype</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.delete_eventtype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.delete_eventtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action: create dialog to delete event type.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.delete_rater">
+<code class="descname">delete_rater</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.delete_rater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.delete_rater" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action: create dialog to delete rater.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.delete_row">
+<code class="descname">delete_row</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.delete_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.delete_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete bookmarks or event from annotations, based on row.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.display_eventtype">
+<code class="descname">display_eventtype</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.display_eventtype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.display_eventtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the list of event types in the annotations and update widgets.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.display_notes">
+<code class="descname">display_notes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.display_notes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.display_notes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display information about scores and raters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.display_stats">
+<code class="descname">display_stats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.display_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.display_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display summary statistics about duration in each stage.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.export">
+<code class="descname">export</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.export"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.export" title="Permalink to this definition">¶</a></dt>
+<dd><p>action: export annotations to CSV.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.get_selected_events">
+<code class="descname">get_selected_events</code><span class="sig-paren">(</span><em>time_selection=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.get_selected_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.get_selected_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns which events are present in one time window.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time_selection</strong> (<em>tuple of float</em>) – start and end of the window of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>list of dict</em> – list of events in the window of interest</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.get_sleepstage">
+<code class="descname">get_sleepstage</code><span class="sig-paren">(</span><em>stage_idx=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.get_sleepstage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.get_sleepstage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the sleep stage, using shortcuts or combobox.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>stage</strong> (<em>str</em>) – string with the name of the sleep stage.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.go_to_marker">
+<code class="descname">go_to_marker</code><span class="sig-paren">(</span><em>row</em>, <em>col</em>, <em>table_type</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.go_to_marker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.go_to_marker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move to point in time marked by the marker.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>row</strong> (<em>QtCore.int</em>) – </li>
+<li><strong>column</strong> (<em>QtCore.int</em>) – </li>
+<li><strong>table_type</strong> (<em>str</em>) – ‘dataset’ table or ‘annot’ table, it works on either</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.load_annot">
+<code class="descname">load_annot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.load_annot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.load_annot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action: load a file for annotations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.new_annot">
+<code class="descname">new_annot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.new_annot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.new_annot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action: create a new file for annotations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.new_eventtype">
+<code class="descname">new_eventtype</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.new_eventtype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.new_eventtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action: create dialog to add new event type.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.new_rater">
+<code class="descname">new_rater</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.new_rater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.new_rater" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action: add a new rater.</p>
+<p class="rubric">Notes</p>
+<p>First argument, if not specified, is a bool/False:
+<a class="reference external" href="http://pyqt.sourceforge.net/Docs/PyQt4/qaction.html#triggered">http://pyqt.sourceforge.net/Docs/PyQt4/qaction.html#triggered</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all annotations from window.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.select_rater">
+<code class="descname">select_rater</code><span class="sig-paren">(</span><em>rater=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.select_rater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.select_rater" title="Permalink to this definition">¶</a></dt>
+<dd><p>Action: select one rater.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rater</strong> (<em>str</em>) – name of the rater</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.set_stage_index">
+<code class="descname">set_stage_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.set_stage_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.set_stage_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the current stage in combobox.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.update_annotations">
+<code class="descname">update_annotations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.update_annotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.update_annotations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update annotations made by the user, including bookmarks and events.
+Depending on the settings, it might add the bookmarks to overview and
+traces.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.update_dataset_marker">
+<code class="descname">update_dataset_marker</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.update_dataset_marker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.update_dataset_marker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update markers which are in the dataset. It always updates the list
+of events. Depending on the settings, it might add the markers to
+overview and traces.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.update_notes">
+<code class="descname">update_notes</code><span class="sig-paren">(</span><em>xml_file</em>, <em>new=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.update_notes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.update_notes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update information about the sleep scoring.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>xml_file</strong> (<em>str</em>) – file of the new or existing .xml file</li>
+<li><strong>new</strong> (<em>bool</em>) – if the xml_file should be a new file or an existing one</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.notes.Notes.update_settings">
+<code class="descname">update_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/notes.html#Notes.update_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.notes.Notes.update_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Once Settings are applied, update the notes.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="phypno.widgets.overview.html" class="btn btn-neutral float-right" title="phypno.widgets.overview module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phypno.widgets.labels.html" class="btn btn-neutral" title="phypno.widgets.labels module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

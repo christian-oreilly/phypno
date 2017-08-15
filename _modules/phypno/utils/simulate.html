@@ -1,0 +1,458 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.utils.simulate &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.utils.simulate</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.utils.simulate</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="p">(</span><span class="nb">abs</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">arange</span><span class="p">,</span> <span class="n">around</span><span class="p">,</span> <span class="n">asarray</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span>
+                   <span class="n">real</span><span class="p">,</span> <span class="n">tile</span><span class="p">,</span> <span class="n">zeros</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">numpy.random</span> <span class="k">import</span> <span class="n">random</span><span class="p">,</span> <span class="n">randn</span>
+<span class="kn">from</span> <span class="nn">numpy.fft</span> <span class="k">import</span> <span class="n">fft</span><span class="p">,</span> <span class="n">ifft</span>
+
+<span class="kn">from</span> <span class="nn">..datatype</span> <span class="k">import</span> <span class="n">ChanTime</span><span class="p">,</span> <span class="n">ChanFreq</span><span class="p">,</span> <span class="n">ChanTimeFreq</span>
+
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="create_data"><a class="viewcode-back" href="../../../api/phypno.utils.simulate.html#phypno.utils.simulate.create_data">[docs]</a><span class="k">def</span> <span class="nf">create_data</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;ChanTime&#39;</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_trial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">chan_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_chan</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">s_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">noise</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create data of different datatype from scratch.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    datatype : str, optional</span>
+<span class="sd">        one of &#39;ChanTime&#39;, &#39;ChanFreq&#39;, &#39;ChanTimeFreq&#39;</span>
+<span class="sd">    start_time : datetime.datetime, optional</span>
+<span class="sd">        starting time of the recordings</span>
+<span class="sd">    n_trial : int, optional</span>
+<span class="sd">        number of trials</span>
+<span class="sd">    chan_name : list of str, optional</span>
+<span class="sd">        names of the channels</span>
+<span class="sd">    n_chan : int, optional</span>
+<span class="sd">        if chan_name is not specified, this defines the number of channels</span>
+<span class="sd">    s_freq : int, optional</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    time : numpy.ndarray or tuple of two numbers, optional</span>
+<span class="sd">        if tuple, the first and second numbers indicate beginning and end</span>
+<span class="sd">    freq : numpy.ndarray or tuple of two numbers, optional</span>
+<span class="sd">        if tuple, the first and second numbers indicate beginning and end</span>
+<span class="sd">    noise : float or str, optional</span>
+<span class="sd">        noise color to generate (white noise is 0, pink is 1, brown is 2). If</span>
+<span class="sd">        str, then it can be &#39;ekg&#39; (to create heart-related activity).</span>
+<span class="sd">    values : tuple of two numbers, optional</span>
+<span class="sd">        the min and max values of the random data values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data : instance of specified datatype</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    ChanTime uses randn (to have normally distributed noise), while when you</span>
+<span class="sd">    have freq, it uses random (which gives always positive values).</span>
+<span class="sd">    You can only color noise for ChanTime, not for the other datatypes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">possible_datatypes</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;ChanTime&#39;</span><span class="p">,</span> <span class="s1">&#39;ChanFreq&#39;</span><span class="p">,</span> <span class="s1">&#39;ChanTimeFreq&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">possible_datatypes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Datatype should be one of &#39;</span> <span class="o">+</span>
+                         <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">possible_datatypes</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">n_trial</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n_trial</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">s_freq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">s_freq</span> <span class="o">=</span> <span class="mi">512</span>
+
+    <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">mult</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">add</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">s_freq</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">s_freq</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">freq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">freq</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">freq</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">freq</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">s_freq</span> <span class="o">/</span> <span class="mf">2.</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">chan_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">chan_name</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;chan</span><span class="si">{0:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_chan</span><span class="p">)]</span>
+
+    <span class="k">if</span> <span class="n">start_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;ChanTime&#39;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">ChanTime</span><span class="p">()</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">n_trial</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trial</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">noise</span> <span class="o">==</span> <span class="s1">&#39;ekg&#39;</span><span class="p">:</span>
+                <span class="n">n_sec</span> <span class="o">=</span> <span class="n">around</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">(</span><span class="n">tile</span><span class="p">(</span><span class="n">_make_ekg</span><span class="p">(</span><span class="n">s_freq</span><span class="p">),</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chan_name</span><span class="p">),</span> <span class="n">n_sec</span><span class="p">))</span>
+                          <span class="o">*</span> <span class="n">mult</span> <span class="o">+</span> <span class="n">add</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">randn</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chan_name</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)))</span> <span class="o">*</span> <span class="n">mult</span> <span class="o">+</span> <span class="n">add</span>
+                <span class="k">for</span> <span class="n">i_ch</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+                    <span class="n">values</span><span class="p">[</span><span class="n">i_ch</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">_color_noise</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">noise</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+
+    <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;ChanFreq&#39;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">ChanFreq</span><span class="p">()</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">n_trial</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trial</span><span class="p">):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">chan_name</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">freq</span><span class="p">)))</span> <span class="o">*</span> <span class="n">mult</span> <span class="o">+</span> <span class="n">add</span>
+
+    <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;ChanTimeFreq&#39;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">ChanTimeFreq</span><span class="p">()</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">n_trial</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trial</span><span class="p">):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">random</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">chan_name</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">freq</span><span class="p">)))</span>
+                            <span class="o">*</span> <span class="n">mult</span> <span class="o">+</span> <span class="n">add</span><span class="p">)</span>
+
+    <span class="n">data</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">start_time</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">s_freq</span> <span class="o">=</span> <span class="n">s_freq</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">n_trial</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trial</span><span class="p">):</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">chan_name</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;ChanTime&#39;</span><span class="p">,</span> <span class="s1">&#39;ChanTimeFreq&#39;</span><span class="p">):</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">n_trial</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trial</span><span class="p">):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span>
+
+    <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;ChanFreq&#39;</span><span class="p">,</span> <span class="s1">&#39;ChanTimeFreq&#39;</span><span class="p">):</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">n_trial</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trial</span><span class="p">):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">freq</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="_color_noise"><a class="viewcode-back" href="../../../api/phypno.utils.simulate.html#phypno.utils.simulate._color_noise">[docs]</a><span class="k">def</span> <span class="nf">_color_noise</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">coef</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add some color to the noise by changing the power spectrum.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : ndarray</span>
+<span class="sd">        one vector of the original signal</span>
+<span class="sd">    s_freq : int</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    coef : float</span>
+<span class="sd">        coefficient to apply (0 -&gt; white noise, 1 -&gt; pink, 2 -&gt; brown,</span>
+<span class="sd">                              -1 -&gt; blue)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        one vector of the colored noise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># convert to freq domain</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">ph</span> <span class="o">=</span> <span class="n">angle</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="c1"># frequencies for each fft value</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">s_freq</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="n">freq</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># create new power spectrum</span>
+    <span class="n">m1</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="p">))</span>
+    <span class="c1"># leave zero alone, and multiply the rest by the function</span>
+    <span class="n">m1</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">coef</span><span class="p">)</span>
+    <span class="c1"># simmetric around nyquist freq</span>
+    <span class="n">m1</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):]</span> <span class="o">=</span> <span class="n">m1</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># reconstruct the signal</span>
+    <span class="n">y1</span> <span class="o">=</span> <span class="n">m1</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">ph</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">real</span><span class="p">(</span><span class="n">ifft</span><span class="p">(</span><span class="n">y1</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="f"><a class="viewcode-back" href="../../../api/phypno.utils.simulate.html#phypno.utils.simulate.f">[docs]</a><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">coef</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create an almost-linear function to apply to the power spectrum.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : ndarray</span>
+<span class="sd">        vector with the frequency values</span>
+<span class="sd">    coef : float</span>
+<span class="sd">        coefficient to apply (0 -&gt; white noise, 1 -&gt; pink, 2 -&gt; brown,</span>
+<span class="sd">                              -1 -&gt; blue)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        vector to multiply with the other frequencies</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    No activity in the frequencies below .1, to avoid huge distorsions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="n">coef</span><span class="p">)</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">x</span> <span class="o">&lt;</span> <span class="o">.</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">y</span></div>
+
+
+<div class="viewcode-block" id="_make_ekg"><a class="viewcode-back" href="../../../api/phypno.utils.simulate.html#phypno.utils.simulate._make_ekg">[docs]</a><span class="k">def</span> <span class="nf">_make_ekg</span><span class="p">(</span><span class="n">s_freq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a simulated EKG of one second.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    s_freq : int</span>
+<span class="sd">        sampling frequency / duration of the sample</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        vector of length &quot;s_freq&quot; with one EKG in it, with peak at 1.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Based on ecg.m in Matlab, in the signal toolbox.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="k">import</span> <span class="n">savgol_filter</span>  <span class="c1"># scipy is optional dependency</span>
+
+    <span class="n">EKG_val</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">34</span><span class="p">,</span> <span class="mi">118</span><span class="p">,</span> <span class="o">-</span><span class="mi">99</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">EKG_time</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">91</span><span class="p">,</span> <span class="mi">131</span><span class="p">,</span> <span class="mi">141</span><span class="p">,</span> <span class="mi">163</span><span class="p">,</span> <span class="mi">185</span><span class="p">,</span> <span class="mi">195</span><span class="p">,</span> <span class="mi">275</span><span class="p">,</span> <span class="mi">307</span><span class="p">,</span> <span class="mi">339</span><span class="p">,</span>
+                        <span class="mi">357</span><span class="p">,</span> <span class="mi">390</span><span class="p">,</span> <span class="mi">440</span><span class="p">,</span> <span class="mi">500</span><span class="p">])</span>
+
+    <span class="n">EKG_time</span> <span class="o">=</span> <span class="n">around</span><span class="p">(</span><span class="n">EKG_time</span> <span class="o">*</span> <span class="n">s_freq</span> <span class="o">/</span> <span class="n">EKG_time</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">EKG_time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_freq</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">s_freq</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">EKG_val</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">EKG_time</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">EKG_time</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">slope</span> <span class="o">=</span> <span class="p">(</span><span class="n">EKG_val</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">EKG_val</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">EKG_time</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">EKG_time</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">EKG_time</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">EKG_time</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">EKG_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">slope</span> <span class="o">*</span> <span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">EKG_time</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="n">polyorder</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s_freq</span> <span class="o">/</span> <span class="mi">40</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">savgol_filter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">polyorder</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

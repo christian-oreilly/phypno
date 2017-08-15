@@ -1,0 +1,682 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.ioeeg.egimff &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.ioeeg.egimff</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.ioeeg.egimff</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">SEEK_CUR</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">basename</span><span class="p">,</span> <span class="n">join</span><span class="p">,</span> <span class="n">splitext</span>
+<span class="kn">from</span> <span class="nn">struct</span> <span class="k">import</span> <span class="n">unpack</span>
+<span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">import</span> <span class="n">parse</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="p">(</span><span class="n">append</span><span class="p">,</span> <span class="n">asarray</span><span class="p">,</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">NaN</span><span class="p">,</span> <span class="n">reshape</span><span class="p">,</span> <span class="nb">sum</span><span class="p">,</span>
+                   <span class="n">where</span><span class="p">)</span>
+
+<span class="n">shorttime</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[:</span><span class="mi">26</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">29</span><span class="p">:</span><span class="mi">32</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">33</span><span class="p">:]</span>
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="EgiMff"><a class="viewcode-back" href="../../../api/phypno.ioeeg.egimff.html#phypno.ioeeg.egimff.EgiMff">[docs]</a><span class="k">class</span> <span class="nc">EgiMff</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Basic class to read the data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : path to file</span>
+<span class="sd">        the name of the filename or directory</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signal</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_block_hdr</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nchan_signal1</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># n of channels in signal1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_samples</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orig</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="EgiMff.return_hdr"><a class="viewcode-back" href="../../../api/phypno.ioeeg.egimff.html#phypno.ioeeg.egimff.EgiMff.return_hdr">[docs]</a>    <span class="k">def</span> <span class="nf">return_hdr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the header for further use.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        subj_id : str</span>
+<span class="sd">            subject identification code</span>
+<span class="sd">        start_time : datetime</span>
+<span class="sd">            start time of the dataset</span>
+<span class="sd">        s_freq : float</span>
+<span class="sd">            sampling frequency</span>
+<span class="sd">        chan_name : list of str</span>
+<span class="sd">            list of all the channels</span>
+<span class="sd">        n_samples : int</span>
+<span class="sd">            number of samples in the dataset</span>
+<span class="sd">        orig : dict</span>
+<span class="sd">            additional information taken directly from the header</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">orig</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">xml_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;*.xml&#39;</span><span class="p">)):</span>
+            <span class="n">xml_type</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="n">basename</span><span class="p">(</span><span class="n">xml_file</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">orig</span><span class="p">[</span><span class="n">xml_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">xml_file</span><span class="p">)</span>
+
+        <span class="n">signals</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;signal*.bin&#39;</span><span class="p">)))</span>
+
+        <span class="k">for</span> <span class="n">signal</span> <span class="ow">in</span> <span class="n">signals</span><span class="p">:</span>
+            <span class="n">block_hdr</span><span class="p">,</span> <span class="n">i_data</span> <span class="o">=</span> <span class="n">read_all_block_hdr</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">signal</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_signal</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_block_hdr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">block_hdr</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_i_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i_data</span><span class="p">)</span>
+            <span class="n">n_samples</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;n_samples&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">block_hdr</span><span class="p">],</span> <span class="s1">&#39;q&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_n_samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">subj_id</span> <span class="o">=</span> <span class="n">orig</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">subj_id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">shorttime</span><span class="p">(</span><span class="n">orig</span><span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;recordTime&#39;</span><span class="p">]),</span>
+                                           <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">%z&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>  <span class="c1"># TODO: what do use when time is not available?</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">start_time</span>
+
+        <span class="n">videos</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;*.mp4&#39;</span><span class="p">))</span>  <span class="c1"># as described in specs</span>
+        <span class="n">videos</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;*.mov&#39;</span><span class="p">)))</span>  <span class="c1"># actual example</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">videos</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;More than one video present: &#39;</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">videos</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_videos</span> <span class="o">=</span> <span class="n">videos</span>
+
+        <span class="c1"># it only works if they have all the same sampling frequency</span>
+        <span class="n">s_freq</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;freq&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_hdr</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="n">x</span> <span class="o">==</span> <span class="n">s_freq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">s_freq</span><span class="p">])</span>
+        <span class="n">SIGNAL</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">s_freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_hdr</span><span class="p">[</span><span class="n">SIGNAL</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;freq&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_samples</span><span class="p">[</span><span class="n">SIGNAL</span><span class="p">])</span>
+
+        <span class="n">chan_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nchan_signal1</span> <span class="o">=</span> <span class="n">_read_chan_name</span><span class="p">(</span><span class="n">orig</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orig</span> <span class="o">=</span> <span class="n">orig</span>
+
+        <span class="k">return</span> <span class="n">subj_id</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">chan_name</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">orig</span></div>
+
+<div class="viewcode-block" id="EgiMff.return_dat"><a class="viewcode-back" href="../../../api/phypno.ioeeg.egimff.html#phypno.ioeeg.egimff.EgiMff.return_dat">[docs]</a>    <span class="k">def</span> <span class="nf">return_dat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">begsam</span><span class="p">,</span> <span class="n">endsam</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the data as 2D numpy.ndarray.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        chan : list</span>
+<span class="sd">            indices of the channels to read</span>
+<span class="sd">        begsam : int</span>
+<span class="sd">            index of the first sample</span>
+<span class="sd">        endsam : int</span>
+<span class="sd">            index of the last sample</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            A 2d matrix, with dimension chan X samples</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This format is tricky for both channels and samples. For the samples,</span>
+<span class="sd">        we just use the boundaries in the block header. For the channels, we</span>
+<span class="sd">        assume that there are max two signals, one EEG and one PIB box. We</span>
+<span class="sd">        just use the boundary between them to define if a channel belongs to</span>
+<span class="sd">        the first group or to the second.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">begsam</span> <span class="o">&lt;</span> <span class="n">endsam</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">chan</span><span class="p">),</span> <span class="n">endsam</span> <span class="o">-</span> <span class="n">begsam</span><span class="p">))</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">NaN</span><span class="p">)</span>
+
+        <span class="n">chan</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+
+        <span class="c1"># we assume there are only two signals</span>
+        <span class="n">signals_to_read</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">chan</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nchan_signal1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">signals_to_read</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">chan</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nchan_signal1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">signals_to_read</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">one_signal</span> <span class="ow">in</span> <span class="n">signals_to_read</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">one_signal</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">i_chan_data</span> <span class="o">=</span> <span class="n">chan</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nchan_signal1</span>
+                <span class="n">i_chan_rec</span> <span class="o">=</span> <span class="n">chan</span><span class="p">[</span><span class="n">i_chan_data</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">one_signal</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">i_chan_data</span> <span class="o">=</span> <span class="n">chan</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nchan_signal1</span>
+                <span class="n">i_chan_rec</span> <span class="o">=</span> <span class="n">chan</span><span class="p">[</span><span class="n">i_chan_data</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nchan_signal1</span>
+
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_samples</span><span class="p">[</span><span class="n">one_signal</span><span class="p">]</span>
+            <span class="n">x1</span> <span class="o">=</span> <span class="n">cumsum</span><span class="p">(</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+
+            <span class="c1"># begrec is -1 when begsam is before start of the recordings</span>
+            <span class="n">begrec</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">begsam</span> <span class="o">&lt;</span> <span class="n">x1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">endrec</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">endsam</span> <span class="o">&lt;</span> <span class="n">x1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="n">endrec</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_signal</span><span class="p">[</span><span class="n">one_signal</span><span class="p">],</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+
+            <span class="n">i0</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">begrec</span><span class="p">,</span> <span class="n">endrec</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+
+                <span class="c1"># if begsam is before start of the recordings, we just shift the baseline</span>
+                <span class="k">if</span> <span class="n">rec</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">i0</span> <span class="o">=</span> <span class="o">-</span> <span class="n">begsam</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># if endsam is after end of the recordings, we just stop here</span>
+                <span class="k">if</span> <span class="n">rec</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_samples</span><span class="p">[</span><span class="n">one_signal</span><span class="p">]):</span>
+                    <span class="k">break</span>
+
+
+                <span class="k">if</span> <span class="n">rec</span> <span class="o">==</span> <span class="n">begrec</span><span class="p">:</span> 
+                    <span class="n">begpos_rec</span> <span class="o">=</span> <span class="n">begsam</span> <span class="o">-</span> <span class="n">x1</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">begpos_rec</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="k">if</span> <span class="n">rec</span> <span class="o">==</span> <span class="n">endrec</span><span class="p">:</span>
+                    <span class="n">endpos_rec</span> <span class="o">=</span> <span class="n">endsam</span> <span class="o">-</span> <span class="n">x1</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">endpos_rec</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
+
+                <span class="n">i1</span> <span class="o">=</span> <span class="n">i0</span> <span class="o">+</span> <span class="n">endpos_rec</span> <span class="o">-</span> <span class="n">begpos_rec</span>
+
+                <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;data </span><span class="si">{: 8d}</span><span class="s1">-</span><span class="si">{: 8d}</span><span class="s1">, rec (</span><span class="si">{}</span><span class="s1">) </span><span class="si">{: 5d}</span><span class="s1"> - </span><span class="si">{: 5d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="n">rec</span><span class="p">,</span> <span class="n">begpos_rec</span><span class="p">,</span> <span class="n">endpos_rec</span><span class="p">))</span>
+
+                <span class="n">rec_dat</span> <span class="o">=</span> <span class="n">_read_block</span><span class="p">(</span><span class="n">f</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">_block_hdr</span><span class="p">[</span><span class="n">one_signal</span><span class="p">][</span><span class="n">rec</span><span class="p">],</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">_i_data</span><span class="p">[</span><span class="n">one_signal</span><span class="p">][</span><span class="n">rec</span><span class="p">])</span>
+
+
+                <span class="n">data</span><span class="p">[</span><span class="n">i_chan_data</span><span class="p">,</span> <span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec_dat</span><span class="p">[</span><span class="n">i_chan_rec</span><span class="p">,</span>
+                                                   <span class="n">begpos_rec</span><span class="p">:</span><span class="n">endpos_rec</span><span class="p">]</span>
+                <span class="n">i0</span> <span class="o">=</span> <span class="n">i1</span>
+
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="EgiMff.return_markers"><a class="viewcode-back" href="../../../api/phypno.ioeeg.egimff.html#phypno.ioeeg.egimff.EgiMff.return_markers">[docs]</a>    <span class="k">def</span> <span class="nf">return_markers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="n">xml_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">xml_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xml_files</span> <span class="k">if</span> <span class="n">x</span><span class="p">[:</span><span class="mi">7</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Events_&#39;</span><span class="p">]</span>
+
+        <span class="n">markers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">xml</span> <span class="ow">in</span> <span class="n">xml_events</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig</span><span class="p">[</span><span class="n">xml</span><span class="p">][</span><span class="mi">2</span><span class="p">:]:</span>
+                <span class="n">event_start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">shorttime</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;beginTime&#39;</span><span class="p">]),</span>
+                                                <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">%z&#39;</span><span class="p">)</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="n">event_start</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+
+                <span class="n">marker</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">],</span>
+                          <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
+                          <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">start</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span>
+                          <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="p">}</span>
+                <span class="n">markers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">marker</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">markers</span></div>
+
+<div class="viewcode-block" id="EgiMff.return_videos"><a class="viewcode-back" href="../../../api/phypno.ioeeg.egimff.html#phypno.ioeeg.egimff.EgiMff.return_videos">[docs]</a>    <span class="k">def</span> <span class="nf">return_videos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">begtime</span><span class="p">,</span> <span class="n">endtime</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It returns the videos and beginning and end time of the video</span>
+<span class="sd">        segment. The MFF video format is not well documented. As far as I can</span>
+<span class="sd">        see, the manual 20150805 says that there might be multiple .mp4 files</span>
+<span class="sd">        but I only see one .mov file (and no way to specify which video file to</span>
+<span class="sd">        read). In addition, there is a file &quot;po_videoSyncups.xml&quot; which seems</span>
+<span class="sd">        to contain some time information, but the sampleTime does not start at</span>
+<span class="sd">        zero, but at a large number. I don&#39;t know how to use the info in</span>
+<span class="sd">        po_videoSyncups.xml.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        begtime : float</span>
+<span class="sd">            start time of the period of interest</span>
+<span class="sd">        endtime : float</span>
+<span class="sd">            end time of the period of interest</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of one path</span>
+<span class="sd">            list with only one element</span>
+<span class="sd">        float</span>
+<span class="sd">            start time of the video</span>
+<span class="sd">        float</span>
+<span class="sd">            end time of the video</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_orig</span><span class="p">[</span><span class="s1">&#39;po_videoSyncups&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s1">&#39;No po_videoSyncups.xml in folder to sync videos&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_videos</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s1">&#39;No mp4 video files&#39;</span><span class="p">)</span>
+
+        <span class="n">mp4_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_videos</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># make clear we only use the first video</span>
+
+        <span class="k">return</span> <span class="n">mp4_file</span><span class="p">,</span> <span class="n">begtime</span><span class="p">,</span> <span class="n">endtime</span></div></div>
+
+
+<div class="viewcode-block" id="_read_block"><a class="viewcode-back" href="../../../api/phypno.ioeeg.egimff.html#phypno.ioeeg.egimff._read_block">[docs]</a><span class="k">def</span> <span class="nf">_read_block</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">block_hdr</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">filename</span>
+
+    <span class="n">n_bytes</span> <span class="o">=</span> <span class="p">(</span><span class="n">block_hdr</span><span class="p">[</span><span class="s1">&#39;depth&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">)</span>
+
+    <span class="n">data_type</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">n_smp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">,</span> <span class="n">block_hdr</span><span class="p">[</span><span class="s1">&#39;n_samples&#39;</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">b</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">data_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;h&#39;</span> <span class="o">*</span> <span class="n">n_smp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">b</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">data_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;f&#39;</span> <span class="o">*</span> <span class="n">n_smp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">b</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="n">data_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;d&#39;</span> <span class="o">*</span> <span class="n">n_smp</span><span class="p">)</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="n">v</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_type</span><span class="p">),</span>
+               <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">n_bytes</span> <span class="o">*</span> <span class="n">block_hdr</span><span class="p">[</span><span class="s1">&#39;n_samples&#39;</span><span class="p">])))</span>
+
+    <span class="k">return</span> <span class="n">reshape</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">block_hdr</span><span class="p">[</span><span class="s1">&#39;n_signals&#39;</span><span class="p">],</span> <span class="n">block_hdr</span><span class="p">[</span><span class="s1">&#39;n_samples&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="read_block_hdr"><a class="viewcode-back" href="../../../api/phypno.ioeeg.egimff.html#phypno.ioeeg.egimff.read_block_hdr">[docs]</a><span class="k">def</span> <span class="nf">read_block_hdr</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+
+    <span class="n">version</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">hdr_size</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">data_size</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n_signals</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">offset</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;I&#39;</span> <span class="o">*</span> <span class="n">n_signals</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n_signals</span><span class="p">)),</span> <span class="s1">&#39;I&#39;</span><span class="p">)</span>
+
+    <span class="n">depth</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">)</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_signals</span><span class="p">):</span>
+        <span class="n">depth</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;B&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">freq</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">diff</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">append</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">data_size</span> <span class="o">-</span> <span class="n">offset</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_samples</span> <span class="o">/</span> <span class="p">(</span><span class="n">depth</span> <span class="o">/</span> <span class="mi">8</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">)</span>
+
+    <span class="n">opt_hdr_size</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">opt_hdr_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">opt_hdr_type</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n_blocks</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;Q&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n_smp</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;Q&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># unreliable</span>
+        <span class="n">n_signals_opt</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n_blocks</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">n_smp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">n_signals_opt</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">opt_hdr</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;n_blocks&#39;</span><span class="p">:</span> <span class="n">n_blocks</span><span class="p">,</span>
+               <span class="s1">&#39;n_smp&#39;</span><span class="p">:</span> <span class="n">n_smp</span><span class="p">,</span>
+               <span class="s1">&#39;n_signals_opt&#39;</span><span class="p">:</span> <span class="n">n_signals_opt</span><span class="p">}</span>
+
+    <span class="n">hdr</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="n">version</span><span class="p">,</span>
+           <span class="s1">&#39;hdr_size&#39;</span><span class="p">:</span> <span class="n">hdr_size</span><span class="p">,</span>
+           <span class="s1">&#39;data_size&#39;</span><span class="p">:</span> <span class="n">data_size</span><span class="p">,</span>
+           <span class="s1">&#39;n_signals&#39;</span><span class="p">:</span> <span class="n">n_signals</span><span class="p">,</span>
+           <span class="s1">&#39;offset&#39;</span><span class="p">:</span> <span class="n">offset</span><span class="p">,</span>
+           <span class="s1">&#39;depth&#39;</span><span class="p">:</span> <span class="n">depth</span><span class="p">,</span>
+           <span class="s1">&#39;freq&#39;</span><span class="p">:</span> <span class="n">freq</span><span class="p">,</span>
+           <span class="s1">&#39;n_samples&#39;</span><span class="p">:</span> <span class="n">n_samples</span><span class="p">,</span>
+           <span class="s1">&#39;opt_hdr_size&#39;</span><span class="p">:</span> <span class="n">opt_hdr_size</span><span class="p">,</span>
+           <span class="s1">&#39;opt_hdr&#39;</span><span class="p">:</span> <span class="n">opt_hdr</span><span class="p">,</span>
+           <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">hdr</span></div>
+
+
+<div class="viewcode-block" id="read_all_block_hdr"><a class="viewcode-back" href="../../../api/phypno.ioeeg.egimff.html#phypno.ioeeg.egimff.read_all_block_hdr">[docs]</a><span class="k">def</span> <span class="nf">read_all_block_hdr</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+        <span class="n">block_hdr</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">i_data</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">version_bytes</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">version_bytes</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">version_bytes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="n">SEEK_CUR</span><span class="p">)</span>  <span class="c1"># re-read version</span>
+                <span class="n">block_hdr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">read_block_hdr</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">block_hdr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">block_hdr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">i_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">())</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">block_hdr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;data_size&#39;</span><span class="p">],</span> <span class="n">SEEK_CUR</span><span class="p">)</span>
+
+        <span class="n">i_data</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">i_data</span><span class="p">,</span> <span class="s1">&#39;q&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">block_hdr</span><span class="p">,</span> <span class="n">i_data</span></div>
+
+
+<div class="viewcode-block" id="parse_xml"><a class="viewcode-back" href="../../../api/phypno.ioeeg.egimff.html#phypno.ioeeg.egimff.parse_xml">[docs]</a><span class="k">def</span> <span class="nf">parse_xml</span><span class="p">(</span><span class="n">xml_file</span><span class="p">):</span>
+    <span class="n">xml</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">xml_file</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">xml</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">xml2list</span><span class="p">(</span><span class="n">root</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ns"><a class="viewcode-back" href="../../../api/phypno.ioeeg.egimff.html#phypno.ioeeg.egimff.ns">[docs]</a><span class="k">def</span> <span class="nf">ns</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;remove namespace, but only it there is a namespace to begin with&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;}&#39;</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;}&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+
+<div class="viewcode-block" id="xml2list"><a class="viewcode-back" href="../../../api/phypno.ioeeg.egimff.html#phypno.ioeeg.egimff.xml2list">[docs]</a><span class="k">def</span> <span class="nf">xml2list</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">root</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">element</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">element</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tag</span> <span class="o">!=</span> <span class="n">element</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xml2dict</span><span class="p">(</span><span class="n">element</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xml2list</span><span class="p">(</span><span class="n">element</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">element</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="n">ns</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">tag</span><span class="p">:</span> <span class="n">text</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="xml2dict"><a class="viewcode-back" href="../../../api/phypno.ioeeg.egimff.html#phypno.ioeeg.egimff.xml2dict">[docs]</a><span class="k">def</span> <span class="nf">xml2dict</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Use functions instead of Class and remove namespace based on:</span>
+<span class="sd">    http://stackoverflow.com/questions/2148119</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">root</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">element</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">element</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tag</span> <span class="o">!=</span> <span class="n">element</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
+                <span class="n">one_dict</span> <span class="o">=</span> <span class="n">xml2dict</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">one_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">ns</span><span class="p">(</span><span class="n">element</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tag</span><span class="p">):</span> <span class="n">xml2list</span><span class="p">(</span><span class="n">element</span><span class="p">)}</span>
+
+            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">one_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">ns</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="p">):</span> <span class="n">one_dict</span><span class="p">})</span>
+
+        <span class="k">elif</span> <span class="n">element</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">ns</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="p">):</span> <span class="nb">dict</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">items</span><span class="p">())})</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">ns</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="p">):</span> <span class="n">element</span><span class="o">.</span><span class="n">text</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="_read_chan_name"><a class="viewcode-back" href="../../../api/phypno.ioeeg.egimff.html#phypno.ioeeg.egimff._read_chan_name">[docs]</a><span class="k">def</span> <span class="nf">_read_chan_name</span><span class="p">(</span><span class="n">orig</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read channel labels, which can be across xml files.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    orig : dict</span>
+<span class="sd">        contains the converted xml information</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of str</span>
+<span class="sd">        list of channel names</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        vector to indicate to which signal a channel belongs to</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This assumes that the PIB Box is the second signal.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sensors</span> <span class="o">=</span> <span class="n">orig</span><span class="p">[</span><span class="s1">&#39;sensorLayout&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">eeg_chan</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">one_sensor</span> <span class="ow">in</span> <span class="n">sensors</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">one_sensor</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">one_sensor</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">eeg_chan</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_sensor</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">eeg_chan</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_sensor</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">])</span>
+
+    <span class="n">pns_chan</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="s1">&#39;pnsSet&#39;</span> <span class="ow">in</span> <span class="n">orig</span><span class="p">:</span>
+        <span class="n">pnsSet</span> <span class="o">=</span> <span class="n">orig</span><span class="p">[</span><span class="s1">&#39;pnsSet&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">one_sensor</span> <span class="ow">in</span> <span class="n">pnsSet</span><span class="p">:</span>
+            <span class="n">pns_chan</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_sensor</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">eeg_chan</span> <span class="o">+</span> <span class="n">pns_chan</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">eeg_chan</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

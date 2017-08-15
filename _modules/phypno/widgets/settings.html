@@ -1,0 +1,902 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.widgets.settings &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.widgets.settings</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.widgets.settings</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Large and simple widget to indicate settings/Settings.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">ast</span> <span class="k">import</span> <span class="n">literal_eval</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="n">QSettings</span><span class="p">,</span> <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QCheckBox</span><span class="p">,</span>
+                             <span class="n">QDialogButtonBox</span><span class="p">,</span>
+                             <span class="n">QDialog</span><span class="p">,</span>
+                             <span class="n">QFileDialog</span><span class="p">,</span>
+                             <span class="n">QFormLayout</span><span class="p">,</span>
+                             <span class="n">QGroupBox</span><span class="p">,</span>
+                             <span class="n">QHBoxLayout</span><span class="p">,</span>
+                             <span class="n">QLineEdit</span><span class="p">,</span>
+                             <span class="n">QListWidget</span><span class="p">,</span>
+                             <span class="n">QPushButton</span><span class="p">,</span>
+                             <span class="n">QSplitter</span><span class="p">,</span>
+                             <span class="n">QStackedWidget</span><span class="p">,</span>
+                             <span class="n">QVBoxLayout</span><span class="p">,</span>
+                             <span class="n">QWidget</span><span class="p">,</span>
+                             <span class="p">)</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">settings</span> <span class="o">=</span> <span class="n">QSettings</span><span class="p">(</span><span class="s2">&quot;phypno&quot;</span><span class="p">,</span> <span class="s2">&quot;scroll_data&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># DO NOT DUPLICATE NAMES</span>
+<span class="n">DEFAULTS</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">&#39;channels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;hp&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span>
+                        <span class="s1">&#39;lp&#39;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span>
+                        <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;scale&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="p">}</span>
+<span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">&#39;overview&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;timestamp_steps&#39;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">,</span>
+                        <span class="s1">&#39;overview_scale&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+                        <span class="p">}</span>
+<span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">&#39;spectrum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x_min&#39;</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span>
+                        <span class="s1">&#39;x_max&#39;</span><span class="p">:</span> <span class="mf">30.</span><span class="p">,</span>
+                        <span class="s1">&#39;x_tick&#39;</span><span class="p">:</span> <span class="mf">10.</span><span class="p">,</span>
+                        <span class="s1">&#39;y_min&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.</span><span class="p">,</span>
+                        <span class="s1">&#39;y_max&#39;</span><span class="p">:</span> <span class="mf">5.</span><span class="p">,</span>
+                        <span class="s1">&#39;y_tick&#39;</span><span class="p">:</span> <span class="mf">5.</span><span class="p">,</span>
+                        <span class="s1">&#39;log&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                        <span class="p">}</span>
+<span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">&#39;notes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;marker_show&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                     <span class="s1">&#39;marker_color&#39;</span><span class="p">:</span> <span class="s1">&#39;darkBlue&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;annot_show&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                     <span class="s1">&#39;annot_bookmark_color&#39;</span><span class="p">:</span> <span class="s1">&#39;darkMagenta&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;min_marker_dur&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span>
+                     <span class="s1">&#39;scoring_window&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+                     <span class="p">}</span>
+<span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">&#39;traces&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;n_time_labels&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+                      <span class="s1">&#39;y_distance&#39;</span><span class="p">:</span> <span class="mf">50.</span><span class="p">,</span>
+                      <span class="s1">&#39;y_scale&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+                      <span class="s1">&#39;label_ratio&#39;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+                      <span class="s1">&#39;max_s_freq&#39;</span><span class="p">:</span> <span class="mi">30000</span><span class="p">,</span>
+                      <span class="s1">&#39;window_start&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                      <span class="s1">&#39;window_length&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+                      <span class="s1">&#39;window_step&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                      <span class="s1">&#39;grid_x&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                      <span class="s1">&#39;grid_xtick&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># in seconds</span>
+                      <span class="s1">&#39;grid_y&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                      <span class="p">}</span>
+<span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">&#39;settings&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;max_dataset_history&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+                        <span class="s1">&#39;y_distance_presets&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">20.</span><span class="p">,</span> <span class="mf">30.</span><span class="p">,</span> <span class="mf">40.</span><span class="p">,</span> <span class="mf">50.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">,</span> <span class="mf">200.</span><span class="p">],</span>
+                        <span class="s1">&#39;y_scale_presets&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+                        <span class="s1">&#39;window_length_presets&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">,</span> <span class="mf">30.</span><span class="p">,</span> <span class="mf">60.</span><span class="p">],</span>
+                        <span class="s1">&#39;recording_dir&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/gio/recordings&#39;</span><span class="p">,</span>
+                        <span class="p">}</span>
+<span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">&#39;video&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="Settings"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.Settings">[docs]</a><span class="k">class</span> <span class="nc">Settings</span><span class="p">(</span><span class="n">QDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Window showing the Settings/settings.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : instance of QMainWindow</span>
+<span class="sd">        the main window</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">WindowSystemMenuHint</span> <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">WindowTitleHint</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">ConfigUtils</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s1">&#39;Settings&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_settings</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Settings.create_settings"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.Settings.create_settings">[docs]</a>    <span class="k">def</span> <span class="nf">create_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create the widget, organized in two parts.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        When you add widgets in config, remember to update show_settings too</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bbox</span> <span class="o">=</span> <span class="n">QDialogButtonBox</span><span class="p">(</span><span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Ok</span> <span class="o">|</span> <span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Apply</span> <span class="o">|</span>
+                                <span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Cancel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_ok</span> <span class="o">=</span> <span class="n">bbox</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Ok</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_apply</span> <span class="o">=</span> <span class="n">bbox</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Apply</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_cancel</span> <span class="o">=</span> <span class="n">bbox</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Cancel</span><span class="p">)</span>
+        <span class="n">bbox</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">button_clicked</span><span class="p">)</span>
+
+        <span class="n">page_list</span> <span class="o">=</span> <span class="n">QListWidget</span><span class="p">()</span>
+        <span class="n">page_list</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">page_list</span><span class="o">.</span><span class="n">currentRowChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_widget</span><span class="p">)</span>
+
+        <span class="n">pages</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;General&#39;</span><span class="p">,</span> <span class="s1">&#39;Overview&#39;</span><span class="p">,</span> <span class="s1">&#39;Signals&#39;</span><span class="p">,</span> <span class="s1">&#39;Channels&#39;</span><span class="p">,</span> <span class="s1">&#39;Spectrum&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;Notes&#39;</span><span class="p">,</span> <span class="s1">&#39;Video&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">one_page</span> <span class="ow">in</span> <span class="n">pages</span><span class="p">:</span>
+            <span class="n">page_list</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">one_page</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stacked</span> <span class="o">=</span> <span class="n">QStackedWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stacked</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stacked</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stacked</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stacked</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stacked</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">spectrum</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stacked</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stacked</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">video</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="n">hsplitter</span> <span class="o">=</span> <span class="n">QSplitter</span><span class="p">()</span>
+        <span class="n">hsplitter</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">page_list</span><span class="p">)</span>
+        <span class="n">hsplitter</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stacked</span><span class="p">)</span>
+
+        <span class="n">btnlayout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">btnlayout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">btnlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">bbox</span><span class="p">)</span>
+
+        <span class="n">vlayout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">vlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">hsplitter</span><span class="p">)</span>
+        <span class="n">vlayout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">btnlayout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">vlayout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Settings.change_widget"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.Settings.change_widget">[docs]</a>    <span class="k">def</span> <span class="nf">change_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_row</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Change the widget on the right side.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_row : int</span>
+<span class="sd">            index of the widgets</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stacked</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">new_row</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Settings.button_clicked"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.Settings.button_clicked">[docs]</a>    <span class="k">def</span> <span class="nf">button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">button</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Action when button was clicked.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        button : instance of QPushButton</span>
+<span class="sd">            which button was pressed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_ok</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_apply</span><span class="p">):</span>
+
+            <span class="c1"># loop over widgets, to see if they were modified</span>
+            <span class="k">for</span> <span class="n">i_config</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stacked</span><span class="o">.</span><span class="n">count</span><span class="p">()):</span>
+                <span class="n">one_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stacked</span><span class="o">.</span><span class="n">widget</span><span class="p">(</span><span class="n">i_config</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">one_config</span><span class="o">.</span><span class="n">modified</span><span class="p">:</span>
+                    <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Settings for &#39;</span> <span class="o">+</span> <span class="n">one_config</span><span class="o">.</span><span class="n">widget</span> <span class="o">+</span>
+                             <span class="s1">&#39; were modified&#39;</span><span class="p">)</span>
+                    <span class="n">one_config</span><span class="o">.</span><span class="n">get_values</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">one_config</span><span class="o">.</span><span class="n">update_widget</span><span class="p">()</span>
+                    <span class="n">one_config</span><span class="o">.</span><span class="n">modified</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_ok</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_cancel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reject</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for widgets used in the Settings.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    widget : str</span>
+<span class="sd">        name of the widget</span>
+<span class="sd">    update_widget : function</span>
+<span class="sd">        function to run to update the main window with new values</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    modified : bool</span>
+<span class="sd">        if the preference widget has been changed</span>
+<span class="sd">    value : dict</span>
+<span class="sd">        dictionary with the actual current values</span>
+<span class="sd">    index : dict</span>
+<span class="sd">        dictionary with the instances of the small widgets</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    You&#39;ll need to implement create_config with the QGroupBox and layouts</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">update_widget</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">modified</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widget</span> <span class="o">=</span> <span class="n">widget</span>
+
+        <span class="n">value_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="p">[</span><span class="n">widget</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_values</span><span class="p">(</span><span class="n">value_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_indices</span><span class="p">(</span><span class="n">value_names</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_config</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">put_values</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_widget</span> <span class="o">=</span> <span class="n">update_widget</span>
+
+<div class="viewcode-block" id="Config.create_values"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.Config.create_values">[docs]</a>    <span class="k">def</span> <span class="nf">create_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read original values from the settings or the defaults.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value_names : list of str</span>
+<span class="sd">            list of value names to read</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            dictionary with the value names as keys</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="n">value_names</span><span class="p">:</span>
+            <span class="n">output</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_settings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="p">,</span> <span class="n">value_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span></div>
+
+<div class="viewcode-block" id="Config.create_indices"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.Config.create_indices">[docs]</a>    <span class="k">def</span> <span class="nf">create_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create empty indices as None. They&#39;ll be created by create_config.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">value_names</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">value_names</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="Config.get_values"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.Config.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get values from the GUI and save them in preference file.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">value_name</span><span class="p">,</span> <span class="n">widget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">value_name</span><span class="p">])</span>
+
+            <span class="n">setting_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">value_name</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">setting_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">value_name</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Config.put_values"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.Config.put_values">[docs]</a>    <span class="k">def</span> <span class="nf">put_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Put values to the GUI.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        In addition, when one small widget has been changed, it calls</span>
+<span class="sd">        set_modified, so that we know that the preference widget was modified.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">value_name</span><span class="p">,</span> <span class="n">widget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">value_name</span><span class="p">])</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_modified</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Config.create_config"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.Config.create_config">[docs]</a>    <span class="k">def</span> <span class="nf">create_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Placeholder: it&#39;ll be replaced with actual layout.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Config.set_modified"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.Config.set_modified">[docs]</a>    <span class="k">def</span> <span class="nf">set_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Simply mark that the preference widget was modified.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        You cannot use lambda because they don&#39;t accept assignments.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modified</span> <span class="o">=</span> <span class="kc">True</span></div></div>
+
+
+<div class="viewcode-block" id="ConfigUtils"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.ConfigUtils">[docs]</a><span class="k">class</span> <span class="nc">ConfigUtils</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_widget</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;settings&#39;</span><span class="p">,</span> <span class="n">update_widget</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConfigUtils.create_config"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.ConfigUtils.create_config">[docs]</a>    <span class="k">def</span> <span class="nf">create_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">box0</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;History&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;max_dataset_history&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormInt</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;recording_dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormStr</span><span class="p">()</span>
+
+        <span class="n">form_layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Max History Size&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;max_dataset_history&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Directory with recordings&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;recording_dir&#39;</span><span class="p">])</span>
+        <span class="n">box0</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form_layout</span><span class="p">)</span>
+
+        <span class="n">box1</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Default values&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;y_distance_presets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormList</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;y_scale_presets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormList</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;window_length_presets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormList</span><span class="p">()</span>
+
+        <span class="n">form_layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Signal scaling, presets&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;y_scale_presets&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Distance between signals, presets&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;y_distance_presets&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Window length, presets&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;window_length_presets&#39;</span><span class="p">])</span>
+        <span class="n">box1</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form_layout</span><span class="p">)</span>
+
+        <span class="n">main_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">box0</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">box1</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_layout</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="read_settings"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.read_settings">[docs]</a><span class="k">def</span> <span class="nf">read_settings</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">value_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read Settings information, either from INI or from default values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    widget : str</span>
+<span class="sd">        name of the widget</span>
+<span class="sd">    value_name : str</span>
+<span class="sd">        name of the value of interest.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    multiple types</span>
+<span class="sd">        type depends on the type in the default values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">setting_name</span> <span class="o">=</span> <span class="n">widget</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">value_name</span>
+    <span class="n">default_value</span> <span class="o">=</span> <span class="n">DEFAULTS</span><span class="p">[</span><span class="n">widget</span><span class="p">][</span><span class="n">value_name</span><span class="p">]</span>
+
+    <span class="n">default_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">default_value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">default_type</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">default_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">default_value</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">val</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">setting_name</span><span class="p">,</span> <span class="n">default_value</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">default_type</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">val</span></div>
+
+
+<div class="viewcode-block" id="FormBool"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormBool">[docs]</a><span class="k">class</span> <span class="nc">FormBool</span><span class="p">(</span><span class="n">QCheckBox</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subclass QCheckBox to have a more consistent API across widgets.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    checkbox_label : str</span>
+<span class="sd">        label next to checkbox</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checkbox_label</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">checkbox_label</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FormBool.get_value"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormBool.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the value of the QCheckBox, as boolean.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        default : bool</span>
+<span class="sd">            not used</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            state of the checkbox</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkState</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span></div>
+
+<div class="viewcode-block" id="FormBool.set_value"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormBool.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set value of the checkbox.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : bool</span>
+<span class="sd">            value for the checkbox</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Unchecked</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FormBool.connect"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormBool.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">funct</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call funct when user ticks the box.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        funct : function</span>
+<span class="sd">            function that broadcasts a change.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stateChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">funct</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="FormFloat"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormFloat">[docs]</a><span class="k">class</span> <span class="nc">FormFloat</span><span class="p">(</span><span class="n">QLineEdit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subclass QLineEdit for float to have a more consistent API across</span>
+<span class="sd">    widgets.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FormFloat.get_value"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormFloat.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get float from widget.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        default : float</span>
+<span class="sd">            default value for the parameter in case it fails</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            the value in text or default</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Cannot convert &quot;&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&quot; to float.&#39;</span> <span class="o">+</span>
+                     <span class="s1">&#39;Using default &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">default</span><span class="p">))</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">default</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">text</span></div>
+
+<div class="viewcode-block" id="FormFloat.set_value"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormFloat.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set value of the float.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : float</span>
+<span class="sd">            value for the line edit</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="FormFloat.connect"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormFloat.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">funct</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call funct when the text was changed.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        funct : function</span>
+<span class="sd">            function that broadcasts a change.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textEdited</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">funct</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="FormInt"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormInt">[docs]</a><span class="k">class</span> <span class="nc">FormInt</span><span class="p">(</span><span class="n">QLineEdit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subclass QLineEdit for int to have a more consistent API across widgets.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FormInt.get_value"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormInt.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get int from widget.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        default : int</span>
+<span class="sd">            default value for the parameter in case it fails</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            the value in text or default</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>  <span class="c1"># to convert values like 30.0</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Cannot convert &quot;&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&quot; to int. &#39;</span> <span class="o">+</span>
+                     <span class="s1">&#39;Using default &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">default</span><span class="p">))</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">default</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">text</span></div>
+
+<div class="viewcode-block" id="FormInt.set_value"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormInt.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set value of the int.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : int</span>
+<span class="sd">            value for the line edit</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="FormInt.connect"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormInt.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">funct</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call funct when the text was changed.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        funct : function</span>
+<span class="sd">            function that broadcasts a change.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textEdited</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">funct</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="FormList"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormList">[docs]</a><span class="k">class</span> <span class="nc">FormList</span><span class="p">(</span><span class="n">QLineEdit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subclass QLineEdit for lists to have a more consistent API across</span>
+<span class="sd">    widgets.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FormList.get_value"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormList.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get int from widget.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        default : list</span>
+<span class="sd">            list with widgets</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            list that might contain int or str or float etc</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">default</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">pass</span>
+                <span class="c1"># raise ValueError</span>
+
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Cannot convert &quot;&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&quot; to list. &#39;</span> <span class="o">+</span>
+                     <span class="s1">&#39;Using default &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">default</span><span class="p">))</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">default</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">text</span></div>
+
+<div class="viewcode-block" id="FormList.set_value"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormList.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set value of the list.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : list</span>
+<span class="sd">            value for the line edit</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="FormList.connect"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormList.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">funct</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call funct when the text was changed.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        funct : function</span>
+<span class="sd">            function that broadcasts a change.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textEdited</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">funct</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="FormStr"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormStr">[docs]</a><span class="k">class</span> <span class="nc">FormStr</span><span class="p">(</span><span class="n">QLineEdit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subclass QLineEdit for str to have a more consistent API across widgets.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FormStr.get_value"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormStr.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get int from widget.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        default : str</span>
+<span class="sd">            not used</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            the value in text</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="FormStr.set_value"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormStr.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set value of the string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : str</span>
+<span class="sd">            value for the line edit</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FormStr.connect"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormStr.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">funct</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call funct when the text was changed.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        funct : function</span>
+<span class="sd">            function that broadcasts a change.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textEdited</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">funct</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="FormDir"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormDir">[docs]</a><span class="k">class</span> <span class="nc">FormDir</span><span class="p">(</span><span class="n">QPushButton</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subclass QPushButton for str to have a more consistent API across widgets.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    It calls to open the directory three times, but I don&#39;t understand why</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FormDir.get_value"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormDir.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get int from widget.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        default : str</span>
+<span class="sd">            not used</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            the value in text</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="FormDir.set_value"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormDir.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set value of the string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : str</span>
+<span class="sd">            value for the line edit</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FormDir.connect"><a class="viewcode-back" href="../../../api/phypno.widgets.settings.html#phypno.widgets.settings.FormDir.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">funct</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call funct when the text was changed.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        funct : function</span>
+<span class="sd">            function that broadcasts a change.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        There is something wrong here. When you run this function, it calls</span>
+<span class="sd">        for opening a directory three or four times. This is obviously wrong</span>
+<span class="sd">        but I don&#39;t understand why this happens three times. Traceback did not</span>
+<span class="sd">        help.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">get_directory</span><span class="p">():</span>
+            <span class="n">rec</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getExistingDirectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                                   <span class="s1">&#39;Path to Recording&#39;</span>
+                                                   <span class="s1">&#39; Directory&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rec</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
+            <span class="n">funct</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">get_directory</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

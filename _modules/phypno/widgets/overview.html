@@ -1,0 +1,660 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.widgets.overview &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.widgets.overview</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.widgets.overview</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Wide widget giving an overview of the recordings with markers and</span>
+<span class="sd">annotations (bookmarks, events, and sleep scores)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">floor</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="k">import</span> <span class="p">(</span><span class="n">QBrush</span><span class="p">,</span>
+                         <span class="n">QColor</span><span class="p">,</span>
+                         <span class="n">QPen</span><span class="p">,</span>
+                         <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QFormLayout</span><span class="p">,</span>
+                             <span class="n">QGraphicsItem</span><span class="p">,</span>
+                             <span class="n">QGraphicsRectItem</span><span class="p">,</span>
+                             <span class="n">QGraphicsScene</span><span class="p">,</span>
+                             <span class="n">QGraphicsView</span><span class="p">,</span>
+                             <span class="n">QGroupBox</span><span class="p">,</span>
+                             <span class="n">QVBoxLayout</span><span class="p">,</span>
+                             <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.settings</span> <span class="k">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">FormInt</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">convert_name_to_color</span><span class="p">,</span> <span class="n">LINE_WIDTH</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">NoPen</span> <span class="o">=</span> <span class="n">QPen</span><span class="p">()</span>
+<span class="n">NoPen</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">NoPen</span><span class="p">)</span>
+
+<span class="n">NoBrush</span> <span class="o">=</span> <span class="n">QBrush</span><span class="p">()</span>
+<span class="n">NoBrush</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">NoBrush</span><span class="p">)</span>
+
+<span class="n">STAGES</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Wake&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos0&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;pos1&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">black</span><span class="p">},</span>
+          <span class="s1">&#39;Movement&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos0&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;pos1&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">darkGray</span><span class="p">},</span>
+          <span class="s1">&#39;REM&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos0&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;pos1&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">magenta</span><span class="p">},</span>
+          <span class="s1">&#39;NREM1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos0&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;pos1&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">cyan</span><span class="p">},</span>
+          <span class="s1">&#39;NREM2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos0&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;pos1&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">blue</span><span class="p">},</span>
+          <span class="s1">&#39;NREM3&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos0&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="s1">&#39;pos1&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">darkBlue</span><span class="p">},</span>
+          <span class="s1">&#39;Undefined&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos0&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;pos1&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">gray</span><span class="p">},</span>
+          <span class="s1">&#39;Unknown&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos0&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">&#39;pos1&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">NoBrush</span><span class="p">},</span>
+          <span class="p">}</span>
+
+<span class="n">BARS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;markers&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos0&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;pos1&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;tip&#39;</span><span class="p">:</span> <span class="s1">&#39;Markers in Dataset&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;annot&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos0&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">&#39;pos1&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                  <span class="s1">&#39;tip&#39;</span><span class="p">:</span> <span class="s1">&#39;Annotations (bookmarks and events)&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;stage&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos0&#39;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> <span class="s1">&#39;pos1&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">&#39;tip&#39;</span><span class="p">:</span> <span class="s1">&#39;Sleep Stage&#39;</span><span class="p">},</span>
+        <span class="p">}</span>
+<span class="n">CURR</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pos0&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;pos1&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">}</span>
+<span class="n">TIME_HEIGHT</span> <span class="o">=</span> <span class="mi">92</span>
+<span class="n">TOTAL_HEIGHT</span> <span class="o">=</span> <span class="mi">100</span>
+
+
+<div class="viewcode-block" id="ConfigOverview"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.ConfigOverview">[docs]</a><span class="k">class</span> <span class="nc">ConfigOverview</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Widget with preferences in Settings window for Overview.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_widget</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;overview&#39;</span><span class="p">,</span> <span class="n">update_widget</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConfigOverview.create_config"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.ConfigOverview.create_config">[docs]</a>    <span class="k">def</span> <span class="nf">create_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">box0</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Overview&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;timestamp_steps&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormInt</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;overview_scale&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormInt</span><span class="p">()</span>
+
+        <span class="n">form_layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Steps in overview (in s)&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;timestamp_steps&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;One pixel corresponds to (s)&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;overview_scale&#39;</span><span class="p">])</span>
+
+        <span class="n">box0</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form_layout</span><span class="p">)</span>
+
+        <span class="n">main_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">box0</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_layout</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Overview"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.Overview">[docs]</a><span class="k">class</span> <span class="nc">Overview</span><span class="p">(</span><span class="n">QGraphicsView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Show an overview of data, such as hypnogram and data in memory.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : instance of QMainWindow</span>
+<span class="sd">        the main window.</span>
+<span class="sd">    config : ConfigChannels</span>
+<span class="sd">        preferences for this widget</span>
+
+<span class="sd">    minimum : int or float</span>
+<span class="sd">        start time of the recording, from the absolute time of start_time in s</span>
+<span class="sd">    maximum : int or float</span>
+<span class="sd">        length of the recordings in s</span>
+<span class="sd">    start_time : datetime</span>
+<span class="sd">        absolute start time of the recording</span>
+
+<span class="sd">    scene : instance of QGraphicsScene</span>
+<span class="sd">        to keep track of the objects</span>
+<span class="sd">    idx_current : QGraphicsRectItem</span>
+<span class="sd">        instance of the current time window</span>
+<span class="sd">    idx_markers : list of QGraphicsRectItem</span>
+<span class="sd">        list of markers in the dataset</span>
+<span class="sd">    idx_annot : list of QGraphicsRectItem</span>
+<span class="sd">        list of user-made annotations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">ConfigOverview</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_settings</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># datetime, absolute start time</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_current</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_markers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimumHeight</span><span class="p">(</span><span class="n">TOTAL_HEIGHT</span> <span class="o">+</span> <span class="mi">30</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Overview.update"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.Overview.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read full duration and update maximum.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># read from the dataset, if available</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">header</span>
+            <span class="n">maximum</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="s1">&#39;n_samples&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">header</span><span class="p">[</span><span class="s1">&#39;s_freq&#39;</span><span class="p">]</span>  <span class="c1"># in s</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">=</span> <span class="n">maximum</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># read from annotations</span>
+            <span class="n">annot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">annot</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">=</span> <span class="n">annot</span><span class="o">.</span><span class="n">first_second</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">=</span> <span class="n">annot</span><span class="o">.</span><span class="n">last_second</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">annot</span><span class="o">.</span><span class="n">start_time</span>
+
+        <span class="c1"># make it time-zone unaware</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># the only value that is reset</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Overview.display"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.Overview.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates the widgets, especially based on length of recordings.&quot;&quot;&quot;</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;GraphicsScene is between </span><span class="si">{}</span><span class="s1">s and </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span>
+                                                               <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">))</span>
+
+        <span class="n">x_scale</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;overview_scale&#39;</span><span class="p">)</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Set scene x-scaling to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x_scale</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">()</span><span class="o">.</span><span class="n">m11</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># reset to 1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">x_scale</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="n">QGraphicsScene</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span>
+                                    <span class="n">TOTAL_HEIGHT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setScene</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">)</span>
+
+        <span class="c1"># reset annotations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_markers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_current</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">BARS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">QGraphicsRectItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span> <span class="n">pos</span><span class="p">[</span><span class="s1">&#39;pos0&#39;</span><span class="p">],</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span> <span class="n">pos</span><span class="p">[</span><span class="s1">&#39;pos1&#39;</span><span class="p">])</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="s1">&#39;tip&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_timestamps</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Overview.add_timestamps"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.Overview.add_timestamps">[docs]</a>    <span class="k">def</span> <span class="nf">add_timestamps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add timestamps at the bottom of the overview.&quot;&quot;&quot;</span>
+        <span class="n">transform</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">()</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span>
+
+        <span class="n">stamps</span> <span class="o">=</span> <span class="n">_make_timestamps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;timestamp_steps&#39;</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">stamp</span><span class="p">,</span> <span class="n">xpos</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">stamps</span><span class="p">):</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addSimpleText</span><span class="p">(</span><span class="n">stamp</span><span class="p">)</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIgnoresTransformations</span><span class="p">)</span>
+
+            <span class="c1"># set xpos and adjust for text width</span>
+            <span class="n">text_width</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span><span class="o">.</span><span class="n">width</span><span class="p">()</span> <span class="o">*</span> <span class="n">transform</span><span class="o">.</span><span class="n">m11</span><span class="p">()</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">xpos</span> <span class="o">-</span> <span class="n">text_width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">TIME_HEIGHT</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Overview.update_settings"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.Overview.update_settings">[docs]</a>    <span class="k">def</span> <span class="nf">update_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;After changing the settings, we need to recreate the whole image.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_markers</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">display_notes</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Overview.update_position"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.Overview.update_position">[docs]</a>    <span class="k">def</span> <span class="nf">update_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_position</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update the cursor position and much more.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_position : int or float</span>
+<span class="sd">            new position in s, for plotting etc.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This is a central function. It updates the cursor, then updates</span>
+<span class="sd">        the traces, the scores, and the power spectrum. In other words, this</span>
+<span class="sd">        function is responsible for keep track of the changes every time</span>
+<span class="sd">        the start time of the window changes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">new_position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Updating position to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_position</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">,</span> <span class="n">new_position</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_current</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">new_position</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="n">current_time</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+</span>
+                            <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">new_position</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Current time: &#39;</span> <span class="o">+</span> <span class="n">current_time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H:%M:%S&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Updating position at </span><span class="si">{}</span><span class="s1">&#39;</span>
+                     <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">read_data</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">spectrum</span><span class="o">.</span><span class="n">display_window</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">set_stage_index</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_current</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Overview.display_current"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.Overview.display_current">[docs]</a>    <span class="k">def</span> <span class="nf">display_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a rectangle showing the current window.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_current</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_current</span><span class="p">)</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="n">QGraphicsRectItem</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span>
+                                 <span class="n">CURR</span><span class="p">[</span><span class="s1">&#39;pos0&#39;</span><span class="p">],</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">),</span>
+                                 <span class="n">CURR</span><span class="p">[</span><span class="s1">&#39;pos1&#39;</span><span class="p">])</span>
+        <span class="c1"># it&#39;s necessary to create rect first, and then move it</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">lightGray</span><span class="p">))</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">QBrush</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">lightGray</span><span class="p">))</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">setZValue</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_current</span> <span class="o">=</span> <span class="n">item</span></div>
+
+<div class="viewcode-block" id="Overview.display_markers"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.Overview.display_markers">[docs]</a>    <span class="k">def</span> <span class="nf">display_markers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark all the markers, from the dataset.</span>
+
+<span class="sd">        This function should be called only when we load the dataset or when</span>
+<span class="sd">        we change the settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">rect</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_markers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_markers</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">markers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">markers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;marker_show&#39;</span><span class="p">):</span>
+                <span class="n">markers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">markers</span>
+
+        <span class="k">for</span> <span class="n">mrk</span> <span class="ow">in</span> <span class="n">markers</span><span class="p">:</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">QGraphicsRectItem</span><span class="p">(</span><span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span>
+                                     <span class="n">BARS</span><span class="p">[</span><span class="s1">&#39;markers&#39;</span><span class="p">][</span><span class="s1">&#39;pos0&#39;</span><span class="p">],</span>
+                                     <span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span>
+                                     <span class="n">BARS</span><span class="p">[</span><span class="s1">&#39;markers&#39;</span><span class="p">][</span><span class="s1">&#39;pos1&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+
+            <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;marker_color&#39;</span><span class="p">)</span>
+            <span class="n">rect</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">)))</span>
+            <span class="n">rect</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">QBrush</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">)))</span>
+            <span class="n">rect</span><span class="o">.</span><span class="n">setZValue</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_markers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Overview.display_annotations"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.Overview.display_annotations">[docs]</a>    <span class="k">def</span> <span class="nf">display_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark all the bookmarks/events, from annotations.</span>
+
+<span class="sd">        This function is similar to display_markers, but they are called at</span>
+<span class="sd">        different stages (f.e. when loading annotations file), so we keep them</span>
+<span class="sd">        separate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">rect</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">bookmarks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;annot_show&#39;</span><span class="p">):</span>
+            <span class="n">bookmarks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">get_bookmarks</span><span class="p">()</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">get_selected_events</span><span class="p">()</span>
+
+        <span class="n">annotations</span> <span class="o">=</span> <span class="n">bookmarks</span> <span class="o">+</span> <span class="n">events</span>
+
+        <span class="k">for</span> <span class="n">annot</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">QGraphicsRectItem</span><span class="p">(</span><span class="n">annot</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span>
+                                     <span class="n">BARS</span><span class="p">[</span><span class="s1">&#39;annot&#39;</span><span class="p">][</span><span class="s1">&#39;pos0&#39;</span><span class="p">],</span>
+                                     <span class="n">annot</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">annot</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span>
+                                     <span class="n">BARS</span><span class="p">[</span><span class="s1">&#39;annot&#39;</span><span class="p">][</span><span class="s1">&#39;pos1&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">annot</span> <span class="ow">in</span> <span class="n">bookmarks</span><span class="p">:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;annot_bookmark_color&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">annot</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="n">convert_name_to_color</span><span class="p">(</span><span class="n">annot</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
+            <span class="n">rect</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="n">LINE_WIDTH</span><span class="p">))</span>
+            <span class="n">rect</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">QBrush</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">)))</span>
+            <span class="n">rect</span><span class="o">.</span><span class="n">setZValue</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">epochs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mark_stages</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span>
+                             <span class="n">epoch</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">epoch</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span>
+                             <span class="n">epoch</span><span class="p">[</span><span class="s1">&#39;stage&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Overview.mark_stages"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.Overview.mark_stages">[docs]</a>    <span class="k">def</span> <span class="nf">mark_stages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark stages, only add the new ones.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_time : int</span>
+<span class="sd">            start time in s of the epoch being scored.</span>
+<span class="sd">        length : int</span>
+<span class="sd">           duration in s of the epoch being scored.</span>
+<span class="sd">        stage_name : str</span>
+<span class="sd">            one of the stages defined in global stages.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">y_pos</span> <span class="o">=</span> <span class="n">BARS</span><span class="p">[</span><span class="s1">&#39;stage&#39;</span><span class="p">][</span><span class="s1">&#39;pos0&#39;</span><span class="p">]</span>
+
+        <span class="c1"># the -1 is really important, otherwise we stay on the edge of the rect</span>
+        <span class="n">old_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="n">start_time</span> <span class="o">+</span> <span class="n">length</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                                      <span class="n">y_pos</span> <span class="o">+</span>
+                                      <span class="n">STAGES</span><span class="p">[</span><span class="n">stage_name</span><span class="p">][</span><span class="s1">&#39;pos0&#39;</span><span class="p">]</span> <span class="o">+</span>
+                                      <span class="n">STAGES</span><span class="p">[</span><span class="n">stage_name</span><span class="p">][</span><span class="s1">&#39;pos1&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">())</span>
+
+        <span class="c1"># check we are not removing the black border</span>
+        <span class="k">if</span> <span class="n">old_score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">old_score</span><span class="o">.</span><span class="n">pen</span><span class="p">()</span> <span class="o">==</span> <span class="n">NoPen</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Removing old score at </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start_time</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">old_score</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">old_score</span><span class="p">)</span>
+
+        <span class="n">rect</span> <span class="o">=</span> <span class="n">QGraphicsRectItem</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span>
+                                 <span class="n">y_pos</span> <span class="o">+</span> <span class="n">STAGES</span><span class="p">[</span><span class="n">stage_name</span><span class="p">][</span><span class="s1">&#39;pos0&#39;</span><span class="p">],</span>
+                                 <span class="n">length</span><span class="p">,</span>
+                                 <span class="n">STAGES</span><span class="p">[</span><span class="n">stage_name</span><span class="p">][</span><span class="s1">&#39;pos1&#39;</span><span class="p">])</span>
+        <span class="n">rect</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">NoPen</span><span class="p">)</span>
+        <span class="n">rect</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">STAGES</span><span class="p">[</span><span class="n">stage_name</span><span class="p">][</span><span class="s1">&#39;color&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Overview.mousePressEvent"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.Overview.mousePressEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mousePressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Jump to window when user clicks on overview.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        event : instance of QtCore.QEvent</span>
+<span class="sd">            it contains the position that was clicked.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x_in_scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+            <span class="n">window_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span>
+            <span class="n">window_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">floor</span><span class="p">(</span><span class="n">x_in_scene</span> <span class="o">/</span> <span class="n">window_length</span><span class="p">)</span> <span class="o">*</span>
+                               <span class="n">window_length</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="n">window_start</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Overview.reset"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview.Overview.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reset the widget, and clear the scene.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># datetime, absolute start time</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_current</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_markers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="_make_timestamps"><a class="viewcode-back" href="../../../api/phypno.widgets.overview.html#phypno.widgets.overview._make_timestamps">[docs]</a><span class="k">def</span> <span class="nf">_make_timestamps</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create timestamps on x-axis, every so often.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start_time : instance of datetime</span>
+<span class="sd">        actual start time of the dataset</span>
+<span class="sd">    minimum : int</span>
+<span class="sd">        start time of the recording from start_time, in s</span>
+<span class="sd">    maximum : int</span>
+<span class="sd">        end time of the recording from start_time, in s</span>
+<span class="sd">    steps : int</span>
+<span class="sd">        how often you want a label, in s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        where the key is the label and the value is the time point where the</span>
+<span class="sd">        label should be placed.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function takes care that labels are placed at the meaningful time, not</span>
+<span class="sd">    at random values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">start_time</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">minimum</span><span class="p">)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">start_time</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">maximum</span><span class="p">)</span>
+
+    <span class="n">t0_midnight</span> <span class="o">=</span> <span class="n">t0</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">d0</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">-</span> <span class="n">t0_midnight</span>
+    <span class="n">d1</span> <span class="o">=</span> <span class="n">t1</span> <span class="o">-</span> <span class="n">t0_midnight</span>
+
+    <span class="n">first_stamp</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">d0</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="n">steps</span><span class="p">)</span> <span class="o">*</span> <span class="n">steps</span>
+    <span class="n">last_stamp</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">d1</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="n">steps</span><span class="p">)</span> <span class="o">*</span> <span class="n">steps</span>
+
+    <span class="n">stamp_label</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">stamp_time</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">stamp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">first_stamp</span><span class="p">,</span> <span class="n">last_stamp</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+        <span class="n">stamp_as_datetime</span> <span class="o">=</span> <span class="n">t0_midnight</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">stamp</span><span class="p">)</span>
+        <span class="n">stamp_label</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stamp_as_datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H:%M&#39;</span><span class="p">))</span>
+        <span class="n">stamp_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stamp</span> <span class="o">-</span> <span class="n">d0</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">stamp_label</span><span class="p">,</span> <span class="n">stamp_time</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

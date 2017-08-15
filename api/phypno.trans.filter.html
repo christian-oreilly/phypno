@@ -1,0 +1,336 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.trans.filter module &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="phypno.trans package" href="phypno.trans.html"/>
+        <link rel="next" title="phypno.trans.frequency module" href="phypno.trans.frequency.html"/>
+        <link rel="prev" title="phypno.trans package" href="phypno.trans.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="phypno.html">Modules, classes, functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="phypno.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="phypno.attr.html">phypno.attr package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.detect.html">phypno.detect package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.ioeeg.html">phypno.ioeeg package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.source.html">phypno.source package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="phypno.trans.html">phypno.trans package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="phypno.trans.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.utils.html">phypno.utils package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.widgets.html">phypno.widgets package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phypno.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="phypno.html">phypno package</a> &raquo;</li>
+        
+          <li><a href="phypno.trans.html">phypno.trans package</a> &raquo;</li>
+        
+      <li>phypno.trans.filter module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/phypno.trans.filter.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-phypno.trans.filter">
+<span id="phypno-trans-filter-module"></span><h1>phypno.trans.filter module<a class="headerlink" href="#module-phypno.trans.filter" title="Permalink to this headline">¶</a></h1>
+<p>Module to filter the data.</p>
+<dl class="function">
+<dt id="phypno.trans.filter.convolve">
+<code class="descclassname">phypno.trans.filter.</code><code class="descname">convolve</code><span class="sig-paren">(</span><em>data</em>, <em>window</em>, <em>axis=’time’</em>, <em>length=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/trans/filter.html#convolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.trans.filter.convolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Design taper and convolve it with the signal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>instance of Data</em>) – the data to filter.</li>
+<li><strong>window</strong> (<em>str</em>) – one of the windows in scipy, using get_window</li>
+<li><strong>length</strong> (<em>float</em><em>, </em><em>optional</em>) – length of the window</li>
+<li><strong>axis</strong> (<em>str</em><em>, </em><em>optional</em>) – axis to apply the filter on.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>instance of DataRaw</em> – data after convolution</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Most of the code is identical to fftconvolve(axis=data.index_of(axis))
+but unfortunately fftconvolve in scipy 0.13 doesn’t take that argument
+so we need to redefine it here. It’s pretty slow too.</p>
+<p>Taper is normalized such that the integral of the function remains the
+same even after convolution.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><code class="xref py py-func docutils literal"><span class="pre">scipy.signal.get_window()</span></code></dt>
+<dd>function used to create windows</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.trans.filter.filter_">
+<code class="descclassname">phypno.trans.filter.</code><code class="descname">filter_</code><span class="sig-paren">(</span><em>data</em>, <em>axis=’time’</em>, <em>low_cut=None</em>, <em>high_cut=None</em>, <em>order=4</em>, <em>ftype=’butter’</em>, <em>Rs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/trans/filter.html#filter_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.trans.filter.filter_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Design filter and apply it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ftype</strong> (<em>str</em>) – ‘butter’, ‘cheby1’, ‘cheby2’, ‘ellip’, ‘bessel’ or ‘diff’</li>
+<li><strong>low_cut</strong> (<em>float</em><em>, </em><em>optional</em>) – low cutoff for high-pass filter</li>
+<li><strong>high_cut</strong> (<em>float</em><em>, </em><em>optional</em>) – high cutoff for low-pass filter</li>
+<li><strong>order</strong> (<em>int</em><em>, </em><em>optional</em>) – filter order</li>
+<li><strong>data</strong> (<em>instance of Data</em>) – the data to filter.</li>
+<li><strong>axis</strong> (<em>str</em><em>, </em><em>optional</em>) – axis to apply the filter on.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>filtered_data</strong> (<em>instance of DataRaw</em>) – filtered data</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>You can specify any filter type as defined by iirfilter.</p>
+<p>If you specify low_cut only, it generates a high-pass filter.
+If you specify high_cut only, it generates a low-pass filter.
+If you specify both, it generates a band-pass filter.</p>
+<p>low_cut and high_cut should be given as ratio of the Nyquist. But if you
+specify s_freq, then the ratio will be computed automatically.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> – if the cutoff frequency is larger than the Nyquist frequency.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="phypno.trans.frequency.html" class="btn btn-neutral float-right" title="phypno.trans.frequency module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phypno.trans.html" class="btn btn-neutral" title="phypno.trans package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

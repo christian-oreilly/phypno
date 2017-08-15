@@ -1,0 +1,644 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.widgets.traces module &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="phypno.widgets package" href="phypno.widgets.html"/>
+        <link rel="next" title="phypno.widgets.utils module" href="phypno.widgets.utils.html"/>
+        <link rel="prev" title="phypno.widgets.spectrum module" href="phypno.widgets.spectrum.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="phypno.html">Modules, classes, functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="phypno.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="phypno.attr.html">phypno.attr package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.detect.html">phypno.detect package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.ioeeg.html">phypno.ioeeg package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.source.html">phypno.source package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.trans.html">phypno.trans package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.utils.html">phypno.utils package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="phypno.widgets.html">phypno.widgets package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="phypno.widgets.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phypno.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="phypno.html">phypno package</a> &raquo;</li>
+        
+          <li><a href="phypno.widgets.html">phypno.widgets package</a> &raquo;</li>
+        
+      <li>phypno.widgets.traces module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/phypno.widgets.traces.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-phypno.widgets.traces">
+<span id="phypno-widgets-traces-module"></span><h1>phypno.widgets.traces module<a class="headerlink" href="#module-phypno.widgets.traces" title="Permalink to this headline">¶</a></h1>
+<p>Definition of the main widgets, with recordings.</p>
+<dl class="class">
+<dt id="phypno.widgets.traces.ConfigTraces">
+<em class="property">class </em><code class="descclassname">phypno.widgets.traces.</code><code class="descname">ConfigTraces</code><span class="sig-paren">(</span><em>update_widget</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#ConfigTraces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.ConfigTraces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="phypno.widgets.settings.html#phypno.widgets.settings.Config" title="phypno.widgets.settings.Config"><code class="xref py py-class docutils literal"><span class="pre">phypno.widgets.settings.Config</span></code></a></p>
+<p>Widget with preferences in Settings window for Overview.</p>
+<dl class="method">
+<dt id="phypno.widgets.traces.ConfigTraces.create_config">
+<code class="descname">create_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#ConfigTraces.create_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.ConfigTraces.create_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.widgets.traces.Traces">
+<em class="property">class </em><code class="descclassname">phypno.widgets.traces.</code><code class="descname">Traces</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtWidgets.QGraphicsView</span></code></p>
+<p>Main widget that contains the recordings to be plotted.</p>
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.parent">
+<code class="descname">parent</code><a class="headerlink" href="#phypno.widgets.traces.Traces.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QMainWindow</em> – the main window.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.config">
+<code class="descname">config</code><a class="headerlink" href="#phypno.widgets.traces.Traces.config" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of ConfigTraces</em> – settings for this widget</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.y_scrollbar_value">
+<code class="descname">y_scrollbar_value</code><a class="headerlink" href="#phypno.widgets.traces.Traces.y_scrollbar_value" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – position of the vertical scrollbar</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.data">
+<code class="descname">data</code><a class="headerlink" href="#phypno.widgets.traces.Traces.data" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of ChanTime</em> – filtered and reref’ed data</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.chan">
+<code class="descname">chan</code><a class="headerlink" href="#phypno.widgets.traces.Traces.chan" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of str</em> – list of channels (labels and channel group)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.chan_pos">
+<code class="descname">chan_pos</code><a class="headerlink" href="#phypno.widgets.traces.Traces.chan_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of int</em> – y-position of each channel (based on value at 0)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.chan_scale">
+<code class="descname">chan_scale</code><a class="headerlink" href="#phypno.widgets.traces.Traces.chan_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of float</em> – scaling factor for each channel</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.time_pos">
+<code class="descname">time_pos</code><a class="headerlink" href="#phypno.widgets.traces.Traces.time_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of QPointF</em> – we need to keep track of the position of time label during creation</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.sel_chan">
+<code class="descname">sel_chan</code><a class="headerlink" href="#phypno.widgets.traces.Traces.sel_chan" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – index of self.chan of the first selected channel</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.sel_xy">
+<code class="descname">sel_xy</code><a class="headerlink" href="#phypno.widgets.traces.Traces.sel_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple of 2 floats</em> – x and y position of the first selected point</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.scene">
+<code class="descname">scene</code><a class="headerlink" href="#phypno.widgets.traces.Traces.scene" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QGraphicsScene</em> – the main scene.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.idx_label">
+<code class="descname">idx_label</code><a class="headerlink" href="#phypno.widgets.traces.Traces.idx_label" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of instance of QGraphicsSimpleTextItem</em> – the channel labels on the y-axis</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.idx_time">
+<code class="descname">idx_time</code><a class="headerlink" href="#phypno.widgets.traces.Traces.idx_time" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of instance of QGraphicsSimpleTextItem</em> – the time labels on the x-axis</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.idx_sel">
+<code class="descname">idx_sel</code><a class="headerlink" href="#phypno.widgets.traces.Traces.idx_sel" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QGraphicsRectItem</em> – the rectangle showing the selection (both for selection and event)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.idx_info">
+<code class="descname">idx_info</code><a class="headerlink" href="#phypno.widgets.traces.Traces.idx_info" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QGraphicsSimpleTextItem</em> – the rectangle showing the selection</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.idx_markers">
+<code class="descname">idx_markers</code><a class="headerlink" href="#phypno.widgets.traces.Traces.idx_markers" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of QGraphicsRectItem</em> – list of markers in the dataset</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.traces.Traces.idx_annot">
+<code class="descname">idx_annot</code><a class="headerlink" href="#phypno.widgets.traces.Traces.idx_annot" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of QGraphicsRectItem</em> – list of user-made annotations</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.X_length">
+<code class="descname">X_length</code><span class="sig-paren">(</span><em>new_window_length</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.X_length"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.X_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use presets for length of the window.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.X_less">
+<code class="descname">X_less</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.X_less"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.X_less" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zoom out on the x-axis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.X_more">
+<code class="descname">X_more</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.X_more"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.X_more" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zoom in on the x-axis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.Y_ampl">
+<code class="descname">Y_ampl</code><span class="sig-paren">(</span><em>new_y_scale</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.Y_ampl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.Y_ampl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make amplitude on Y axis using predefined values</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.Y_dist">
+<code class="descname">Y_dist</code><span class="sig-paren">(</span><em>new_y_distance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.Y_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.Y_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use preset values for the distance between lines.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.Y_less">
+<code class="descname">Y_less</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.Y_less"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.Y_less" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrease the amplitude.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.Y_more">
+<code class="descname">Y_more</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.Y_more"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.Y_more" title="Permalink to this definition">¶</a></dt>
+<dd><p>Increase the amplitude.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.Y_tighter">
+<code class="descname">Y_tighter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.Y_tighter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.Y_tighter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrease the distance of the lines.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.Y_wider">
+<code class="descname">Y_wider</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.Y_wider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.Y_wider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Increase the distance of the lines.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.add_chan_labels">
+<code class="descname">add_chan_labels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.add_chan_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.add_chan_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add channel labels on the left.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.add_time">
+<code class="descname">add_time</code><span class="sig-paren">(</span><em>extra_time</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.add_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.add_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Go to the predefined time forward.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.add_time_labels">
+<code class="descname">add_time_labels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.add_time_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.add_time_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add time labels at the bottom.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.add_traces">
+<code class="descname">add_traces</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.add_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.add_traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add traces based on self.data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.create_action">
+<code class="descname">create_action</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.create_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.create_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create actions associated with this widget.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.create_chan_labels">
+<code class="descname">create_chan_labels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.create_chan_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.create_chan_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the channel labels, but don’t plot them yet.</p>
+<p class="rubric">Notes</p>
+<p>It’s necessary to have the width of the labels, so that we can adjust
+the main scene.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.create_time_labels">
+<code class="descname">create_time_labels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.create_time_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.create_time_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the time labels, but don’t plot them yet.</p>
+<p class="rubric">Notes</p>
+<p>It’s necessary to have the height of the time labels, so that we can
+adjust the main scene.</p>
+<p>Not very robust, because it uses seconds as integers.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.display">
+<code class="descname">display</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the recordings.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.display_annotations">
+<code class="descname">display_annotations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.display_annotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.display_annotations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark all the bookmarks/events, on top of first plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.display_grid">
+<code class="descname">display_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.display_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.display_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display grid on x-axis and y-axis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.display_markers">
+<code class="descname">display_markers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.display_markers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.display_markers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add markers on top of first plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.mouseMoveEvent">
+<code class="descname">mouseMoveEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.mouseMoveEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.mouseMoveEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>When normal selection, update power spectrum with current selection.
+Otherwise, show the range of the new marker.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.mousePressEvent">
+<code class="descname">mousePressEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.mousePressEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.mousePressEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a marker or start selection</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> (<em>instance of QtCore.QEvent</em>) – it contains the position that was clicked.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.mouseReleaseEvent">
+<code class="descname">mouseReleaseEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.mouseReleaseEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.mouseReleaseEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new event or marker, or show the previous power spectrum</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.page_next">
+<code class="descname">page_next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.page_next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.page_next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Go to the next page.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.page_prev">
+<code class="descname">page_prev</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.page_prev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.page_prev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Go to the previous page.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.read_data">
+<code class="descname">read_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.read_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.read_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the data to plot.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.resizeEvent">
+<code class="descname">resizeEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.resizeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.resizeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resize scene so that it fits the whole widget.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> (<em>instance of QtCore.QEvent</em>) – not important</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This function overwrites Qt function, therefore the non-standard
+name. Argument also depends on Qt.</p>
+<p>The function is used to change the scale of view, so that the scene
+fits the whole scene. There are two problems that I could not fix: 1)
+how to give the width of the label in absolute width, 2) how to strech
+scene just enough that it doesn’t trigger a scrollbar. However, it’s
+pretty good as it is now.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.step_next">
+<code class="descname">step_next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.step_next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.step_next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Go to the next step.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.traces.Traces.step_prev">
+<code class="descname">step_prev</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#Traces.step_prev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces.Traces.step_prev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Go to the previous step.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.widgets.traces._create_data_to_plot">
+<code class="descclassname">phypno.widgets.traces.</code><code class="descname">_create_data_to_plot</code><span class="sig-paren">(</span><em>data</em>, <em>chan_groups</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#_create_data_to_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces._create_data_to_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create data after montage and filtering.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>instance of ChanTime</em>) – the raw data</li>
+<li><strong>chan_groups</strong> (<em>list of dict</em>) – information about channels to plot, to use as reference and about
+filtering etc.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>instance of ChanTime</em> – data ready to be plotted.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.widgets.traces._select_channels">
+<code class="descclassname">phypno.widgets.traces.</code><code class="descname">_select_channels</code><span class="sig-paren">(</span><em>data</em>, <em>channels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/traces.html#_select_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.traces._select_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select channels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>instance of ChanTime</em>) – data with all the channels</li>
+<li><strong>channels</strong> (<em>list</em>) – channels of interest</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>instance of ChanTime</em> – data with only channels of interest</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This function does the same as phypno.trans.select, but it’s much faster.
+phypno.trans.Select needs to flexible for any data type, here we assume
+that we have one trial, and that channel is the first dimension.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.widgets.traces.take_raw_name">
+<code class="descclassname">phypno.widgets.traces.</code><code class="descname">take_raw_name</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#phypno.widgets.traces.take_raw_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="phypno.widgets.utils.html" class="btn btn-neutral float-right" title="phypno.widgets.utils module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phypno.widgets.spectrum.html" class="btn btn-neutral" title="phypno.widgets.spectrum module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

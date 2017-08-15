@@ -1,0 +1,7 @@
+phypno\.widgets\.creation module
+================================
+
+.. automodule:: phypno.widgets.creation
+    :members:
+    :undoc-members:
+    :show-inheritance:

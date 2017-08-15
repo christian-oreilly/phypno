@@ -1,0 +1,447 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.trans.frequency module &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="phypno.trans package" href="phypno.trans.html"/>
+        <link rel="next" title="phypno.trans.math module" href="phypno.trans.math.html"/>
+        <link rel="prev" title="phypno.trans.filter module" href="phypno.trans.filter.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="phypno.html">Modules, classes, functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="phypno.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="phypno.attr.html">phypno.attr package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.detect.html">phypno.detect package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.ioeeg.html">phypno.ioeeg package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.source.html">phypno.source package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="phypno.trans.html">phypno.trans package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="phypno.trans.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.utils.html">phypno.utils package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.widgets.html">phypno.widgets package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phypno.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="phypno.html">phypno package</a> &raquo;</li>
+        
+          <li><a href="phypno.trans.html">phypno.trans package</a> &raquo;</li>
+        
+      <li>phypno.trans.frequency module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/phypno.trans.frequency.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-phypno.trans.frequency">
+<span id="phypno-trans-frequency-module"></span><h1>phypno.trans.frequency module<a class="headerlink" href="#module-phypno.trans.frequency" title="Permalink to this headline">¶</a></h1>
+<p>Module to compute frequency representation.</p>
+<dl class="function">
+<dt id="phypno.trans.frequency._create_morlet">
+<code class="descclassname">phypno.trans.frequency.</code><code class="descname">_create_morlet</code><span class="sig-paren">(</span><em>options</em>, <em>s_freq</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/trans/frequency.html#_create_morlet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.trans.frequency._create_morlet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create morlet wavelets, with scipy.signal doing the actual computation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>foi</strong> (<em>ndarray</em><em> or </em><em>list</em><em> or </em><em>tuple</em>) – vector with frequency of interest</li>
+<li><strong>s_freq</strong> (<em>int</em><em> or </em><em>float</em>) – sampling frequency of the data</li>
+<li><strong>options</strong> (<em>dict</em>) – with ‘M_in_s’ (duration of the wavelet in seconds) and ‘w’ (Omega0)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>ndarray</em> – nFreq X nSamples matrix containing the complex Morlet wavelets.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.trans.frequency.frequency">
+<code class="descclassname">phypno.trans.frequency.</code><code class="descname">frequency</code><span class="sig-paren">(</span><em>data</em>, <em>method=’welch’</em>, <em>**options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/trans/frequency.html#frequency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.trans.frequency.frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the power spectrum.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method</strong> (<em>str</em>) – the method to compute the power spectrum, such as ‘welch’</li>
+<li><strong>data</strong> (<em>instance of ChanTime</em>) – one of the datatypes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><em>instance of ChanFreq</em></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">TypeError</span></code> – If the data does not have a ‘time’ axis. It might work in the
+future on other axes, but I cannot imagine how.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>It uses sampling frequency as specified in s_freq, it does not
+recompute the sampling frequency based on the time axis.</p>
+<dl class="docutils">
+<dt>For method ‘welch’, the following options should be specified:</dt>
+<dd><dl class="first docutils">
+<dt>duraton <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>duration of the window to compute the power spectrum, in s</dd>
+<dt>overlap <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>amount of overlap (0 -&gt; no overlap, 1 -&gt; full overlap)</dd>
+<dt>window <span class="classifier-delimiter">:</span> <span class="classifier">str or tuple or array</span></dt>
+<dd>desired window to use</dd>
+<dt>detrend <span class="classifier-delimiter">:</span> <span class="classifier">str or function or False</span></dt>
+<dd>specifies how to detrend each segment</dd>
+<dt>scaling <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>you can choose between density (V**2/Hz) or spectrum (V**2)</dd>
+</dl>
+<p class="last">The output is real PSD, not complex, because of
+<a class="reference external" href="https://github.com/scipy/scipy/issues/5757">https://github.com/scipy/scipy/issues/5757</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.trans.frequency.morlet">
+<code class="descclassname">phypno.trans.frequency.</code><code class="descname">morlet</code><span class="sig-paren">(</span><em>freq</em>, <em>s_freq</em>, <em>ratio=5</em>, <em>sigma_f=None</em>, <em>dur_in_sd=4</em>, <em>dur_in_s=None</em>, <em>normalization=’peak’</em>, <em>zero_mean=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/trans/frequency.html#morlet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.trans.frequency.morlet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Morlet wavelet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>freq</strong> (<em>float</em>) – central frequency of the wavelet</li>
+<li><strong>s_freq</strong> (<em>int</em>) – sampling frequency</li>
+<li><strong>ratio</strong> (<em>float</em>) – ratio for a wavelet family ( = freq / sigma_f)</li>
+<li><strong>sigma_f</strong> (<em>float</em>) – standard deviation of the wavelet in frequency domain</li>
+<li><strong>dur_in_sd</strong> (<em>float</em>) – duration of the wavelet, given as number of the standard deviation in
+the time domain, in one side.</li>
+<li><strong>dur_in_s</strong> (<em>float</em>) – total duration of the wavelet, two-sided (i.e. from start to finish)</li>
+<li><strong>normalization</strong> (<em>str</em>) – ‘area’ means that energy is normalized to 1, ‘peak’ means that the peak
+is set at 1, ‘max’ is a normalization used by nitime which does not
+change max value of output when you change sigma_f.</li>
+<li><strong>zero_mean</strong> (<em>bool</em>) – make sure that the wavelet has zero mean (only relevant if ratio &lt; 5)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>ndarray</em> – vector containing the complex Morlet wavelets</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>‘ratio’ and ‘sigma_f’ are mutually exclusive. If you use ‘sigma_f’, the
+standard deviation stays the same for all the frequency. It’s more common
+to specify a constant ratio for the wavelet family, so that the frequency
+resolution changes with the frequency of interest.</p>
+<p>‘dur_in_sd’ and ‘dur_in_s’ are mutually exclusive. ‘dur_in_s’ specifies the
+total duration (from start to finish) of the window. ‘dur_in_sd’ calculates
+the total duration as the length in standard deviations in the time domain:
+dur_in_s = dur_in_sd * 2 * sigma_t, with sigma_t = 1 / (2 * pi * sigma_f)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.trans.frequency.timefrequency">
+<code class="descclassname">phypno.trans.frequency.</code><code class="descname">timefrequency</code><span class="sig-paren">(</span><em>data</em>, <em>method=’morlet’</em>, <em>time_skip=1</em>, <em>**options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/trans/frequency.html#timefrequency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.trans.frequency.timefrequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the power spectrum over time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – the method to compute the time-frequency representation, such as
+‘morlet’ (wavelet using complex morlet window), ‘spectrogram’ (relies
+on scipy implementation)</li>
+<li><strong>options</strong> (<em>dict</em>) – Options depends on the method.</li>
+<li><strong>data</strong> (<em>instance of ChanTime</em>) – data to analyze</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>instance of ChanTimeFreq</em> – data in time-frequency representation.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>The data in ChanTimeFreq are complex and they should stay that way. You
+can also get the magnitude or power the easy way using Math.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">phypno.trans</span> <span class="k">import</span> <span class="n">math</span><span class="p">,</span> <span class="n">timefreq</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tf</span> <span class="o">=</span> <span class="n">timefreq</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">foi</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tf_abs</span> <span class="o">=</span> <span class="n">math</span><span class="p">(</span><span class="n">tf</span><span class="p">,</span> <span class="n">operator_name</span><span class="o">=</span><span class="s1">&#39;abs&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tf_abs</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">1737.4662329214384)</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>It uses sampling frequency as specified in s_freq, it does not
+recompute the sampling frequency based on the time axis.</p>
+<dl class="docutils">
+<dt>For method ‘morlet’, the following options should be specified:</dt>
+<dd><dl class="first last docutils">
+<dt>foi <span class="classifier-delimiter">:</span> <span class="classifier">ndarray or list or tuple</span></dt>
+<dd>vector with frequency of interest</dd>
+<dt>ratio <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>ratio for a wavelet family ( = freq / sigma_f)</dd>
+<dt>sigma_f <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>standard deviation of the wavelet in frequency domain</dd>
+<dt>dur_in_sd <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>duration of the wavelet, given as number of the standard deviation
+in the time domain, in one side.</dd>
+<dt>dur_in_s <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>total duration of the wavelet, two-sided (i.e. from start to
+finish)</dd>
+<dt>time_skip <span class="classifier-delimiter">:</span> <span class="classifier">int, in samples</span></dt>
+<dd>number of time points to skip (it runs convolution on all the
+data points, but you don’t need to store them all)</dd>
+<dt>normalization <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>‘area’ means that energy is normalized to 1, ‘peak’ means that the
+peak of the wavelet is set at 1, ‘max’ is a normalization used by
+nitime where the max value of the output of the convolution remains
+the same even if you change the sigma_f.</dd>
+<dt>zero_mean <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>make sure that the wavelet has zero mean (only relevant if ratio
+&lt; 5)</dd>
+</dl>
+</dd>
+<dt>For method ‘spectrogram’, the following options should be specified:</dt>
+<dd><dl class="first last docutils">
+<dt>duraton <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>duration of the window to compute the power spectrum, in s</dd>
+<dt>overlap <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>amount of overlap (0 -&gt; no overlap, 1 -&gt; full overlap)</dd>
+<dt>window <span class="classifier-delimiter">:</span> <span class="classifier">str or tuple or array</span></dt>
+<dd>desired window to use</dd>
+<dt>detrend <span class="classifier-delimiter">:</span> <span class="classifier">str or function or False</span></dt>
+<dd>specifies how to detrend each segment</dd>
+<dt>scaling <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>you can choose between density (V**2/Hz) or spectrum (V**2)</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="phypno.trans.math.html" class="btn btn-neutral float-right" title="phypno.trans.math module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phypno.trans.filter.html" class="btn btn-neutral" title="phypno.trans.filter module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Edit Labels &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="Graphical User Interface" href="index.html"/>
+        <link rel="next" title="Change Log" href="../changelog.html"/>
+        <link rel="prev" title="Open Dataset" href="open.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Graphical User Interface</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="open.html">Open Dataset</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Edit Labels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#load-labels-from-file">Load Labels from File</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Graphical User Interface</a> &raquo;</li>
+        
+      <li>Edit Labels</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/gui/labels.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="edit-labels">
+<span id="id1"></span><h1>Edit Labels<a class="headerlink" href="#edit-labels" title="Permalink to this headline">¶</a></h1>
+<p>Sometimes, the labels in the recordings are not correct (f.e. typos or some channels were changed) or might be completely uninformative (f.e. BCI2000 does not have channel labels).
+From the <cite>labels</cite> panel, you can edit the labels and load from a list of labels.</p>
+<img alt="../_images/labels_01_table.png" src="../_images/labels_01_table.png" />
+<p>The column on the left shows the current (original) labels while the column on the right can be edited to change the labels.
+Select one label from the right-hand column and write the name of the label:</p>
+<img alt="../_images/labels_02_newlabel.png" src="../_images/labels_02_newlabel.png" />
+<p>It’s crucial that the channels have unique labels, so if you use the same label twice, you cannot continue (the duplicated labels are highlighted in red):</p>
+<img alt="../_images/labels_03_duplicate.png" src="../_images/labels_03_duplicate.png" />
+<p>Fix the label before proceeding:</p>
+<img alt="../_images/labels_04_correct.png" src="../_images/labels_04_correct.png" />
+<p>Then, click on <cite>apply</cite> to propagate the new labels to the whole app.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Clicking <cite>apply</cite> will reset the traces and channel groups, because they are based on the labels.</p>
+</div>
+<p>You then need to create the channel groups and plot the signal.
+Note the updated labels:</p>
+<img alt="../_images/labels_05_traces.png" src="../_images/labels_05_traces.png" />
+<div class="section" id="load-labels-from-file">
+<h2>Load Labels from File<a class="headerlink" href="#load-labels-from-file" title="Permalink to this headline">¶</a></h2>
+<p>You can also load the list of labels from a file on a disk.
+It should be a simple text file, where the labels are separated by either commas (comma-separated values), tabs, semicolon, new lines.
+F.e.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">newchan01</span><span class="p">,</span> <span class="n">newchan02</span><span class="p">,</span> <span class="n">newchan03</span><span class="p">,,</span> <span class="n">newchan05</span>
+</pre></div>
+</div>
+<p>Note the double commas, meaning that channel 4 won’t be modified.</p>
+<p>To import the labels, click on <cite>load</cite>:</p>
+<img alt="../_images/labels_06_load_button.png" src="../_images/labels_06_load_button.png" />
+<p>And after selecting the file, you should see the changes in the list on the right.
+You can modify the labels further, and click <cite>apply</cite> to make the changes effective.</p>
+<img alt="../_images/labels_07_loaded.png" src="../_images/labels_07_loaded.png" />
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../changelog.html" class="btn btn-neutral float-right" title="Change Log" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="open.html" class="btn btn-neutral" title="Open Dataset" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

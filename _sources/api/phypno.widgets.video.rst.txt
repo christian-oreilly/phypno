@@ -1,0 +1,7 @@
+phypno\.widgets\.video module
+=============================
+
+.. automodule:: phypno.widgets.video
+    :members:
+    :undoc-members:
+    :show-inheritance:

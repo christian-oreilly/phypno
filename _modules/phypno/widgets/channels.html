@@ -1,0 +1,698 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.widgets.channels &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.widgets.channels</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.widgets.channels</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Widget to define channels, montage and filters.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">json</span> <span class="k">import</span> <span class="n">dump</span><span class="p">,</span> <span class="n">load</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">splitext</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="k">import</span> <span class="p">(</span><span class="n">QColor</span><span class="p">,</span>
+                         <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QAbstractItemView</span><span class="p">,</span>
+                             <span class="n">QAction</span><span class="p">,</span>
+                             <span class="n">QColorDialog</span><span class="p">,</span>
+                             <span class="n">QDoubleSpinBox</span><span class="p">,</span>
+                             <span class="n">QFileDialog</span><span class="p">,</span>
+                             <span class="n">QFormLayout</span><span class="p">,</span>
+                             <span class="n">QGridLayout</span><span class="p">,</span>
+                             <span class="n">QGroupBox</span><span class="p">,</span>
+                             <span class="n">QHBoxLayout</span><span class="p">,</span>
+                             <span class="n">QInputDialog</span><span class="p">,</span>
+                             <span class="n">QListWidget</span><span class="p">,</span>
+                             <span class="n">QListWidgetItem</span><span class="p">,</span>
+                             <span class="n">QPushButton</span><span class="p">,</span>
+                             <span class="n">QVBoxLayout</span><span class="p">,</span>
+                             <span class="n">QTabWidget</span><span class="p">,</span>
+                             <span class="n">QWidget</span>
+                             <span class="p">)</span>
+
+
+<span class="kn">from</span> <span class="nn">.settings</span> <span class="k">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">FormFloat</span><span class="p">,</span> <span class="n">FormStr</span>
+
+
+<div class="viewcode-block" id="ConfigChannels"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.ConfigChannels">[docs]</a><span class="k">class</span> <span class="nc">ConfigChannels</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Widget with preferences in Settings window for Channels.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_widget</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="n">update_widget</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConfigChannels.create_config"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.ConfigChannels.create_config">[docs]</a>    <span class="k">def</span> <span class="nf">create_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">box0</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Channels&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;hp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormFloat</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;lp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormFloat</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormStr</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;scale&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormFloat</span><span class="p">()</span>
+
+        <span class="n">form_layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Default High-Pass Filter&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;hp&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Default Low-Pass Filter&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;lp&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Default Color&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Default Scale&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;scale&#39;</span><span class="p">])</span>
+        <span class="n">box0</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form_layout</span><span class="p">)</span>
+
+        <span class="n">main_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">box0</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_layout</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ChannelsGroup"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.ChannelsGroup">[docs]</a><span class="k">class</span> <span class="nc">ChannelsGroup</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tab inside the Channels widget.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    chan_name : list of str</span>
+<span class="sd">        list of all the channels in the dataset</span>
+<span class="sd">    config_value : dict</span>
+<span class="sd">        default values for the channels</span>
+<span class="sd">    s_freq : int</span>
+<span class="sd">        sampling frequency (to define max of filter)</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    chan_name : list of str</span>
+<span class="sd">        list of all the channels in the dataset</span>
+
+<span class="sd">    idx_l0 : QListWidget</span>
+<span class="sd">        list with the channels to plot</span>
+<span class="sd">    idx_l1 : QListWidget</span>
+<span class="sd">        list with the channels to use as reference</span>
+<span class="sd">    idx_hp : QDoubleSpinBox</span>
+<span class="sd">        spin box to indicate the high-pass filter</span>
+<span class="sd">    idx_lp : QDoubleSpinBox</span>
+<span class="sd">        spin box to indicate the low-pass filter</span>
+<span class="sd">    idx_scale : QDoubleSpinBox</span>
+<span class="sd">        spin_box to indicate the group-specific scaling</span>
+<span class="sd">    idx_reref : QPushButton</span>
+<span class="sd">        it triggers a selection of reference channels equal to the channels to</span>
+<span class="sd">        plot.</span>
+<span class="sd">    idx_color : QColor</span>
+<span class="sd">        color of the traces beloning to this channel group (it could be a</span>
+<span class="sd">        property of QWidget)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    TODO: re-referencing should be more flexible, by allowing other types of</span>
+<span class="sd">    referencing.</span>
+
+<span class="sd">    Use config_value instead of config, because it&#39;s easier to pass dict</span>
+<span class="sd">    when loading channels montage.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan_name</span><span class="p">,</span> <span class="n">config_value</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">chan_name</span> <span class="o">=</span> <span class="n">chan_name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_l0</span> <span class="o">=</span> <span class="n">QListWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_l1</span> <span class="o">=</span> <span class="n">QListWidget</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_channels_to_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_l0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_channels_to_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_l1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_hp</span> <span class="o">=</span> <span class="n">QDoubleSpinBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_hp</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">config_value</span><span class="p">[</span><span class="s1">&#39;hp&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_hp</span><span class="o">.</span><span class="n">setSuffix</span><span class="p">(</span><span class="s1">&#39; Hz&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_hp</span><span class="o">.</span><span class="n">setDecimals</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_hp</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">s_freq</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_hp</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;0 means no filter&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_lp</span> <span class="o">=</span> <span class="n">QDoubleSpinBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_lp</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">config_value</span><span class="p">[</span><span class="s1">&#39;lp&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_lp</span><span class="o">.</span><span class="n">setSuffix</span><span class="p">(</span><span class="s1">&#39; Hz&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_lp</span><span class="o">.</span><span class="n">setDecimals</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_lp</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">s_freq</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_lp</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;0 means no filter&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_scale</span> <span class="o">=</span> <span class="n">QDoubleSpinBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_scale</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">config_value</span><span class="p">[</span><span class="s1">&#39;scale&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_scale</span><span class="o">.</span><span class="n">setSuffix</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_reref</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Average&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_reref</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rereference</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_color</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="n">config_value</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">])</span>
+
+        <span class="n">l_form</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">l_form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;High-Pass&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_hp</span><span class="p">)</span>
+        <span class="n">l_form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Low-Pass&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_lp</span><span class="p">)</span>
+
+        <span class="n">r_form</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">r_form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Scaling&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_scale</span><span class="p">)</span>
+        <span class="n">r_form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Reference&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_reref</span><span class="p">)</span>
+
+        <span class="n">l_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">l_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_l0</span><span class="p">)</span>
+        <span class="n">l_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_l1</span><span class="p">)</span>
+
+        <span class="n">lr_form</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">lr_form</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">l_form</span><span class="p">)</span>
+        <span class="n">lr_form</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">r_form</span><span class="p">)</span>
+
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">l_layout</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">lr_form</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ChannelsGroup.add_channels_to_list"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.ChannelsGroup.add_channels_to_list">[docs]</a>    <span class="k">def</span> <span class="nf">add_channels_to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create list of channels (one for those to plot, one for ref).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        l : instance of QListWidget</span>
+<span class="sd">            one of the two lists (chan_to_plot or ref_chan)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="n">l</span><span class="o">.</span><span class="n">setSelectionMode</span><span class="p">(</span><span class="n">QAbstractItemView</span><span class="o">.</span><span class="n">ExtendedSelection</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan_name</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">QListWidgetItem</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChannelsGroup.highlight_channels"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.ChannelsGroup.highlight_channels">[docs]</a>    <span class="k">def</span> <span class="nf">highlight_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">selected_chan</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Highlight channels in the list of channels.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        selected_chan : list of str</span>
+<span class="sd">            channels to indicate as selected.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">count</span><span class="p">()):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">text</span><span class="p">()</span> <span class="ow">in</span> <span class="n">selected_chan</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setSelected</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setSelected</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChannelsGroup.rereference"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.ChannelsGroup.rereference">[docs]</a>    <span class="k">def</span> <span class="nf">rereference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Automatically highlight channels to use as reference, based on</span>
+<span class="sd">        selected channels.&quot;&quot;&quot;</span>
+        <span class="n">selectedItems</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_l0</span><span class="o">.</span><span class="n">selectedItems</span><span class="p">()</span>
+
+        <span class="n">chan_to_plot</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">selected</span> <span class="ow">in</span> <span class="n">selectedItems</span><span class="p">:</span>
+            <span class="n">chan_to_plot</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">selected</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">highlight_channels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_l1</span><span class="p">,</span> <span class="n">chan_to_plot</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChannelsGroup.get_info"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.ChannelsGroup.get_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the information about the channel groups.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            information about this channel group</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The items in selectedItems() are ordered based on the user&#39;s selection</span>
+<span class="sd">        (which appears pretty random). It&#39;s more consistent to use the same</span>
+<span class="sd">        order of the main channel list. That&#39;s why the additional for-loop</span>
+<span class="sd">        is necessary. We don&#39;t care about the order of the reference channels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">selectedItems</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_l0</span><span class="o">.</span><span class="n">selectedItems</span><span class="p">()</span>
+        <span class="n">selected_chan</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">text</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">selectedItems</span><span class="p">]</span>
+        <span class="n">chan_to_plot</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan_name</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">selected_chan</span><span class="p">:</span>
+                <span class="n">chan_to_plot</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+
+        <span class="n">selectedItems</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_l1</span><span class="o">.</span><span class="n">selectedItems</span><span class="p">()</span>
+        <span class="n">ref_chan</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">selected</span> <span class="ow">in</span> <span class="n">selectedItems</span><span class="p">:</span>
+            <span class="n">ref_chan</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">selected</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+
+        <span class="n">hp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_hp</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">hp</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">low_cut</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">low_cut</span> <span class="o">=</span> <span class="n">hp</span>
+
+        <span class="n">lp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_lp</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">lp</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">high_cut</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">high_cut</span> <span class="o">=</span> <span class="n">lp</span>
+
+        <span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_scale</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+
+        <span class="n">group_info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>  <span class="c1"># not present in widget</span>
+                      <span class="s1">&#39;chan_to_plot&#39;</span><span class="p">:</span> <span class="n">chan_to_plot</span><span class="p">,</span>
+                      <span class="s1">&#39;ref_chan&#39;</span><span class="p">:</span> <span class="n">ref_chan</span><span class="p">,</span>
+                      <span class="s1">&#39;hp&#39;</span><span class="p">:</span> <span class="n">low_cut</span><span class="p">,</span>
+                      <span class="s1">&#39;lp&#39;</span><span class="p">:</span> <span class="n">high_cut</span><span class="p">,</span>
+                      <span class="s1">&#39;scale&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">scale</span><span class="p">),</span>
+                      <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_color</span>
+                      <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">group_info</span></div></div>
+
+
+<div class="viewcode-block" id="Channels"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.Channels">[docs]</a><span class="k">class</span> <span class="nc">Channels</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Widget with information about channel groups.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : QMainWindow</span>
+<span class="sd">        the main window</span>
+<span class="sd">    config : ConfigChannels</span>
+<span class="sd">        preferences for this widget</span>
+
+<span class="sd">    filename : path to file</span>
+<span class="sd">        file with the channel groups</span>
+<span class="sd">    groups : list of dict</span>
+<span class="sd">        each dict contains information about one channel group</span>
+
+<span class="sd">    tabs : QTabWidget</span>
+<span class="sd">        Widget that contains the tabs with channel groups</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">ConfigChannels</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_action</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Channels.create"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.Channels.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create Channels Widget&quot;&quot;&quot;</span>
+        <span class="n">add_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;New&#39;</span><span class="p">)</span>
+        <span class="n">add_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_group</span><span class="p">)</span>
+        <span class="n">color_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Color&#39;</span><span class="p">)</span>
+        <span class="n">color_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_group</span><span class="p">)</span>
+        <span class="n">del_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Delete&#39;</span><span class="p">)</span>
+        <span class="n">del_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">del_group</span><span class="p">)</span>
+        <span class="n">apply_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Apply&#39;</span><span class="p">)</span>
+        <span class="n">apply_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">)</span>
+
+        <span class="n">buttons</span> <span class="o">=</span> <span class="n">QGridLayout</span><span class="p">()</span>
+        <span class="n">buttons</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">add_button</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">buttons</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">color_button</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">buttons</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">del_button</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">buttons</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">apply_button</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span> <span class="o">=</span> <span class="n">QTabWidget</span><span class="p">()</span>
+
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">buttons</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Channels.create_action"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.Channels.create_action">[docs]</a>    <span class="k">def</span> <span class="nf">create_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create actions related to channel selection.&quot;&quot;&quot;</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;Load Channels Montage...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_channels</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;load_channels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;Save Channels Montage...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_channels</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;save_channels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">actions</span></div>
+
+<div class="viewcode-block" id="Channels.new_group"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.Channels.new_group">[docs]</a>    <span class="k">def</span> <span class="nf">new_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checked</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">test_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a new channel group.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        checked : bool</span>
+<span class="sd">            comes from QAbstractButton.clicked</span>
+<span class="sd">        test_name : str</span>
+<span class="sd">            used for testing purposes to avoid modal window</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Don&#39;t call self.apply() just yet, only if the user wants it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chan_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">chan_name</span>
+        <span class="k">if</span> <span class="n">chan_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;No dataset loaded&#39;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">test_name</span><span class="p">:</span>
+                <span class="n">new_name</span> <span class="o">=</span> <span class="n">QInputDialog</span><span class="o">.</span><span class="n">getText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;New Channel Group&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;Enter Name&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">test_name</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span>  <span class="c1"># like output of getText</span>
+
+            <span class="k">if</span> <span class="n">new_name</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">s_freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;s_freq&#39;</span><span class="p">]</span>
+                <span class="n">group</span> <span class="o">=</span> <span class="n">ChannelsGroup</span><span class="p">(</span><span class="n">chan_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                      <span class="n">s_freq</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">new_name</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Channels.color_group"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.Channels.color_group">[docs]</a>    <span class="k">def</span> <span class="nf">color_group</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Change the color of the group.&quot;&quot;&quot;</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">currentWidget</span><span class="p">()</span>
+        <span class="n">newcolor</span> <span class="o">=</span> <span class="n">QColorDialog</span><span class="o">.</span><span class="n">getColor</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">idx_color</span><span class="p">)</span>
+        <span class="n">group</span><span class="o">.</span><span class="n">idx_color</span> <span class="o">=</span> <span class="n">newcolor</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Channels.del_group"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.Channels.del_group">[docs]</a>    <span class="k">def</span> <span class="nf">del_group</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete current group.&quot;&quot;&quot;</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">removeTab</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Channels.apply"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.Channels.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply changes to the plots.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_group_info</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">update_position</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">spectrum</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">spectrum</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Channels.read_group_info"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.Channels.read_group_info">[docs]</a>    <span class="k">def</span> <span class="nf">read_group_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get information about groups directly from the widget.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">count</span><span class="p">()):</span>
+            <span class="n">one_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">widget</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">get_info</span><span class="p">()</span>
+            <span class="n">one_group</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">tabText</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_group</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Channels.load_channels"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.Channels.load_channels">[docs]</a>    <span class="k">def</span> <span class="nf">load_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">debug_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load channel groups from file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        debug_filename : path to file</span>
+<span class="sd">            when debugging the function, you can open a channels file from the</span>
+<span class="sd">            command line</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chan_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">chan_name</span>
+
+        <span class="k">if</span> <span class="n">debug_filename</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">debug_filename</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="p">(</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span>
+                            <span class="s1">&#39;_channels.json&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">filename</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getOpenFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                                      <span class="s1">&#39;Open Channels Montage&#39;</span><span class="p">,</span>
+                                                      <span class="n">filename</span><span class="p">,</span>
+                                                      <span class="s1">&#39;Channels File (*.json)&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+            <span class="n">groups</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+
+        <span class="n">s_freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;s_freq&#39;</span><span class="p">]</span>
+        <span class="n">no_in_dataset</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">one_grp</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">no_in_dataset</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;chan_to_plot&#39;</span><span class="p">])</span> <span class="o">-</span>
+                                 <span class="nb">set</span><span class="p">(</span><span class="n">chan_name</span><span class="p">))</span>
+            <span class="n">chan_to_plot</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">chan_name</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;chan_to_plot&#39;</span><span class="p">])</span>
+            <span class="n">ref_chan</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">chan_name</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;ref_chan&#39;</span><span class="p">])</span>
+
+            <span class="n">group</span> <span class="o">=</span> <span class="n">ChannelsGroup</span><span class="p">(</span><span class="n">chan_name</span><span class="p">,</span> <span class="n">one_grp</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">)</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">highlight_channels</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">idx_l0</span><span class="p">,</span> <span class="n">chan_to_plot</span><span class="p">)</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">highlight_channels</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">idx_l1</span><span class="p">,</span> <span class="n">ref_chan</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">no_in_dataset</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Channels not present in the dataset: &#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="n">msg</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">no_in_dataset</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Channels.save_channels"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.Channels.save_channels">[docs]</a>    <span class="k">def</span> <span class="nf">save_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save channel groups to file.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_group_info</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="p">(</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span>
+                        <span class="s1">&#39;_channels.json&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">filename</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                                  <span class="s1">&#39;Save Channels Montage&#39;</span><span class="p">,</span>
+                                                  <span class="n">filename</span><span class="p">,</span>
+                                                  <span class="s1">&#39;Channels File (*.json)&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">one_grp</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rgba</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+            <span class="n">dump</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Channels.reset"><a class="viewcode-back" href="../../../api/phypno.widgets.channels.html#phypno.widgets.channels.Channels.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reset all the information of this widget.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+phypno\.widgets\.settings module
+================================
+
+.. automodule:: phypno.widgets.settings
+    :members:
+    :undoc-members:
+    :show-inheritance:

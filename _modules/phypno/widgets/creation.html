@@ -1,0 +1,517 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.widgets.creation &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.widgets.creation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.widgets.creation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions used when creating a new window.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="k">import</span> <span class="n">QIcon</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QAction</span><span class="p">,</span>
+                             <span class="n">QDockWidget</span><span class="p">,</span>
+                             <span class="n">QMessageBox</span><span class="p">,</span>
+                             <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.settings</span> <span class="k">import</span> <span class="n">Settings</span>  <span class="c1"># has to be first</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">ICON</span>  <span class="c1"># has to be second</span>
+<span class="kn">from</span> <span class="nn">.labels</span> <span class="k">import</span> <span class="n">Labels</span>
+<span class="kn">from</span> <span class="nn">.channels</span> <span class="k">import</span> <span class="n">Channels</span>
+<span class="kn">from</span> <span class="nn">.info</span> <span class="k">import</span> <span class="n">Info</span>
+<span class="kn">from</span> <span class="nn">.overview</span> <span class="k">import</span> <span class="n">Overview</span>
+<span class="kn">from</span> <span class="nn">.notes</span> <span class="k">import</span> <span class="n">Notes</span>
+<span class="kn">from</span> <span class="nn">.spectrum</span> <span class="k">import</span> <span class="n">Spectrum</span>
+<span class="kn">from</span> <span class="nn">.traces</span> <span class="k">import</span> <span class="n">Traces</span>
+<span class="kn">from</span> <span class="nn">.video</span> <span class="k">import</span> <span class="n">Video</span>
+
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="create_widgets"><a class="viewcode-back" href="../../../api/phypno.widgets.creation.html#phypno.widgets.creation.create_widgets">[docs]</a><span class="k">def</span> <span class="nf">create_widgets</span><span class="p">(</span><span class="n">MAIN</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create all the widgets and dockwidgets. It also creates actions to</span>
+<span class="sd">    toggle views of dockwidgets in dockwidgets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ CREATE WIDGETS ------ &quot;&quot;&quot;</span>
+    <span class="n">MAIN</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">Labels</span><span class="p">(</span><span class="n">MAIN</span><span class="p">)</span>
+    <span class="n">MAIN</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="n">Channels</span><span class="p">(</span><span class="n">MAIN</span><span class="p">)</span>
+    <span class="n">MAIN</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="n">Notes</span><span class="p">(</span><span class="n">MAIN</span><span class="p">)</span>
+    <span class="n">MAIN</span><span class="o">.</span><span class="n">overview</span> <span class="o">=</span> <span class="n">Overview</span><span class="p">(</span><span class="n">MAIN</span><span class="p">)</span>
+    <span class="n">MAIN</span><span class="o">.</span><span class="n">spectrum</span> <span class="o">=</span> <span class="n">Spectrum</span><span class="p">(</span><span class="n">MAIN</span><span class="p">)</span>
+    <span class="n">MAIN</span><span class="o">.</span><span class="n">traces</span> <span class="o">=</span> <span class="n">Traces</span><span class="p">(</span><span class="n">MAIN</span><span class="p">)</span>
+    <span class="n">MAIN</span><span class="o">.</span><span class="n">video</span> <span class="o">=</span> <span class="n">Video</span><span class="p">(</span><span class="n">MAIN</span><span class="p">)</span>
+    <span class="n">MAIN</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">(</span><span class="n">MAIN</span><span class="p">)</span>  <span class="c1"># depends on all widgets apart from Info</span>
+    <span class="n">MAIN</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">Info</span><span class="p">(</span><span class="n">MAIN</span><span class="p">)</span>  <span class="c1"># this has to be the last, it depends on settings</span>
+
+    <span class="n">MAIN</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">traces</span><span class="p">)</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ LIST DOCKWIDGETS ------ &quot;&quot;&quot;</span>
+    <span class="n">new_docks</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Information&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;widget&#39;</span><span class="p">:</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">info</span><span class="p">,</span>
+                  <span class="s1">&#39;main_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+                  <span class="s1">&#39;extra_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+                  <span class="p">},</span>
+                 <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Labels&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;widget&#39;</span><span class="p">:</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+                  <span class="s1">&#39;main_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+                  <span class="s1">&#39;extra_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+                  <span class="p">},</span>
+                 <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Channels&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;widget&#39;</span><span class="p">:</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">channels</span><span class="p">,</span>
+                  <span class="s1">&#39;main_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+                  <span class="s1">&#39;extra_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+                  <span class="p">},</span>
+                 <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Spectrum&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;widget&#39;</span><span class="p">:</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">spectrum</span><span class="p">,</span>
+                  <span class="s1">&#39;main_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+                  <span class="s1">&#39;extra_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+                  <span class="p">},</span>
+                 <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Annotations&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;widget&#39;</span><span class="p">:</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">notes</span><span class="p">,</span>
+                  <span class="s1">&#39;main_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+                  <span class="s1">&#39;extra_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+                  <span class="p">},</span>
+                 <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Video&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;widget&#39;</span><span class="p">:</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">video</span><span class="p">,</span>
+                  <span class="s1">&#39;main_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span>
+                  <span class="s1">&#39;extra_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span>
+                  <span class="p">},</span>
+                 <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Overview&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;widget&#39;</span><span class="p">:</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">overview</span><span class="p">,</span>
+                  <span class="s1">&#39;main_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">BottomDockWidgetArea</span><span class="p">,</span>
+                  <span class="s1">&#39;extra_area&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">TopDockWidgetArea</span><span class="p">,</span>
+                  <span class="p">},</span>
+                 <span class="p">]</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ CREATE DOCKWIDGETS ------ &quot;&quot;&quot;</span>
+    <span class="n">idx_docks</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">action</span>
+
+    <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;dockwidgets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">dock</span> <span class="ow">in</span> <span class="n">new_docks</span><span class="p">:</span>
+        <span class="n">dockwidget</span> <span class="o">=</span> <span class="n">QDockWidget</span><span class="p">(</span><span class="n">dock</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">MAIN</span><span class="p">)</span>
+        <span class="n">dockwidget</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">dock</span><span class="p">[</span><span class="s1">&#39;widget&#39;</span><span class="p">])</span>
+        <span class="n">dockwidget</span><span class="o">.</span><span class="n">setAllowedAreas</span><span class="p">(</span><span class="n">dock</span><span class="p">[</span><span class="s1">&#39;main_area&#39;</span><span class="p">]</span> <span class="o">|</span> <span class="n">dock</span><span class="p">[</span><span class="s1">&#39;extra_area&#39;</span><span class="p">])</span>
+        <span class="n">dockwidget</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">dock</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>  <span class="c1"># savestate</span>
+
+        <span class="n">idx_docks</span><span class="p">[</span><span class="n">dock</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">dockwidget</span>
+        <span class="n">MAIN</span><span class="o">.</span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">dock</span><span class="p">[</span><span class="s1">&#39;main_area&#39;</span><span class="p">],</span> <span class="n">dockwidget</span><span class="p">)</span>
+
+        <span class="n">dockwidget_action</span> <span class="o">=</span> <span class="n">dockwidget</span><span class="o">.</span><span class="n">toggleViewAction</span><span class="p">()</span>
+        <span class="n">dockwidget_action</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;widget&#39;</span><span class="p">]))</span>
+
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;dockwidgets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dockwidget_action</span><span class="p">)</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ ORGANIZE DOCKWIDGETS ------ &quot;&quot;&quot;</span>
+    <span class="n">MAIN</span><span class="o">.</span><span class="n">tabifyDockWidget</span><span class="p">(</span><span class="n">idx_docks</span><span class="p">[</span><span class="s1">&#39;Information&#39;</span><span class="p">],</span>
+                          <span class="n">idx_docks</span><span class="p">[</span><span class="s1">&#39;Video&#39;</span><span class="p">])</span>
+    <span class="n">MAIN</span><span class="o">.</span><span class="n">tabifyDockWidget</span><span class="p">(</span><span class="n">idx_docks</span><span class="p">[</span><span class="s1">&#39;Channels&#39;</span><span class="p">],</span>
+                          <span class="n">idx_docks</span><span class="p">[</span><span class="s1">&#39;Labels&#39;</span><span class="p">])</span>
+    <span class="n">idx_docks</span><span class="p">[</span><span class="s1">&#39;Information&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">raise_</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="create_actions"><a class="viewcode-back" href="../../../api/phypno.widgets.creation.html#phypno.widgets.creation.create_actions">[docs]</a><span class="k">def</span> <span class="nf">create_actions</span><span class="p">(</span><span class="n">MAIN</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create all the possible actions.&quot;&quot;&quot;</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">action</span>  <span class="c1"># actions was already taken</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ OPEN SETTINGS ------ &quot;&quot;&quot;</span>
+    <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;open_settings&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;settings&#39;</span><span class="p">]),</span> <span class="s1">&#39;Settings&#39;</span><span class="p">,</span>
+                                       <span class="n">MAIN</span><span class="p">)</span>
+    <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;open_settings&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">show_settings</span><span class="p">)</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ CLOSE WINDOW ------ &quot;&quot;&quot;</span>
+    <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;close_wndw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;quit&#39;</span><span class="p">]),</span> <span class="s1">&#39;Quit&#39;</span><span class="p">,</span> <span class="n">MAIN</span><span class="p">)</span>
+    <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;close_wndw&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">close</span><span class="p">)</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ ABOUT ------ &quot;&quot;&quot;</span>
+    <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;about&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;About PHYPNO&#39;</span><span class="p">,</span> <span class="n">MAIN</span><span class="p">)</span>
+    <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;about&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">about</span><span class="p">)</span>
+
+    <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;aboutqt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;About Qt&#39;</span><span class="p">,</span> <span class="n">MAIN</span><span class="p">)</span>
+    <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;aboutqt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">aboutQt</span><span class="p">(</span><span class="n">MAIN</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="create_menubar"><a class="viewcode-back" href="../../../api/phypno.widgets.creation.html#phypno.widgets.creation.create_menubar">[docs]</a><span class="k">def</span> <span class="nf">create_menubar</span><span class="p">(</span><span class="n">MAIN</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create the whole menubar, based on actions.&quot;&quot;&quot;</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">action</span>
+    <span class="n">menubar</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span>
+    <span class="n">menubar</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ FILE ------ &quot;&quot;&quot;</span>
+    <span class="n">menu_file</span> <span class="o">=</span> <span class="n">menubar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;File&#39;</span><span class="p">)</span>
+    <span class="n">menu_file</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;open_dataset&#39;</span><span class="p">])</span>
+    <span class="n">submenu_recent</span> <span class="o">=</span> <span class="n">menu_file</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Recent Datasets&#39;</span><span class="p">)</span>
+    <span class="n">submenu_recent</span><span class="o">.</span><span class="n">addActions</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;open_recent&#39;</span><span class="p">])</span>
+
+    <span class="n">menu_file</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+    <span class="n">menu_file</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;open_settings&#39;</span><span class="p">])</span>
+    <span class="n">menu_file</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+    <span class="n">menu_file</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;close_wndw&#39;</span><span class="p">])</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ CHANNELS ------ &quot;&quot;&quot;</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">action</span>
+    <span class="n">menu_time</span> <span class="o">=</span> <span class="n">menubar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Channels&#39;</span><span class="p">)</span>
+    <span class="n">menu_time</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;load_channels&#39;</span><span class="p">])</span>
+    <span class="n">menu_time</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;save_channels&#39;</span><span class="p">])</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ NAVIGATION ------ &quot;&quot;&quot;</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">action</span>
+
+    <span class="n">menu_time</span> <span class="o">=</span> <span class="n">menubar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Navigation&#39;</span><span class="p">)</span>
+    <span class="n">menu_time</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;step_prev&#39;</span><span class="p">])</span>
+    <span class="n">menu_time</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;step_next&#39;</span><span class="p">])</span>
+    <span class="n">menu_time</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;page_prev&#39;</span><span class="p">])</span>
+    <span class="n">menu_time</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;page_next&#39;</span><span class="p">])</span>
+    <span class="n">menu_time</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+    <span class="n">menu_time</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;addtime_-6h&#39;</span><span class="p">])</span>
+    <span class="n">menu_time</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;addtime_-1h&#39;</span><span class="p">])</span>
+    <span class="n">menu_time</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;addtime_-10min&#39;</span><span class="p">])</span>
+    <span class="n">menu_time</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;addtime_10min&#39;</span><span class="p">])</span>
+    <span class="n">menu_time</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;addtime_1h&#39;</span><span class="p">])</span>
+    <span class="n">menu_time</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;addtime_6h&#39;</span><span class="p">])</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ VIEW ------ &quot;&quot;&quot;</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">action</span>
+
+    <span class="n">menu_view</span> <span class="o">=</span> <span class="n">menubar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;View&#39;</span><span class="p">)</span>
+    <span class="n">submenu_ampl</span> <span class="o">=</span> <span class="n">menu_view</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
+    <span class="n">submenu_ampl</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;Y_less&#39;</span><span class="p">])</span>
+    <span class="n">submenu_ampl</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;Y_more&#39;</span><span class="p">])</span>
+    <span class="n">submenu_ampl</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_scale_presets&#39;</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">act</span> <span class="o">=</span> <span class="n">submenu_ampl</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s1">&#39;Set to &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">Y_ampl</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+
+    <span class="n">submenu_dist</span> <span class="o">=</span> <span class="n">menu_view</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Distance Between Traces&#39;</span><span class="p">)</span>
+    <span class="n">submenu_dist</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;Y_wider&#39;</span><span class="p">])</span>
+    <span class="n">submenu_dist</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;Y_tighter&#39;</span><span class="p">])</span>
+    <span class="n">submenu_dist</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance_presets&#39;</span><span class="p">),</span>
+                    <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">act</span> <span class="o">=</span> <span class="n">submenu_dist</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s1">&#39;Set to &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">Y_dist</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+
+    <span class="n">submenu_length</span> <span class="o">=</span> <span class="n">menu_view</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Window Length&#39;</span><span class="p">)</span>
+    <span class="n">submenu_length</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;X_more&#39;</span><span class="p">])</span>
+    <span class="n">submenu_length</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;X_less&#39;</span><span class="p">])</span>
+    <span class="n">submenu_length</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length_presets&#39;</span><span class="p">),</span>
+                    <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">act</span> <span class="o">=</span> <span class="n">submenu_length</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s1">&#39;Set to &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">X_length</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ ANNOTATIONS ------ &quot;&quot;&quot;</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">action</span>
+
+    <span class="n">menu_annot</span> <span class="o">=</span> <span class="n">menubar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Annotations&#39;</span><span class="p">)</span>
+    <span class="n">menu_annot</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_annot&#39;</span><span class="p">])</span>
+    <span class="n">menu_annot</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;load_annot&#39;</span><span class="p">])</span>
+    <span class="n">menu_annot</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;clear_annot&#39;</span><span class="p">])</span>
+    <span class="n">menu_annot</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+
+    <span class="n">submenu_rater</span> <span class="o">=</span> <span class="n">menu_annot</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Rater&#39;</span><span class="p">)</span>
+    <span class="n">submenu_rater</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_rater&#39;</span><span class="p">])</span>
+    <span class="n">submenu_rater</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;del_rater&#39;</span><span class="p">])</span>
+    <span class="n">submenu_rater</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">rater</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">raters</span><span class="p">):</span>
+            <span class="n">act</span> <span class="o">=</span> <span class="n">submenu_rater</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">rater</span><span class="p">)</span>
+            <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">select_rater</span><span class="p">,</span> <span class="n">rater</span><span class="p">))</span>
+    <span class="n">menu_annot</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+
+    <span class="n">submenu_marker</span> <span class="o">=</span> <span class="n">menu_annot</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Bookmark&#39;</span><span class="p">)</span>
+    <span class="n">submenu_marker</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_bookmark&#39;</span><span class="p">])</span>
+
+    <span class="n">submenu_event</span> <span class="o">=</span> <span class="n">menu_annot</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Event&#39;</span><span class="p">)</span>
+    <span class="n">submenu_event</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_eventtype&#39;</span><span class="p">])</span>
+    <span class="n">submenu_event</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;del_eventtype&#39;</span><span class="p">])</span>
+
+    <span class="c1"># these are the real QActions attached to notes</span>
+    <span class="n">submenu_stage</span> <span class="o">=</span> <span class="n">menu_annot</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Stage&#39;</span><span class="p">)</span>
+    <span class="n">submenu_stage</span><span class="o">.</span><span class="n">addActions</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">actions</span><span class="p">())</span>
+    <span class="n">menu_annot</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+
+    <span class="n">menu_annot</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;export&#39;</span><span class="p">])</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ ANNOTATIONS ------ &quot;&quot;&quot;</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">action</span>
+
+    <span class="n">menu_window</span> <span class="o">=</span> <span class="n">menubar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;Windows&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">dockwidget_act</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;dockwidgets&#39;</span><span class="p">]:</span>
+        <span class="n">menu_window</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">dockwidget_act</span><span class="p">)</span>
+    <span class="n">MAIN</span><span class="o">.</span><span class="n">menu_window</span> <span class="o">=</span> <span class="n">menu_window</span>
+
+    <span class="n">menu_about</span> <span class="o">=</span> <span class="n">menubar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s1">&#39;About&#39;</span><span class="p">)</span>
+    <span class="n">menu_about</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;about&#39;</span><span class="p">])</span>
+    <span class="n">menu_about</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;aboutqt&#39;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="create_toolbar"><a class="viewcode-back" href="../../../api/phypno.widgets.creation.html#phypno.widgets.creation.create_toolbar">[docs]</a><span class="k">def</span> <span class="nf">create_toolbar</span><span class="p">(</span><span class="n">MAIN</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create the various toolbars.&quot;&quot;&quot;</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">action</span>
+
+    <span class="n">toolbar</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">addToolBar</span><span class="p">(</span><span class="s1">&#39;File Management&#39;</span><span class="p">)</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s1">&#39;File Management&#39;</span><span class="p">)</span>  <span class="c1"># for savestate</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;open_dataset&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;load_channels&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;save_channels&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;new_annot&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;load_annot&#39;</span><span class="p">])</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ SCROLL ------ &quot;&quot;&quot;</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">action</span>
+
+    <span class="n">toolbar</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">addToolBar</span><span class="p">(</span><span class="s1">&#39;Scroll&#39;</span><span class="p">)</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s1">&#39;Scroll&#39;</span><span class="p">)</span>  <span class="c1"># for savestate</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;step_prev&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;step_next&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;page_prev&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;page_next&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;X_more&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;X_less&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;Y_less&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;Y_more&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;Y_wider&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;Y_tighter&#39;</span><span class="p">])</span>
+
+    <span class="sd">&quot;&quot;&quot; ------ ANNOTATIONS ------ &quot;&quot;&quot;</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">action</span>
+
+    <span class="n">toolbar</span> <span class="o">=</span> <span class="n">MAIN</span><span class="o">.</span><span class="n">addToolBar</span><span class="p">(</span><span class="s1">&#39;Annotations&#39;</span><span class="p">)</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s1">&#39;Annotations&#39;</span><span class="p">)</span>
+
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_bookmark&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_event&#39;</span><span class="p">])</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">idx_eventtype</span><span class="p">)</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">MAIN</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">idx_stage</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

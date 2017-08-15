@@ -1,0 +1,362 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.trans.montage &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.trans.montage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.trans.montage</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">asarray</span><span class="p">,</span> <span class="n">dot</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="n">c_</span><span class="p">,</span> <span class="n">mean</span>
+<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="k">import</span> <span class="n">norm</span>
+
+<span class="kn">from</span> <span class="nn">..attr</span> <span class="k">import</span> <span class="n">Channels</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="montage"><a class="viewcode-back" href="../../../api/phypno.trans.montage.html#phypno.trans.montage.montage">[docs]</a><span class="k">def</span> <span class="nf">montage</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ref_chan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ref_to_avg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bipolar</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply linear transformation to the channels.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : instance of DataRaw</span>
+<span class="sd">        the data to filter</span>
+<span class="sd">    ref_chan : list of str</span>
+<span class="sd">        list of channels used as reference</span>
+<span class="sd">    ref_to_avg : bool</span>
+<span class="sd">        if re-reference to average or not</span>
+<span class="sd">    bipolar : float</span>
+<span class="sd">        distance in mm to consider two channels as neighbors and then compute</span>
+<span class="sd">        the bipolar montage between them.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    filtered_data : instance of DataRaw</span>
+<span class="sd">        filtered data</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If you don&#39;t change anything, it returns the same instance of data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ref_to_avg</span> <span class="ow">and</span> <span class="n">ref_chan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;You cannot specify reference to the average and &#39;</span>
+                        <span class="s1">&#39;the channels to use as reference&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ref_chan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ref_chan</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">or</span>
+            <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ref_chan</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;chan should be a list of strings&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ref_chan</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ref_chan</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># TODO: check bool for ref_chan</span>
+
+    <span class="k">if</span> <span class="n">bipolar</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">attr</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Data should have Chan information in attr&#39;</span><span class="p">)</span>
+
+        <span class="n">_assert_equal_channels</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">])</span>
+        <span class="n">chan_in_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">chan</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">attr</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span>
+        <span class="n">chan</span> <span class="o">=</span> <span class="n">chan</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">label</span> <span class="ow">in</span> <span class="n">chan_in_data</span><span class="p">)</span>
+        <span class="n">chan</span><span class="p">,</span> <span class="n">trans</span> <span class="o">=</span> <span class="n">create_bipolar_chan</span><span class="p">(</span><span class="n">chan</span><span class="p">,</span> <span class="n">bipolar</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">attr</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span>
+
+    <span class="k">if</span> <span class="n">ref_to_avg</span> <span class="ow">or</span> <span class="n">ref_chan</span> <span class="ow">or</span> <span class="n">bipolar</span><span class="p">:</span>
+        <span class="n">mdata</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mdata</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;trial&#39;</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">ref_to_avg</span> <span class="ow">or</span> <span class="n">ref_chan</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ref_to_avg</span><span class="p">:</span>
+                    <span class="n">ref_chan</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="n">ref_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="n">ref_chan</span><span class="p">)</span>
+                <span class="n">mdata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="n">i</span><span class="p">)</span> <span class="o">-</span>
+                                 <span class="n">mean</span><span class="p">(</span><span class="n">ref_data</span><span class="p">,</span>
+                                      <span class="n">axis</span><span class="o">=</span><span class="n">mdata</span><span class="o">.</span><span class="n">index_of</span><span class="p">(</span><span class="s1">&#39;chan&#39;</span><span class="p">)))</span>
+
+            <span class="k">elif</span> <span class="n">bipolar</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">index_of</span><span class="p">(</span><span class="s1">&#39;chan&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;For matrix multiplication to work, &#39;</span>
+                                     <span class="s1">&#39;the first dimension should be chan&#39;</span><span class="p">)</span>
+                <span class="n">mdata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">trans</span><span class="p">,</span> <span class="n">data</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="n">i</span><span class="p">))</span>
+                <span class="n">mdata</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">return_label</span><span class="p">(),</span>
+                                                <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mdata</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">return</span> <span class="n">mdata</span></div>
+
+
+<div class="viewcode-block" id="_assert_equal_channels"><a class="viewcode-back" href="../../../api/phypno.trans.montage.html#phypno.trans.montage._assert_equal_channels">[docs]</a><span class="k">def</span> <span class="nf">_assert_equal_channels</span><span class="p">(</span><span class="n">axis</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;check that all the trials have the same channels, in the same order.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    axis : ndarray of ndarray</span>
+<span class="sd">        one of the data axis</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i0</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i1</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">i0</span> <span class="o">==</span> <span class="n">i1</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The channels for all the trials should have &#39;</span>
+                                 <span class="s1">&#39;the same labels, in the same order.&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_bipolar_chan"><a class="viewcode-back" href="../../../api/phypno.trans.montage.html#phypno.trans.montage.create_bipolar_chan">[docs]</a><span class="k">def</span> <span class="nf">create_bipolar_chan</span><span class="p">(</span><span class="n">chan</span><span class="p">,</span> <span class="n">max_dist</span><span class="p">):</span>
+    <span class="n">chan_dist</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">chan</span><span class="o">.</span><span class="n">n_chan</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">n_chan</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i0</span><span class="p">,</span> <span class="n">chan0</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">chan</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i1</span><span class="p">,</span> <span class="n">chan1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">chan</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i0</span> <span class="o">&lt;</span> <span class="n">i1</span> <span class="ow">and</span> <span class="n">norm</span><span class="p">(</span><span class="n">chan0</span><span class="o">.</span><span class="n">xyz</span> <span class="o">-</span> <span class="n">chan1</span><span class="o">.</span><span class="n">xyz</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">max_dist</span><span class="p">:</span>
+                <span class="n">chan_dist</span><span class="p">[</span><span class="n">i0</span><span class="p">,</span> <span class="n">i1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">x_all</span><span class="p">,</span> <span class="n">y_all</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">chan_dist</span><span class="p">)</span>
+
+    <span class="n">bipolar_labels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">bipolar_xyz</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">bipolar_trans</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_all</span><span class="p">,</span> <span class="n">y_all</span><span class="p">):</span>
+
+        <span class="n">new_label</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">chan</span><span class="p">[</span><span class="n">x0</span><span class="p">]</span><span class="o">.</span><span class="n">label</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">chan</span><span class="o">.</span><span class="n">chan</span><span class="p">[</span><span class="n">x1</span><span class="p">]</span><span class="o">.</span><span class="n">label</span>
+        <span class="n">bipolar_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_label</span><span class="p">)</span>
+
+        <span class="n">xyz</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">c_</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">chan</span><span class="p">[</span><span class="n">x0</span><span class="p">]</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">chan</span><span class="p">[</span><span class="n">x1</span><span class="p">]</span><span class="o">.</span><span class="n">xyz</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">bipolar_xyz</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
+
+        <span class="n">trans</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">n_chan</span><span class="p">)</span>
+        <span class="n">trans</span><span class="p">[</span><span class="n">x0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">trans</span><span class="p">[</span><span class="n">x1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">bipolar_trans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trans</span><span class="p">)</span>
+
+    <span class="n">bipolar_xyz</span> <span class="o">=</span> <span class="n">c_</span><span class="p">[</span><span class="n">bipolar_xyz</span><span class="p">]</span>
+    <span class="n">bipolar_trans</span> <span class="o">=</span> <span class="n">c_</span><span class="p">[</span><span class="n">bipolar_trans</span><span class="p">]</span>
+
+    <span class="n">bipolar</span> <span class="o">=</span> <span class="n">Channels</span><span class="p">(</span><span class="n">bipolar_labels</span><span class="p">,</span> <span class="n">bipolar_xyz</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">bipolar</span><span class="p">,</span> <span class="n">bipolar_trans</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

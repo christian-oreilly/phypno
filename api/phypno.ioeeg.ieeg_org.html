@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.ioeeg.ieeg_org module &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="phypno.ioeeg package" href="phypno.ioeeg.html"/>
+        <link rel="next" title="phypno.ioeeg.ktlx module" href="phypno.ioeeg.ktlx.html"/>
+        <link rel="prev" title="phypno.ioeeg.fieldtrip module" href="phypno.ioeeg.fieldtrip.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="phypno.html">Modules, classes, functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="phypno.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="phypno.attr.html">phypno.attr package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.detect.html">phypno.detect package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="phypno.ioeeg.html">phypno.ioeeg package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="phypno.ioeeg.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.source.html">phypno.source package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.trans.html">phypno.trans package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.utils.html">phypno.utils package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.widgets.html">phypno.widgets package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phypno.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="phypno.html">phypno package</a> &raquo;</li>
+        
+          <li><a href="phypno.ioeeg.html">phypno.ioeeg package</a> &raquo;</li>
+        
+      <li>phypno.ioeeg.ieeg_org module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/phypno.ioeeg.ieeg_org.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-phypno.ioeeg.ieeg_org">
+<span id="phypno-ioeeg-ieeg-org-module"></span><h1>phypno.ioeeg.ieeg_org module<a class="headerlink" href="#module-phypno.ioeeg.ieeg_org" title="Permalink to this headline">¶</a></h1>
+<p>explain sess behavior</p>
+<dl class="class">
+<dt id="phypno.ioeeg.ieeg_org.IEEG_org">
+<em class="property">class </em><code class="descclassname">phypno.ioeeg.ieeg_org.</code><code class="descname">IEEG_org</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ieeg_org.html#IEEG_org"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ieeg_org.IEEG_org" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="phypno.ioeeg.ieeg_org.IEEG_org.return_dat">
+<code class="descname">return_dat</code><span class="sig-paren">(</span><em>chan</em>, <em>begsam</em>, <em>endsam</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ieeg_org.html#IEEG_org.return_dat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ieeg_org.IEEG_org.return_dat" title="Permalink to this definition">¶</a></dt>
+<dd><p>order of chan is taken into account by ieeg.org server</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.ioeeg.ieeg_org.IEEG_org.return_hdr">
+<code class="descname">return_hdr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ieeg_org.html#IEEG_org.return_hdr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ieeg_org.IEEG_org.return_hdr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="phypno.ioeeg.ieeg_org.IEEG_org.return_markers">
+<code class="descname">return_markers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ieeg_org.html#IEEG_org.return_markers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ieeg_org.IEEG_org.return_markers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.ioeeg.ieeg_org.Session">
+<em class="property">class </em><code class="descclassname">phypno.ioeeg.ieeg_org.</code><code class="descname">Session</code><span class="sig-paren">(</span><em>username=None</em>, <em>password=None</em>, <em>password_md5=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ieeg_org.html#Session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ieeg_org.Session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="phypno.ioeeg.ieeg_org.Session._get_info">
+<code class="descname">_get_info</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ieeg_org.html#Session._get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ieeg_org.Session._get_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="phypno.ioeeg.ieeg_org.Session._make_signature">
+<code class="descname">_make_signature</code><span class="sig-paren">(</span><em>method</em>, <em>urlpath</em>, <em>params=None</em>, <em>xml_str=’‘</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ieeg_org.html#Session._make_signature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ieeg_org.Session._make_signature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="phypno.ioeeg.ieeg_org.Session.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>snapshot</em>, <em>params</em>, <em>xml_str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ieeg_org.html#Session.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ieeg_org.Session.get_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="phypno.ioeeg.ieeg_org.Session.get_dataset">
+<code class="descname">get_dataset</code><span class="sig-paren">(</span><em>snapshot</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ieeg_org.html#Session.get_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ieeg_org.Session.get_dataset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="phypno.ioeeg.ieeg_org.Session.get_snapshot">
+<code class="descname">get_snapshot</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ieeg_org.html#Session.get_snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ieeg_org.Session.get_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ieeg_org._prepare_xml_str">
+<code class="descclassname">phypno.ioeeg.ieeg_org.</code><code class="descname">_prepare_xml_str</code><span class="sig-paren">(</span><em>chan_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ieeg_org.html#_prepare_xml_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ieeg_org._prepare_xml_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ieeg_org._sha256">
+<code class="descclassname">phypno.ioeeg.ieeg_org.</code><code class="descname">_sha256</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ieeg_org.html#_sha256"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ieeg_org._sha256" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ieeg_org.md5">
+<code class="descclassname">phypno.ioeeg.ieeg_org.</code><code class="descname">md5</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ieeg_org.html#md5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ieeg_org.md5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns MD5 hashed string</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="phypno.ioeeg.ktlx.html" class="btn btn-neutral float-right" title="phypno.ioeeg.ktlx module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phypno.ioeeg.fieldtrip.html" class="btn btn-neutral" title="phypno.ioeeg.fieldtrip module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

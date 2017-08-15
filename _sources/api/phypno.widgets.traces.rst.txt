@@ -1,0 +1,7 @@
+phypno\.widgets\.traces module
+==============================
+
+.. automodule:: phypno.widgets.traces
+    :members:
+    :undoc-members:
+    :show-inheritance:

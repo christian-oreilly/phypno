@@ -1,0 +1,764 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.ioeeg.ktlx module &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="phypno.ioeeg package" href="phypno.ioeeg.html"/>
+        <link rel="next" title="phypno.ioeeg.micromed module" href="phypno.ioeeg.micromed.html"/>
+        <link rel="prev" title="phypno.ioeeg.ieeg_org module" href="phypno.ioeeg.ieeg_org.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="phypno.html">Modules, classes, functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="phypno.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="phypno.attr.html">phypno.attr package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.detect.html">phypno.detect package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="phypno.ioeeg.html">phypno.ioeeg package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="phypno.ioeeg.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.source.html">phypno.source package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.trans.html">phypno.trans package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.utils.html">phypno.utils package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.widgets.html">phypno.widgets package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phypno.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="phypno.html">phypno package</a> &raquo;</li>
+        
+          <li><a href="phypno.ioeeg.html">phypno.ioeeg package</a> &raquo;</li>
+        
+      <li>phypno.ioeeg.ktlx module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/phypno.ioeeg.ktlx.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-phypno.ioeeg.ktlx">
+<span id="phypno-ioeeg-ktlx-module"></span><h1>phypno.ioeeg.ktlx module<a class="headerlink" href="#module-phypno.ioeeg.ktlx" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>Module reads and writes header and data for KTLX data. The files are:</dt>
+<dd><ul class="first last simple">
+<li>.eeg (patient information)</li>
+<li>.ent (notes, sometimes with a backup file called .ent.old)</li>
+<li>.erd (raw data)</li>
+<li>.etc (table of content)</li>
+<li>.snc (synchronization file)</li>
+<li>.stc (segmented table of content)</li>
+<li>.vtc (video table of content)</li>
+<li>.avi (videos)</li>
+</ul>
+</dd>
+</dl>
+<p>There is only one of these files in the directory, except for .erd, .etc., .avi
+These files are numbered in the format _%03d, except for the first one, which
+is not _000 but there is no extension, for backwards compatibility.</p>
+<p>This module contains functions to read each of the files, the files are called
+_read_EXT where EXT is one of the extensions.</p>
+<dl class="class">
+<dt id="phypno.ioeeg.ktlx.Ktlx">
+<em class="property">class </em><code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">Ktlx</code><span class="sig-paren">(</span><em>ktlx_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#Ktlx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx.Ktlx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="phypno.ioeeg.ktlx.Ktlx._read_hdr_dir">
+<code class="descname">_read_hdr_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#Ktlx._read_hdr_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx.Ktlx._read_hdr_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the header for basic information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>hdr</strong> (<em>dict</em>) –<ul>
+<li>‘erd’: header of .erd file</li>
+<li>’stc’: general part of .stc file</li>
+<li>’stamps’ : time stamp for each file</li>
+</ul>
+</li>
+<li><em>Also, it adds the attribute</em></li>
+<li><strong>_basename</strong> (<em>Path</em>) – the name of the files inside the directory</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.ioeeg.ktlx.Ktlx.return_dat">
+<code class="descname">return_dat</code><span class="sig-paren">(</span><em>chan</em>, <em>begsam</em>, <em>endsam</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#Ktlx.return_dat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx.Ktlx.return_dat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the data based on begsam and endsam.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>chan</strong> (<em>list of int</em>) – list of channel indeces</li>
+<li><strong>begsam</strong> (<em>int</em>) – index of the first sample</li>
+<li><strong>endsam</strong> – index of the last sample</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>ndarray</em> – 2-d matrix with data (might contain NaN)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The sample numbering is not based on the samples in the files (i.e.
+the first sample of the first file is NOT the first sample of the
+dataset) because it depends on the stamps in the STC file. Usually, the
+recording starts and after a few millisecond (maybe one second), the
+actual acquisition starts. STC takes the offset into account. This has
+the counterintuitive result that if you call read_data, the first few
+hundreds samples are nan.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.ioeeg.ktlx.Ktlx.return_hdr">
+<code class="descname">return_hdr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#Ktlx.return_hdr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx.Ktlx.return_hdr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the header for further use.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>subj_id</strong> (<em>str</em>) – subject identification code</li>
+<li><strong>start_time</strong> (<em>datetime</em>) – start time of the dataset</li>
+<li><strong>s_freq</strong> (<em>float</em>) – sampling frequency</li>
+<li><strong>chan_name</strong> (<em>list of str</em>) – list of all the channels</li>
+<li><strong>n_samples</strong> (<em>int</em>) – number of samples in the dataset</li>
+<li><strong>orig</strong> (<em>dict</em>) – additional information taken directly from the header</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.ioeeg.ktlx.Ktlx.return_markers">
+<code class="descname">return_markers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#Ktlx.return_markers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx.Ktlx.return_markers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the notes of the Ktlx recordings.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.ioeeg.ktlx.Ktlx.return_videos">
+<code class="descname">return_videos</code><span class="sig-paren">(</span><em>begtime</em>, <em>endtime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#Ktlx.return_videos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx.Ktlx.return_videos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._calculate_conversion">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_calculate_conversion</code><span class="sig-paren">(</span><em>hdr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_calculate_conversion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._calculate_conversion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the conversion factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>conv_factor</strong> (<em>numpy.ndarray</em>) – channel-long vector with the channel-specific conversion factor</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Final units are microvolts</p>
+<p>It should include all the headbox versions apart from 5 because it depends
+on subversion.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._filetime_to_dt">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_filetime_to_dt</code><span class="sig-paren">(</span><em>ft</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_filetime_to_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._filetime_to_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a Microsoft filetime number to a Python datetime. The new
+datetime object is time zone-naive but is equivalent to tzinfo=utc.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._find_channels">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_find_channels</code><span class="sig-paren">(</span><em>note</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_find_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._find_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the channel names within a string.</p>
+<p>The channel names are stored in the .ent file. We can read the file with
+_read_ent and we can parse most of the notes (comments) with _read_notes
+however the note containing the montage cannot be read because it’s too
+complex. So, instead of parsing it, we just pass the string of the note
+around. This function takes the string and finds where the channel
+definition is.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>note</strong> (<em>str</em>) – string read from .ent file, it’s the note which contains montage.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>chan_name</strong> (<em>list of str</em>) – the names of the channels.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._find_start_time">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_find_start_time</code><span class="sig-paren">(</span><em>hdr</em>, <em>s_freq</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_find_start_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._find_start_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the start time, usually in STC, but if that’s not correct, use ERD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hdr</strong> (<em>dict</em>) – header with stc (and stamps) and erd</li>
+<li><strong>s_freq</strong> (<em>int</em>) – sampling frequency</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>datetime</em> – either from stc or from erd</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Sometimes, but rather rarely, there is a mismatch between the time in the
+stc and the time in the erd. For some reason, the time in the stc is way
+off (by hours), which is clearly not correct.</p>
+<p>We can try to reconstruct the actual time, but looking at the ERD time
+(of any file apart from the first one) and compute the original time back
+based on the offset of the number of samples in stc. For some reason, this
+is not the same for all the ERD, but the jitter is in the order of 1-2s
+which is acceptable for our purposes (probably, but be careful about the
+notes).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._make_str">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_make_str</code><span class="sig-paren">(</span><em>t_in</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_make_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._make_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._read_eeg">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_read_eeg</code><span class="sig-paren">(</span><em>eeg_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_read_eeg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._read_eeg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads eeg file, but it doesn’t work, the data is in text format, but
+based on Excel. You can read it from the editor, there are still a couple
+of signs that are not in Unicode.</p>
+<p>TODO: parse the text of EEG, if it’s interesting</p>
+<p class="rubric">Notes</p>
+<p>The patient information file consists of a single null terminated string
+following the generic file header. The string encodes all the patient
+information in a list format defined by a hierarchy of name value pairs.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._read_ent">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_read_ent</code><span class="sig-paren">(</span><em>ent_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_read_ent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._read_ent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read notes stored in .ent file.</p>
+<p>This is a basic implementation, that relies on turning the information in
+the string in the dict format, and then evaluate it. It’s not very flexible
+and it might not read some notes, but it’s fast. I could not implement a
+nice, recursive approach.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>allnote</strong> (<em>a list of dict</em>) –<dl class="docutils">
+<dt>where each dict contains keys such as:</dt>
+<dd><ul class="first last simple">
+<li>type</li>
+<li>length : length of the note in B,</li>
+<li>prev_length : length of the previous note in B,</li>
+<li>unused,</li>
+<li>value : the actual content of the note.</li>
+</ul>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The notes are stored in a format called ‘Excel list’ but could not find
+more information. It’s based on “(” and “(.”, and I found it very hard to
+parse. With some basic regex and substitution, it can be evaluated into
+a dict, with sub dictionaries. However, the note containing the name of the
+electrodes (I think they called it “montage”) cannot be parsed, because
+it’s too complicated. If it cannot be converted into a dict, the whole
+string is passed as value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._read_erd">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_read_erd</code><span class="sig-paren">(</span><em>erd_file</em>, <em>begsam</em>, <em>endsam</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_read_erd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._read_erd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the raw data and return a matrix, converted to microvolts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>erd_file</strong> (<em>str</em>) – one of the .erd files to read</li>
+<li><strong>begsam</strong> (<em>int</em>) – index of the first sample to read</li>
+<li><strong>endsam</strong> (<em>int</em>) – index of the last sample (excluded, per python convention)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>numpy.ndarray</em> – 2d matrix with the data, as read from the file</li>
+<li><em>Error</em></li>
+<li><em>—–</em></li>
+<li><em>It checks whether the event byte (the first byte) is x00 as expected.</em></li>
+<li><em>It can also be x01, meaning that an event was generated by an external</em></li>
+<li><em>trigger. According to the manual, “a photic stimulator is the only</em></li>
+<li><em>supported device which generates an external trigger.”</em></li>
+<li><em>If the eventbyte is something else, it throws an error.</em></li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<dl class="docutils">
+<dt>Each sample point consists of these parts:</dt>
+<dd><ul class="first last simple">
+<li>Event Byte</li>
+<li>Frequency byte (only if file_schema &gt;= 8 and one chan has != freq)</li>
+<li>Delta mask (only if file_schema &gt;= 8)</li>
+<li>Delta Information</li>
+<li>Absolute Channel Values</li>
+</ul>
+</dd>
+<dt>Event Byte:</dt>
+<dd>Bit 0 of the event byte indicates the presence of the external trigger
+during the sample period. It’s very rare.</dd>
+<dt>Delta Mask:</dt>
+<dd>Bit-mask of a size int( number_of_channels / 8 + 0.5). Each 1 in the mask
+indicates that corresponding channel has 2*n bit delta, 0 means that
+corresponding channel has n bit delta.
+The rest of the byte of the delta mask is filled with “1”.
+If file_schema &lt;= 7, it generates a “fake” delta, where everything is 0.</dd>
+</dl>
+<p>Some channels are shorted (i.e. not recorded), however they are stored in
+a non-intuitive way: deltamask takes them into account, but for the rest
+they are never used/recorded. So, we need to keep track both of all the
+channels (including the non-shorted) and of the actual channels only.</p>
+<p>When we save the data as memory-mapped, we only save the real channels.
+However, the data in the output have both shorted and non-shorted channels.
+Shorted channels have NaN’s only.</p>
+<p>About the actual implementation, we always follow the python convention
+that the first sample is included and the last sample is not.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._read_etc">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_read_etc</code><span class="sig-paren">(</span><em>etc_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_read_etc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._read_etc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return information about table of content for each erd.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._read_hdr_file">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_read_hdr_file</code><span class="sig-paren">(</span><em>ktlx_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_read_hdr_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._read_hdr_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads header of one KTLX file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ktlx_file</strong> (<a class="reference internal" href="phypno.widgets.utils.html#phypno.widgets.utils.Path" title="phypno.widgets.utils.Path"><em>Path</em></a>) – name of one of the ktlx files inside the directory (absolute path)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>dict</em> – dict with information about the file</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>p.3: says long, but python-long requires 8 bytes, so we use f.read(4)</p>
+<p>GUID is correct, BUT little/big endian problems somewhere</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._read_packet">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_read_packet</code><span class="sig-paren">(</span><em>f</em>, <em>pos</em>, <em>n_smp</em>, <em>n_allchan</em>, <em>abs_delta</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_read_packet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._read_packet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a packet of compressed data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>f</strong> (<em>instance of opened file</em>) – erd file</li>
+<li><strong>pos</strong> (<em>int</em>) – index of the start of the packet in the file (in bytes from beginning
+of the file)</li>
+<li><strong>n_smp</strong> (<em>int</em>) – number of samples to read</li>
+<li><strong>n_allchan</strong> (<em>int</em>) – number of channels (we should specify if shorted or not)</li>
+<li><strong>abs_delta</strong> (<em>byte</em>) – if the delta has this value, it means that you should read the absolute
+value at the end of packet. If schema is 7, the length is 1; if schema
+is 8 or 9, the length is 2.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>ndarray</em> – data read in the packet up to n_smp.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>TODO: shorted chan. If I remember correctly, deltamask includes all the
+channels, but the absolute values are only used for not-shorted channels</p>
+<p>TODO: implement schema 7, which is slightly different, but I don’t remember
+where exactly.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._read_snc">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_read_snc</code><span class="sig-paren">(</span><em>snc_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_read_snc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._read_snc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read Synchronization File and return sample stamp and time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>sampleStamp</strong> (<em>list of int</em>) – Sample number from start of study</li>
+<li><strong>sampleTime</strong> (<em>list of datetime.datetime</em>) – File time representation of sampleStamp</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The synchronization file is used to calculate a FILETIME given a sample
+stamp (and vise-versa). Theoretically, it is possible to calculate a sample
+stamp’s FILETIME given the FILETIME of sample stamp zero (when sampling
+started) and the sample rate. However, because the sample rate cannot be
+represented with full precision the accuracy of the FILETIME calculation is
+affected.</p>
+<p>To compensate for the lack of accuracy, the synchronization file maintains
+a sample stamp-to-computer time (called, MasterTime) mapping. Interpolation
+is then used to calculate a FILETIME given a sample stamp (and vise-versa).</p>
+<p>The attributes, sampleStamp and sampleTime, are used to predict (using
+interpolation) the FILETIME based upon a given sample stamp (and
+vise-versa). Currently, the only use for this conversion process is to
+enable correlation of EEG (sample_stamp) data with other sources of data
+such as Video (which works in FILETIME).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._read_stc">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_read_stc</code><span class="sig-paren">(</span><em>stc_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_read_stc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._read_stc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read Segment Table of Contents file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>hdr</strong> (<em>dict</em>) –<ul>
+<li>next_segment : Sample frequency in Hertz</li>
+<li>final : Number of channels stored</li>
+<li>padding : Padding</li>
+</ul>
+</li>
+<li><strong>stamps</strong> (<em>ndarray of dtype</em>) –<ul>
+<li>segment_name : Name of ERD / ETC file segment</li>
+<li>start_stamp : First sample stamp that is found in the ERD / ETC pair</li>
+<li>end_stamp : Last sample stamp that is still found in the ERD / ETC
+pair</li>
+<li>sample_num : Number of samples actually being recorded (gaps in the
+data are not included in this number)</li>
+<li>sample_span : Number of samples in that .erd file</li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The Segment Table of Contents file is an index into pairs of (raw data file
+/ table of contents file). It is used for mapping samples file segments.
+EEG raw data is split into segments in order to break a single file size
+limit (used to be 2GB) while still allowing quick searches. This file ends
+in the extension ‘.stc’. Default segment size (size of ERD file after which
+it is closed and new [ERD / ETC] pair is opened) is 50MB. The file starts
+with a generic EEG file header, and is followed by a series of fixed length
+records called the STC entries. ERD segments are named according to the
+following schema:</p>
+<blockquote>
+<div><ul class="simple">
+<li>&lt;FIRST_NAME&gt;, &lt;LAST_NAME&gt;_&lt;GUID&gt;.ERD (first)</li>
+<li>&lt;FIRST_NAME&gt;, &lt;LAST_NAME&gt;_&lt;GUID&gt;.ETC (first)</li>
+<li>&lt;FIRST_NAME&gt;, &lt;LAST_NAME&gt;_&lt;GUID&gt;_&lt;INDEX&gt;.ERD (second and subsequent)</li>
+<li>&lt;FIRST_NAME&gt;, &lt;LAST_NAME&gt;_&lt;GUID&gt;_&lt;INDEX&gt;.ETC (second and subsequent)</li>
+</ul>
+</div></blockquote>
+<p>&lt;INDEX&gt; is formatted with “%03d” format specifier and starts at 1 (initial
+value being 0 and omitted for compatibility with the previous versions).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx._read_vtc">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">_read_vtc</code><span class="sig-paren">(</span><em>vtc_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#_read_vtc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx._read_vtc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the VTC file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vtc_file</strong> (<em>str</em>) – path to vtc file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>mpg_file</strong> (<em>list of str</em>) – list of avi files</li>
+<li><strong>start_time</strong> (<em>list of datetime</em>) – list of start time of the avi files</li>
+<li><strong>end_time</strong> (<em>list of datetime</em>) – list of end time of the avi files</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx.convert_sample_to_video_time">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">convert_sample_to_video_time</code><span class="sig-paren">(</span><em>sample</em>, <em>orig_s_freq</em>, <em>sampleStamp</em>, <em>sampleTime</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#convert_sample_to_video_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx.convert_sample_to_video_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert sample number to video time, using snc information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sample</strong> (<em>int</em>) – sample that you want to convert in time</li>
+<li><strong>orig_s_freq</strong> (<em>int</em>) – sampling frequency (used as backup)</li>
+<li><strong>sampleStamp</strong> (<em>list of int</em>) – Sample number from start of study</li>
+<li><strong>sampleTime</strong> (<em>list of datetime.datetime</em>) – File time representation of sampleStamp</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>instance of datetime</em> – absolute time of the sample.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Note that there is a discrepancy of 4 or 5 hours between the time in
+snc and the time in the header. I’m pretty sure that the time in the
+header is accurate, so we use that. I think that the time in snc does
+not take into account the time zone (that’d explain the 4 or 5
+depending on summertime). This time is only used to get the right video
+so we call this “video time”.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.ioeeg.ktlx.get_date_idx">
+<code class="descclassname">phypno.ioeeg.ktlx.</code><code class="descname">get_date_idx</code><span class="sig-paren">(</span><em>time_of_interest</em>, <em>start_time</em>, <em>end_time</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/ioeeg/ktlx.html#get_date_idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.ioeeg.ktlx.get_date_idx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="phypno.ioeeg.micromed.html" class="btn btn-neutral float-right" title="phypno.ioeeg.micromed module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phypno.ioeeg.ieeg_org.html" class="btn btn-neutral" title="phypno.ioeeg.ieeg_org module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

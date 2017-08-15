@@ -1,0 +1,7 @@
+phypno\.widgets\.overview module
+================================
+
+.. automodule:: phypno.widgets.overview
+    :members:
+    :undoc-members:
+    :show-inheritance:

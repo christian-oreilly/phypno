@@ -1,0 +1,994 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.widgets.notes &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.widgets.notes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.widgets.notes</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Widgets containing notes (such as markers, events, and stages).</span>
+
+<span class="sd">  - bookmarks are unique (might have the same text), are not mutually</span>
+<span class="sd">    exclusive, have variable duration</span>
+<span class="sd">  - events are not unique, are not mutually exclusive, have variable duration</span>
+<span class="sd">  - stages are not unique, are mutually exclusive, have fixed duration</span>
+
+
+<span class="sd">TODO:</span>
+<span class="sd">    maybe it&#39;s better to disable options related to annotations, but it&#39;s a bit</span>
+<span class="sd">    too complicated. If you do that, you can remove all &quot;if self.annot is None&quot;</span>
+<span class="sd">    that are marked with &quot;# remove if buttons are disabled&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">floor</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">basename</span><span class="p">,</span> <span class="n">splitext</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="k">import</span> <span class="n">QIcon</span><span class="p">,</span> <span class="n">QColor</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QAbstractItemView</span><span class="p">,</span>
+                             <span class="n">QAction</span><span class="p">,</span>
+                             <span class="n">QCheckBox</span><span class="p">,</span>
+                             <span class="n">QComboBox</span><span class="p">,</span>
+                             <span class="n">QFileDialog</span><span class="p">,</span>
+                             <span class="n">QFormLayout</span><span class="p">,</span>
+                             <span class="n">QGroupBox</span><span class="p">,</span>
+                             <span class="n">QInputDialog</span><span class="p">,</span>
+                             <span class="n">QLabel</span><span class="p">,</span>
+                             <span class="n">QMessageBox</span><span class="p">,</span>
+                             <span class="n">QPushButton</span><span class="p">,</span>
+                             <span class="n">QTableWidget</span><span class="p">,</span>
+                             <span class="n">QTableWidgetItem</span><span class="p">,</span>
+                             <span class="n">QTabWidget</span><span class="p">,</span>
+                             <span class="n">QVBoxLayout</span><span class="p">,</span>
+                             <span class="n">QWidget</span><span class="p">,</span>
+                             <span class="n">QScrollArea</span><span class="p">,</span>
+                             <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">..attr</span> <span class="k">import</span> <span class="n">Annotations</span><span class="p">,</span> <span class="n">create_empty_annotations</span>
+<span class="kn">from</span> <span class="nn">.settings</span> <span class="k">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">FormStr</span><span class="p">,</span> <span class="n">FormInt</span><span class="p">,</span> <span class="n">FormFloat</span><span class="p">,</span> <span class="n">FormBool</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">convert_name_to_color</span><span class="p">,</span> <span class="n">short_strings</span><span class="p">,</span> <span class="n">ICON</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># TODO: this in ConfigNotes</span>
+<span class="n">STAGE_NAME</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Wake&#39;</span><span class="p">,</span> <span class="s1">&#39;Movement&#39;</span><span class="p">,</span> <span class="s1">&#39;REM&#39;</span><span class="p">,</span> <span class="s1">&#39;NREM1&#39;</span><span class="p">,</span> <span class="s1">&#39;NREM2&#39;</span><span class="p">,</span> <span class="s1">&#39;NREM3&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Undefined&#39;</span><span class="p">,</span> <span class="s1">&#39;Unknown&#39;</span><span class="p">]</span>
+<span class="n">STAGE_SHORTCUT</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;9&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="ConfigNotes"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.ConfigNotes">[docs]</a><span class="k">class</span> <span class="nc">ConfigNotes</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Widget with preferences in Settings window for the Annotations.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_widget</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="n">update_widget</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConfigNotes.create_config"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.ConfigNotes.create_config">[docs]</a>    <span class="k">def</span> <span class="nf">create_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">box0</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Markers&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;marker_show&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormBool</span><span class="p">(</span><span class="s1">&#39;Display Markers in Dataset&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;marker_color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormStr</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;annot_show&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormBool</span><span class="p">(</span><span class="s1">&#39;Display User-Made Annotations&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;annot_bookmark_color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormStr</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;min_marker_dur&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormFloat</span><span class="p">()</span>
+
+        <span class="n">form_layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;marker_show&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Color of markers in the dataset&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;marker_color&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;annot_show&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Color of bookmarks in annotations&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;annot_bookmark_color&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Below this duration, markers and events have no &#39;</span>
+                           <span class="s1">&#39;duration&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;min_marker_dur&#39;</span><span class="p">])</span>
+
+        <span class="n">box0</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form_layout</span><span class="p">)</span>
+
+        <span class="n">box1</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Events&#39;</span><span class="p">)</span>
+
+        <span class="n">form_layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">box1</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form_layout</span><span class="p">)</span>
+
+        <span class="n">box2</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Stages&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;scoring_window&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormInt</span><span class="p">()</span>
+
+        <span class="n">form_layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Length of scoring window&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;scoring_window&#39;</span><span class="p">])</span>
+        <span class="n">box2</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form_layout</span><span class="p">)</span>
+
+        <span class="n">main_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">box0</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">box1</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">box2</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_layout</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Notes"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes">[docs]</a><span class="k">class</span> <span class="nc">Notes</span><span class="p">(</span><span class="n">QTabWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Widget that contains information about sleep scoring.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : instance of QMainWindow</span>
+<span class="sd">        the main window.</span>
+<span class="sd">    config : ConfigNotes</span>
+<span class="sd">        preferences for this widget</span>
+
+<span class="sd">    annot : Annotations</span>
+<span class="sd">        contains the annotations made by the user</span>
+
+<span class="sd">    idx_marker : QTableWidget</span>
+<span class="sd">        table with the markers in the dataset</span>
+
+<span class="sd">    idx_summary: QVBoxLayout</span>
+<span class="sd">        layout of the &quot;Summary&quot; tab (we add and remove the &quot;Recap&quot; box)</span>
+<span class="sd">    idx_annotations : QPushButton</span>
+<span class="sd">        push button with the text of the annotation file</span>
+<span class="sd">    idx_rater : QLabel</span>
+<span class="sd">        name of the current rater</span>
+<span class="sd">    idx_stats : QFormLayout</span>
+<span class="sd">        layout of the stage statistics</span>
+
+<span class="sd">    idx_eventtype_scroll : QScrollArea</span>
+<span class="sd">        area to which you add the QGroupBox with the list of events as checkbox</span>
+<span class="sd">    idx_eventtype_list : list of QCheckBox</span>
+<span class="sd">        list of checkboxes with the event types</span>
+<span class="sd">    idx_annot_list : QTableWidget</span>
+<span class="sd">        table with the bookmarks and events in the annotations</span>
+
+<span class="sd">    idx_eventtype : QComboBox</span>
+<span class="sd">        Combo box of the event types for the toolbar</span>
+<span class="sd">    idx_stage : QComboBox</span>
+<span class="sd">        Combo box of the stages for the toolbar</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">ConfigNotes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_settings</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">annot</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_marker</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_summary</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annotations</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_rater</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_stats</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype_scroll</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_stage</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_action</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Notes.create"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create the widget layout with all the annotations.&quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot; ------ MARKERS ------ &quot;&quot;&quot;</span>
+        <span class="n">tab0</span> <span class="o">=</span> <span class="n">QTableWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_marker</span> <span class="o">=</span> <span class="n">tab0</span>
+
+        <span class="n">tab0</span><span class="o">.</span><span class="n">setColumnCount</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">tab0</span><span class="o">.</span><span class="n">horizontalHeader</span><span class="p">()</span><span class="o">.</span><span class="n">setStretchLastSection</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">tab0</span><span class="o">.</span><span class="n">setSelectionBehavior</span><span class="p">(</span><span class="n">QAbstractItemView</span><span class="o">.</span><span class="n">SelectRows</span><span class="p">)</span>
+        <span class="n">tab0</span><span class="o">.</span><span class="n">setEditTriggers</span><span class="p">(</span><span class="n">QAbstractItemView</span><span class="o">.</span><span class="n">NoEditTriggers</span><span class="p">)</span>
+        <span class="n">go_to_marker</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">go_to_marker</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="s1">&#39;dataset&#39;</span><span class="p">)</span>
+        <span class="n">tab0</span><span class="o">.</span><span class="n">cellDoubleClicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">go_to_marker</span><span class="p">)</span>
+        <span class="n">tab0</span><span class="o">.</span><span class="n">setHorizontalHeaderLabels</span><span class="p">([</span><span class="s1">&#39;Start&#39;</span><span class="p">,</span> <span class="s1">&#39;Duration&#39;</span><span class="p">,</span> <span class="s1">&#39;Text&#39;</span><span class="p">])</span>
+
+        <span class="sd">&quot;&quot;&quot; ------ SUMMARY ------ &quot;&quot;&quot;</span>
+        <span class="n">tab1</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_stage</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_stage</span><span class="o">.</span><span class="n">activated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_sleepstage</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annotations</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Load Annotation File...&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annotations</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_annot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_rater</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="n">b0</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Info&#39;</span><span class="p">)</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">b0</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+
+        <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;File:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_annotations</span><span class="p">)</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Rater:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_rater</span><span class="p">)</span>
+
+        <span class="n">b1</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Recap&#39;</span><span class="p">)</span>
+
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">b0</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_summary</span> <span class="o">=</span> <span class="n">layout</span>
+
+        <span class="n">tab1</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+
+        <span class="sd">&quot;&quot;&quot; ------ ANNOTATIONS ------ &quot;&quot;&quot;</span>
+        <span class="n">tab2</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">tab_annot</span> <span class="o">=</span> <span class="n">QTableWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span> <span class="o">=</span> <span class="n">tab_annot</span>
+        <span class="n">delete_row</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Delete&#39;</span><span class="p">)</span>
+        <span class="n">delete_row</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delete_row</span><span class="p">)</span>
+
+        <span class="n">scroll</span> <span class="o">=</span> <span class="n">QScrollArea</span><span class="p">(</span><span class="n">tab2</span><span class="p">)</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidgetResizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">evttype_group</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Event Types&#39;</span><span class="p">)</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">evttype_group</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype_scroll</span> <span class="o">=</span> <span class="n">scroll</span>
+
+        <span class="n">tab_annot</span><span class="o">.</span><span class="n">setColumnCount</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">tab_annot</span><span class="o">.</span><span class="n">setHorizontalHeaderLabels</span><span class="p">([</span><span class="s1">&#39;Start&#39;</span><span class="p">,</span> <span class="s1">&#39;Duration&#39;</span><span class="p">,</span> <span class="s1">&#39;Text&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;Type&#39;</span><span class="p">])</span>
+        <span class="n">tab_annot</span><span class="o">.</span><span class="n">horizontalHeader</span><span class="p">()</span><span class="o">.</span><span class="n">setStretchLastSection</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">tab_annot</span><span class="o">.</span><span class="n">setSelectionBehavior</span><span class="p">(</span><span class="n">QAbstractItemView</span><span class="o">.</span><span class="n">SelectRows</span><span class="p">)</span>
+        <span class="n">tab_annot</span><span class="o">.</span><span class="n">setEditTriggers</span><span class="p">(</span><span class="n">QAbstractItemView</span><span class="o">.</span><span class="n">NoEditTriggers</span><span class="p">)</span>
+        <span class="n">go_to_annot</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">go_to_marker</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="s1">&#39;annot&#39;</span><span class="p">)</span>
+        <span class="n">tab_annot</span><span class="o">.</span><span class="n">cellDoubleClicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">go_to_annot</span><span class="p">)</span>
+
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype_scroll</span><span class="p">,</span> <span class="n">stretch</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">delete_row</span><span class="p">)</span>
+        <span class="n">tab2</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+
+        <span class="sd">&quot;&quot;&quot; ------ TABS ------ &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">tab0</span><span class="p">,</span> <span class="s1">&#39;Markers&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">tab1</span><span class="p">,</span> <span class="s1">&#39;Summary&#39;</span><span class="p">)</span>  <span class="c1"># disable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">tab2</span><span class="p">,</span> <span class="s1">&#39;Annotations&#39;</span><span class="p">)</span>  <span class="c1"># disable</span></div>
+
+<div class="viewcode-block" id="Notes.create_action"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.create_action">[docs]</a>    <span class="k">def</span> <span class="nf">create_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create actions associated with Annotations.&quot;&quot;&quot;</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;New Annotation File...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_annot</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_annot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;Load Annotation File...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_annot</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;load_annot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;Clear Annotations...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clear_annot</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;clear_annot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;New...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_rater</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_rater&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;Delete...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delete_rater</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;del_rater&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;bookmark&#39;</span><span class="p">]),</span> <span class="s1">&#39;New Bookmark&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_bookmark&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;new_eventtype&#39;</span><span class="p">]),</span> <span class="s1">&#39;New Event Type&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_eventtype</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_eventtype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;del_eventtype&#39;</span><span class="p">]),</span> <span class="s1">&#39;Delete Event Type&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delete_eventtype</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;del_eventtype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;event&#39;</span><span class="p">]),</span> <span class="s1">&#39;New Event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_event&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">uncheck_new_event</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_event&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">uncheck_new_bookmark</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_bookmark&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_event&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">uncheck_new_bookmark</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;new_bookmark&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">uncheck_new_event</span><span class="p">)</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">one_stage</span><span class="p">,</span> <span class="n">one_shortcut</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">STAGE_NAME</span><span class="p">,</span> <span class="n">STAGE_SHORTCUT</span><span class="p">):</span>
+            <span class="n">act</span><span class="p">[</span><span class="n">one_stage</span><span class="p">]</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;Score as &#39;</span> <span class="o">+</span> <span class="n">one_stage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+            <span class="n">act</span><span class="p">[</span><span class="n">one_stage</span><span class="p">]</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">one_shortcut</span><span class="p">)</span>
+            <span class="n">stage_idx</span> <span class="o">=</span> <span class="n">STAGE_NAME</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">one_stage</span><span class="p">)</span>
+            <span class="n">act</span><span class="p">[</span><span class="n">one_stage</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_sleepstage</span><span class="p">,</span>
+                                                     <span class="n">stage_idx</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">act</span><span class="p">[</span><span class="n">one_stage</span><span class="p">])</span>
+
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;stages&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s1">&#39;Export...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">export</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;export&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">actions</span></div>
+
+<div class="viewcode-block" id="Notes.update_settings"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.update_settings">[docs]</a>    <span class="k">def</span> <span class="nf">update_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Once Settings are applied, update the notes.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_dataset_marker</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_annotations</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Notes.update_notes"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.update_notes">[docs]</a>    <span class="k">def</span> <span class="nf">update_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xml_file</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update information about the sleep scoring.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        xml_file : str</span>
+<span class="sd">            file of the new or existing .xml file</span>
+<span class="sd">        new : bool</span>
+<span class="sd">            if the xml_file should be a new file or an existing one</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">new</span><span class="p">:</span>
+            <span class="n">create_empty_annotations</span><span class="p">(</span><span class="n">xml_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">annot</span> <span class="o">=</span> <span class="n">Annotations</span><span class="p">(</span><span class="n">xml_file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">annot</span> <span class="o">=</span> <span class="n">Annotations</span><span class="p">(</span><span class="n">xml_file</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">create_menubar</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_stage</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">one_stage</span> <span class="ow">in</span> <span class="n">STAGE_NAME</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_stage</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">one_stage</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_stage</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_summary</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_summary</span><span class="o">.</span><span class="n">removeWidget</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
+
+        <span class="n">b1</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Recap&#39;</span><span class="p">)</span>
+
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">one_stage</span> <span class="ow">in</span> <span class="n">STAGE_NAME</span><span class="p">:</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">one_stage</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="n">b1</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_summary</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_stats</span> <span class="o">=</span> <span class="n">layout</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_notes</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Notes.display_notes"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.display_notes">[docs]</a>    <span class="k">def</span> <span class="nf">display_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Display information about scores and raters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">short_xml_file</span> <span class="o">=</span> <span class="n">short_strings</span><span class="p">(</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">xml_file</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_annotations</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">short_xml_file</span><span class="p">)</span>
+            <span class="c1"># if annotations were loaded without dataset</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">scene</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">raters</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">new_rater</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_rater</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">current_rater</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display_eventtype</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_annotations</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display_stats</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Notes.display_stats"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.display_stats">[docs]</a>    <span class="k">def</span> <span class="nf">display_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Display summary statistics about duration in each stage.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">one_stage</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">STAGE_NAME</span><span class="p">):</span>
+            <span class="n">second_in_stage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">time_in_stage</span><span class="p">(</span><span class="n">one_stage</span><span class="p">)</span>
+            <span class="n">time_in_stage</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">second_in_stage</span><span class="p">))</span>
+
+            <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_stats</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">QFormLayout</span><span class="o">.</span><span class="n">FieldRole</span><span class="p">)</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+            <span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">time_in_stage</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Notes.add_bookmark"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.add_bookmark">[docs]</a>    <span class="k">def</span> <span class="nf">add_bookmark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run this function when user adds a new bookmark.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        time : tuple of float</span>
+<span class="sd">            start and end of the new bookmark, in s</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># remove if buttons are disabled</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;No score file loaded&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">answer</span> <span class="o">=</span> <span class="n">QInputDialog</span><span class="o">.</span><span class="n">getText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;New Bookmark&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;Enter bookmark</span><span class="se">\&#39;</span><span class="s1">s name&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">answer</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">answer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">add_bookmark</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Added Bookmark &#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;at &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_annotations</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Notes.update_dataset_marker"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.update_dataset_marker">[docs]</a>    <span class="k">def</span> <span class="nf">update_dataset_marker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update markers which are in the dataset. It always updates the list</span>
+<span class="sd">        of events. Depending on the settings, it might add the markers to</span>
+<span class="sd">        overview and traces.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">start_time</span>
+
+        <span class="n">markers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">markers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">markers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">markers</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_marker</span><span class="o">.</span><span class="n">clearContents</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_marker</span><span class="o">.</span><span class="n">setRowCount</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">markers</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mrk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">markers</span><span class="p">):</span>
+            <span class="n">abs_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">start_time</span> <span class="o">+</span>
+                        <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H:%M:%S&#39;</span><span class="p">)</span>
+            <span class="n">dur</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:02d}</span><span class="s1">.</span><span class="si">{1:03d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dur</span><span class="o">.</span><span class="n">seconds</span><span class="p">,</span>
+                                                <span class="nb">round</span><span class="p">(</span><span class="n">dur</span><span class="o">.</span><span class="n">microseconds</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">))</span>
+
+            <span class="n">item_time</span> <span class="o">=</span> <span class="n">QTableWidgetItem</span><span class="p">(</span><span class="n">abs_time</span><span class="p">)</span>
+            <span class="n">item_duration</span> <span class="o">=</span> <span class="n">QTableWidgetItem</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+            <span class="n">item_name</span> <span class="o">=</span> <span class="n">QTableWidgetItem</span><span class="p">(</span><span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
+            <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;marker_color&#39;</span><span class="p">)</span>
+            <span class="n">item_time</span><span class="o">.</span><span class="n">setForeground</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">))</span>
+            <span class="n">item_duration</span><span class="o">.</span><span class="n">setForeground</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">))</span>
+            <span class="n">item_name</span><span class="o">.</span><span class="n">setForeground</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_marker</span><span class="o">.</span><span class="n">setItem</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">item_time</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_marker</span><span class="o">.</span><span class="n">setItem</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">item_duration</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_marker</span><span class="o">.</span><span class="n">setItem</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">item_name</span><span class="p">)</span>
+
+        <span class="c1"># store information about the time as list (easy to access)</span>
+        <span class="n">marker_start</span> <span class="o">=</span> <span class="p">[</span><span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">mrk</span> <span class="ow">in</span> <span class="n">markers</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_marker</span><span class="o">.</span><span class="n">setProperty</span><span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">marker_start</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">display_markers</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Notes.display_eventtype"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.display_eventtype">[docs]</a>    <span class="k">def</span> <span class="nf">display_eventtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read the list of event types in the annotations and update widgets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">event_types</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">event_types</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">event_types</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="n">evttype_group</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Event Types&#39;</span><span class="p">)</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">evttype_group</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">one_eventtype</span> <span class="ow">in</span> <span class="n">event_types</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">one_eventtype</span><span class="p">)</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">QCheckBox</span><span class="p">(</span><span class="n">one_eventtype</span><span class="p">)</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">stateChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_annotations</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype_scroll</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">evttype_group</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Notes.get_selected_events"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.get_selected_events">[docs]</a>    <span class="k">def</span> <span class="nf">get_selected_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_selection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns which events are present in one time window.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        time_selection : tuple of float</span>
+<span class="sd">            start and end of the window of interest</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of dict</span>
+<span class="sd">            list of events in the window of interest</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">checkbox</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">checkbox</span><span class="o">.</span><span class="n">checkState</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">:</span>
+                <span class="n">events</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">get_events</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">checkbox</span><span class="o">.</span><span class="n">text</span><span class="p">(),</span>
+                                                    <span class="n">time</span><span class="o">=</span><span class="n">time_selection</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">events</span></div>
+
+<div class="viewcode-block" id="Notes.update_annotations"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.update_annotations">[docs]</a>    <span class="k">def</span> <span class="nf">update_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update annotations made by the user, including bookmarks and events.</span>
+<span class="sd">        Depending on the settings, it might add the bookmarks to overview and</span>
+<span class="sd">        traces.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">start_time</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">all_annot</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bookmarks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">get_bookmarks</span><span class="p">()</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_selected_events</span><span class="p">()</span>
+
+            <span class="n">all_annot</span> <span class="o">=</span> <span class="n">bookmarks</span> <span class="o">+</span> <span class="n">events</span>
+            <span class="n">all_annot</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">all_annot</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">clearContents</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">setRowCount</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">all_annot</span><span class="p">))</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;lenght annotations &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">all_annot</span><span class="p">)))</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mrk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_annot</span><span class="p">):</span>
+            <span class="n">abs_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">start_time</span> <span class="o">+</span>
+                        <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H:%M:%S&#39;</span><span class="p">)</span>
+            <span class="n">dur</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:02d}</span><span class="s1">.</span><span class="si">{1:03d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dur</span><span class="o">.</span><span class="n">seconds</span><span class="p">,</span>
+                                                <span class="nb">round</span><span class="p">(</span><span class="n">dur</span><span class="o">.</span><span class="n">microseconds</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">))</span>
+
+            <span class="n">item_time</span> <span class="o">=</span> <span class="n">QTableWidgetItem</span><span class="p">(</span><span class="n">abs_time</span><span class="p">)</span>
+            <span class="n">item_duration</span> <span class="o">=</span> <span class="n">QTableWidgetItem</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+            <span class="n">item_name</span> <span class="o">=</span> <span class="n">QTableWidgetItem</span><span class="p">(</span><span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">mrk</span> <span class="ow">in</span> <span class="n">bookmarks</span><span class="p">:</span>
+                <span class="n">item_type</span> <span class="o">=</span> <span class="n">QTableWidgetItem</span><span class="p">(</span><span class="s1">&#39;bookmark&#39;</span><span class="p">)</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;annot_bookmark_color&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">item_type</span> <span class="o">=</span> <span class="n">QTableWidgetItem</span><span class="p">(</span><span class="s1">&#39;event&#39;</span><span class="p">)</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="n">convert_name_to_color</span><span class="p">(</span><span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
+            <span class="n">item_time</span><span class="o">.</span><span class="n">setForeground</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">))</span>
+            <span class="n">item_duration</span><span class="o">.</span><span class="n">setForeground</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">))</span>
+            <span class="n">item_name</span><span class="o">.</span><span class="n">setForeground</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">))</span>
+            <span class="n">item_type</span><span class="o">.</span><span class="n">setForeground</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">setItem</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">item_time</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">setItem</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">item_duration</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">setItem</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">item_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">setItem</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">item_type</span><span class="p">)</span>
+
+        <span class="c1"># store information about the time as list (easy to access)</span>
+        <span class="n">annot_start</span> <span class="o">=</span> <span class="p">[</span><span class="n">ann</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">all_annot</span><span class="p">]</span>
+        <span class="n">annot_end</span> <span class="o">=</span> <span class="p">[</span><span class="n">ann</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">all_annot</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">setProperty</span><span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">annot_start</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">setProperty</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="n">annot_end</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">display_annotations</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">display_annotations</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Notes.delete_row"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.delete_row">[docs]</a>    <span class="k">def</span> <span class="nf">delete_row</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete bookmarks or event from annotations, based on row.&quot;&quot;&quot;</span>
+        <span class="n">sel_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">selectionModel</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">sel_model</span><span class="o">.</span><span class="n">selectedRows</span><span class="p">():</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">row</span><span class="p">()</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">property</span><span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">property</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+            <span class="n">marker_event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">marker_event</span> <span class="o">==</span> <span class="s1">&#39;bookmark&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">remove_bookmark</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">remove_event</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_annotations</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Notes.go_to_marker"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.go_to_marker">[docs]</a>    <span class="k">def</span> <span class="nf">go_to_marker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">table_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Move to point in time marked by the marker.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        row : QtCore.int</span>
+
+<span class="sd">        column : QtCore.int</span>
+
+<span class="sd">        table_type : str</span>
+<span class="sd">            &#39;dataset&#39; table or &#39;annot&#39; table, it works on either</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">table_type</span> <span class="o">==</span> <span class="s1">&#39;dataset&#39;</span><span class="p">:</span>
+            <span class="n">marker_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_marker</span><span class="o">.</span><span class="n">property</span><span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">)[</span><span class="n">row</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">marker_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot_list</span><span class="o">.</span><span class="n">property</span><span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">)[</span><span class="n">row</span><span class="p">]</span>
+
+        <span class="n">window_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span>
+        <span class="n">window_start</span> <span class="o">=</span> <span class="n">floor</span><span class="p">(</span><span class="n">marker_time</span> <span class="o">/</span> <span class="n">window_length</span><span class="p">)</span> <span class="o">*</span> <span class="n">window_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="n">window_start</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Notes.get_sleepstage"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.get_sleepstage">[docs]</a>    <span class="k">def</span> <span class="nf">get_sleepstage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the sleep stage, using shortcuts or combobox.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        stage : str</span>
+<span class="sd">            string with the name of the sleep stage.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># remove if buttons are disabled</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;No score file loaded&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">window_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span>
+        <span class="n">window_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">set_stage_for_epoch</span><span class="p">(</span><span class="n">window_start</span><span class="p">,</span>
+                                           <span class="n">STAGE_NAME</span><span class="p">[</span><span class="n">stage_idx</span><span class="p">])</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;The start of the window does &#39;</span>
+                                                <span class="s1">&#39;not correspond to any epoch &#39;</span>
+                                                <span class="s1">&#39;in sleep scoring file&#39;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;User staged &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">window_start</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; as &#39;</span> <span class="o">+</span>
+                    <span class="n">STAGE_NAME</span><span class="p">[</span><span class="n">stage_idx</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_stage_index</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">mark_stages</span><span class="p">(</span><span class="n">window_start</span><span class="p">,</span> <span class="n">window_length</span><span class="p">,</span>
+                                             <span class="n">STAGE_NAME</span><span class="p">[</span><span class="n">stage_idx</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display_stats</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">page_next</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Notes.set_stage_index"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.set_stage_index">[docs]</a>    <span class="k">def</span> <span class="nf">set_stage_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the current stage in combobox.&quot;&quot;&quot;</span>
+        <span class="n">window_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span>
+        <span class="n">stage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">get_stage_for_epoch</span><span class="p">(</span><span class="n">window_start</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">stage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_stage</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_stage</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">STAGE_NAME</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">stage</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Notes.new_annot"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.new_annot">[docs]</a>    <span class="k">def</span> <span class="nf">new_annot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Action: create a new file for annotations.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;No dataset loaded&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_scores.xml&#39;</span>
+        <span class="n">filename</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Create annotation file&#39;</span><span class="p">,</span>
+                                                  <span class="n">filename</span><span class="p">,</span>
+                                                  <span class="s1">&#39;Annotation File (*.xml)&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_notes</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Notes.load_annot"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.load_annot">[docs]</a>    <span class="k">def</span> <span class="nf">load_annot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Action: load a file for annotations.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_scores.xml&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">filename</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getOpenFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Load annotation file&#39;</span><span class="p">,</span>
+                                                  <span class="n">filename</span><span class="p">,</span>
+                                                  <span class="s1">&#39;Annotation File (*.xml)&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_notes</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;Annotation file not found&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Notes.clear_annot"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.clear_annot">[docs]</a>    <span class="k">def</span> <span class="nf">clear_annot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Action: clear all the annotations (ask for confirmation first).&quot;&quot;&quot;</span>
+        <span class="n">msgBox</span> <span class="o">=</span> <span class="n">QMessageBox</span><span class="p">(</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Question</span><span class="p">,</span> <span class="s1">&#39;Clear Annotations&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;Do you want to remove all the annotations?&#39;</span><span class="p">)</span>
+        <span class="n">msgBox</span><span class="o">.</span><span class="n">setStandardButtons</span><span class="p">(</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Yes</span> <span class="o">|</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">No</span><span class="p">)</span>
+        <span class="n">msgBox</span><span class="o">.</span><span class="n">setDefaultButton</span><span class="p">(</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Yes</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">msgBox</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">No</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Notes.new_rater"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.new_rater">[docs]</a>    <span class="k">def</span> <span class="nf">new_rater</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Action: add a new rater.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        First argument, if not specified, is a bool/False:</span>
+<span class="sd">        http://pyqt.sourceforge.net/Docs/PyQt4/qaction.html#triggered</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># remove if buttons are disabled</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;No score file loaded&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">answer</span> <span class="o">=</span> <span class="n">QInputDialog</span><span class="o">.</span><span class="n">getText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;New Rater&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;Enter rater</span><span class="se">\&#39;</span><span class="s1">s name&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">answer</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">add_rater</span><span class="p">(</span><span class="n">answer</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;scoring_window&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display_notes</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">create_menubar</span><span class="p">()</span>  <span class="c1"># refresh list ot raters</span></div>
+
+<div class="viewcode-block" id="Notes.select_rater"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.select_rater">[docs]</a>    <span class="k">def</span> <span class="nf">select_rater</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rater</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Action: select one rater.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rater : str</span>
+<span class="sd">            name of the rater</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">get_rater</span><span class="p">(</span><span class="n">rater</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_notes</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Notes.delete_rater"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.delete_rater">[docs]</a>    <span class="k">def</span> <span class="nf">delete_rater</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Action: create dialog to delete rater.&quot;&quot;&quot;</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="n">QInputDialog</span><span class="o">.</span><span class="n">getText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Delete Rater&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;Enter rater</span><span class="se">\&#39;</span><span class="s1">s name&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">answer</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">remove_rater</span><span class="p">(</span><span class="n">answer</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display_notes</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">create_menubar</span><span class="p">()</span>  <span class="c1"># refresh list ot raters</span></div>
+
+<div class="viewcode-block" id="Notes.new_eventtype"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.new_eventtype">[docs]</a>    <span class="k">def</span> <span class="nf">new_eventtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Action: create dialog to add new event type.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># remove if buttons are disabled</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;No score file loaded&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">answer</span> <span class="o">=</span> <span class="n">QInputDialog</span><span class="o">.</span><span class="n">getText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;New Event Type&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;Enter new event</span><span class="se">\&#39;</span><span class="s1">s name&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">answer</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">add_event_type</span><span class="p">(</span><span class="n">answer</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display_eventtype</span><span class="p">()</span>
+            <span class="n">n_eventtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_eventtype</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">n_eventtype</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Notes.delete_eventtype"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.delete_eventtype">[docs]</a>    <span class="k">def</span> <span class="nf">delete_eventtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Action: create dialog to delete event type.&quot;&quot;&quot;</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="n">QInputDialog</span><span class="o">.</span><span class="n">getText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Delete Event Type&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;Enter event</span><span class="se">\&#39;</span><span class="s1">s name to delete&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">answer</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">remove_event_type</span><span class="p">(</span><span class="n">answer</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display_eventtype</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Notes.add_event"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.add_event">[docs]</a>    <span class="k">def</span> <span class="nf">add_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Action: add a single event.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_annotations</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Notes.export"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;action: export annotations to CSV.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># remove if buttons are disabled</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;No score file loaded&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">xml_file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span>
+        <span class="n">filename</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Export stages&#39;</span><span class="p">,</span>
+                                                  <span class="n">filename</span><span class="p">,</span>
+                                                  <span class="s1">&#39;Sleep stages (*.csv)&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Notes.reset"><a class="viewcode-back" href="../../../api/phypno.widgets.notes.html#phypno.widgets.notes.Notes.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove all annotations from window.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annotations</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;Load Annotation File...&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_rater</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">annot</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset_markers</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># remove dataset marker</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_marker</span><span class="o">.</span><span class="n">clearContents</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_marker</span><span class="o">.</span><span class="n">setRowCount</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># remove summary statistics</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_summary</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_summary</span><span class="o">.</span><span class="n">removeWidget</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
+        <span class="n">b1</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Recap&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_summary</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
+
+        <span class="c1"># remove annotations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_eventtype</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_annotations</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">create_menubar</span><span class="p">()</span>  <span class="c1"># remove all raters</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

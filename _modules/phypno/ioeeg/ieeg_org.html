@@ -1,0 +1,391 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.ioeeg.ieeg_org &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.ioeeg.ieeg_org</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.ioeeg.ieeg_org</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;explain sess behavior&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="k">import</span> <span class="n">urljoin</span>
+<span class="kn">from</span> <span class="nn">base64</span> <span class="k">import</span> <span class="n">standard_b64encode</span>
+<span class="kn">from</span> <span class="nn">getpass</span> <span class="k">import</span> <span class="n">getpass</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">fromstring</span><span class="p">,</span> <span class="n">newaxis</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">requests</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">import_err</span><span class="p">:</span>
+    <span class="n">requests</span> <span class="o">=</span> <span class="n">import_err</span>  <span class="c1"># import_err is local to except-statement</span>
+
+<span class="n">HOST</span> <span class="o">=</span> <span class="s1">&#39;www.ieeg.org&#39;</span>
+<span class="n">HTTP</span> <span class="o">=</span> <span class="s1">&#39;https://&#39;</span>
+<span class="n">URL_ID</span> <span class="o">=</span> <span class="s1">&#39;/services/timeseries/getIdByDataSnapshotName/&#39;</span>
+<span class="n">URL_DETAILS</span> <span class="o">=</span> <span class="s1">&#39;/services/timeseries/getDataSnapshotTimeSeriesDetails/&#39;</span>
+<span class="n">URL_DATA</span> <span class="o">=</span> <span class="s1">&#39;/services/timeseries/getUnscaledTimeSeriesSetBinaryRaw/&#39;</span>
+
+
+<span class="n">SESS</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="IEEG_org"><a class="viewcode-back" href="../../../api/phypno.ioeeg.ieeg_org.html#phypno.ioeeg.ieeg_org.IEEG_org">[docs]</a><span class="k">class</span> <span class="nc">IEEG_org</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">SESS</span>
+        <span class="k">if</span> <span class="n">SESS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">SESS</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sess</span> <span class="o">=</span> <span class="n">SESS</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sess</span><span class="o">.</span><span class="n">get_snapshot</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">xml</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sess</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_details</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;details&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="IEEG_org.return_hdr"><a class="viewcode-back" href="../../../api/phypno.ioeeg.ieeg_org.html#phypno.ioeeg.ieeg_org.IEEG_org.return_hdr">[docs]</a>    <span class="k">def</span> <span class="nf">return_hdr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">chan_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;channelLabel&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span><span class="p">]</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;voltageConversionFactor&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span>
+
+        <span class="n">one_chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">subj_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">one_chan</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;startTime&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">)</span>
+        <span class="n">s_freq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">one_chan</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;sampleRate&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s_freq</span> <span class="o">=</span> <span class="n">s_freq</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">one_chan</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;numberOfSamples&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">orig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chan_id</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="n">chan</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;revisionId&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">subj_id</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">chan_name</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">orig</span></div>
+
+<div class="viewcode-block" id="IEEG_org.return_dat"><a class="viewcode-back" href="../../../api/phypno.ioeeg.ieeg_org.html#phypno.ioeeg.ieeg_org.IEEG_org.return_dat">[docs]</a>    <span class="k">def</span> <span class="nf">return_dat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">begsam</span><span class="p">,</span> <span class="n">endsam</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;order of chan is taken into account by ieeg.org server&quot;&quot;&quot;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">begsam</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_freq</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">)</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">endsam</span> <span class="o">-</span> <span class="n">begsam</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_freq</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="n">duration</span><span class="p">}</span>
+
+        <span class="n">xml_str</span> <span class="o">=</span> <span class="n">_prepare_xml_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chan_id</span><span class="p">[</span><span class="n">chan</span><span class="p">])</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sess</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">xml_str</span><span class="p">)</span>
+
+        <span class="n">h</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">headers</span>
+        <span class="n">samples_per_row</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;samples-per-row&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples_per_row</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Not all channels have equal length&#39;</span><span class="p">)</span>
+        <span class="n">conv</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">h</span><span class="p">[</span><span class="s1">&#39;voltage-conversion-factors-mv&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)])</span>
+
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">fromstring</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;&gt;i4&#39;</span><span class="p">)</span>
+        <span class="n">n_smp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">samples_per_row</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># TODO: should we use self._factor</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_smp</span><span class="p">)</span> <span class="o">*</span> <span class="n">conv</span><span class="p">[:,</span> <span class="n">newaxis</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">dat</span></div>
+
+<div class="viewcode-block" id="IEEG_org.return_markers"><a class="viewcode-back" href="../../../api/phypno.ioeeg.ieeg_org.html#phypno.ioeeg.ieeg_org.IEEG_org.return_markers">[docs]</a>    <span class="k">def</span> <span class="nf">return_markers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[]</span></div></div>
+
+
+<div class="viewcode-block" id="Session"><a class="viewcode-back" href="../../../api/phypno.ioeeg.ieeg_org.html#phypno.ioeeg.ieeg_org.Session">[docs]</a><span class="k">class</span> <span class="nc">Session</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password_md5</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">username</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">username</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s1">&#39;ieeg.org username:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">username</span>
+
+        <span class="k">if</span> <span class="n">password</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">password_md5</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">password</span> <span class="o">=</span> <span class="n">getpass</span><span class="p">(</span><span class="s1">&#39;ieeg.org password:&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">password</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">md5</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">password_md5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password_md5</span>
+
+<div class="viewcode-block" id="Session.get_snapshot"><a class="viewcode-back" href="../../../api/phypno.ioeeg.ieeg_org.html#phypno.ioeeg.ieeg_org.Session.get_snapshot">[docs]</a>    <span class="k">def</span> <span class="nf">get_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_info</span><span class="p">(</span><span class="n">URL_ID</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Session.get_dataset"><a class="viewcode-back" href="../../../api/phypno.ioeeg.ieeg_org.html#phypno.ioeeg.ieeg_org.Session.get_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_info</span><span class="p">(</span><span class="n">URL_DETAILS</span> <span class="o">+</span> <span class="n">snapshot</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Session.get_data"><a class="viewcode-back" href="../../../api/phypno.ioeeg.ieeg_org.html#phypno.ioeeg.ieeg_org.Session.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">xml_str</span><span class="p">):</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">URL_DATA</span> <span class="o">+</span> <span class="n">snapshot</span>
+        <span class="n">dtime</span><span class="p">,</span> <span class="n">sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_signature</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">xml_str</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                   <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">dtime</span><span class="p">,</span>
+                   <span class="s1">&#39;signature&#39;</span><span class="p">:</span> <span class="n">sig</span><span class="p">,</span>
+                   <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/xml&#39;</span><span class="p">}</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">HTTP</span> <span class="o">+</span> <span class="n">HOST</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">xml_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span></div>
+
+<div class="viewcode-block" id="Session._get_info"><a class="viewcode-back" href="../../../api/phypno.ioeeg.ieeg_org.html#phypno.ioeeg.ieeg_org.Session._get_info">[docs]</a>    <span class="k">def</span> <span class="nf">_get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="n">dtime</span><span class="p">,</span> <span class="n">sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_signature</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                   <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">dtime</span><span class="p">,</span>
+                   <span class="s1">&#39;signature&#39;</span><span class="p">:</span> <span class="n">sig</span><span class="p">,</span>
+                   <span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/xml&#39;</span><span class="p">}</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">HTTP</span> <span class="o">+</span> <span class="n">HOST</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="ne">BaseException</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">requests</span>  <span class="c1"># import error</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Session._make_signature"><a class="viewcode-back" href="../../../api/phypno.ioeeg.ieeg_org.html#phypno.ioeeg.ieeg_org.Session._make_signature">[docs]</a>    <span class="k">def</span> <span class="nf">_make_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">urlpath</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xml_str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">dtime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+
+        <span class="n">params_str</span> <span class="o">=</span> <span class="s1">&#39;&amp;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="s1">&#39;=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+        <span class="n">xml_str</span> <span class="o">=</span> <span class="n">_sha256</span><span class="p">(</span><span class="n">xml_str</span><span class="p">)</span>
+        <span class="n">to_hash</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">HOST</span><span class="p">,</span> <span class="n">urlpath</span><span class="p">,</span>
+                   <span class="n">params_str</span><span class="p">,</span> <span class="n">dtime</span><span class="p">,</span> <span class="n">xml_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dtime</span><span class="p">,</span> <span class="n">_sha256</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">to_hash</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="_prepare_xml_str"><a class="viewcode-back" href="../../../api/phypno.ioeeg.ieeg_org.html#phypno.ioeeg.ieeg_org._prepare_xml_str">[docs]</a><span class="k">def</span> <span class="nf">_prepare_xml_str</span><span class="p">(</span><span class="n">chan_id</span><span class="p">):</span>
+    <span class="n">XML_BEG</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#39;</span>
+               <span class="s1">&#39;&lt;timeSeriesIdAndDChecks&gt;&lt;timeSeriesIdAndDChecks&gt;&#39;</span><span class="p">)</span>
+    <span class="n">XML_END</span> <span class="o">=</span> <span class="s1">&#39;&lt;/timeSeriesIdAndDChecks&gt;&lt;/timeSeriesIdAndDChecks&gt;&#39;</span>
+    <span class="n">XML_CHAN</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&lt;timeSeriesIdAndCheck&gt;&lt;dataCheck&gt;</span><span class="si">{}</span><span class="s1">&lt;/dataCheck&gt;&#39;</span>
+                <span class="s1">&#39;&lt;id&gt;</span><span class="si">{}</span><span class="s1">&lt;/id&gt;&lt;/timeSeriesIdAndCheck&gt;&#39;</span><span class="p">)</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="n">XML_BEG</span>
+    <span class="k">for</span> <span class="n">i_chan</span> <span class="ow">in</span> <span class="n">chan_id</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">XML_CHAN</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i_chan</span><span class="p">,</span> <span class="n">i_chan</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">XML_END</span>
+
+    <span class="k">return</span> <span class="n">s</span></div>
+
+
+<div class="viewcode-block" id="md5"><a class="viewcode-back" href="../../../api/phypno.ioeeg.ieeg_org.html#phypno.ioeeg.ieeg_org.md5">[docs]</a><span class="k">def</span> <span class="nf">md5</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns MD5 hashed string &quot;&quot;&quot;</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="_sha256"><a class="viewcode-back" href="../../../api/phypno.ioeeg.ieeg_org.html#phypno.ioeeg.ieeg_org._sha256">[docs]</a><span class="k">def</span> <span class="nf">_sha256</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">standard_b64encode</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">digest</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

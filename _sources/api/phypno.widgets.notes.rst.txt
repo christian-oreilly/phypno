@@ -1,0 +1,7 @@
+phypno\.widgets\.notes module
+=============================
+
+.. automodule:: phypno.widgets.notes
+    :members:
+    :undoc-members:
+    :show-inheritance:

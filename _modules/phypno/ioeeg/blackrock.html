@@ -1,0 +1,856 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.ioeeg.blackrock &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.ioeeg.blackrock</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.ioeeg.blackrock</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span><span class="p">,</span> <span class="n">NOTSET</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">disable</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">SEEK_SET</span><span class="p">,</span> <span class="n">SEEK_CUR</span><span class="p">,</span> <span class="n">SEEK_END</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">splitext</span>
+<span class="kn">from</span> <span class="nn">struct</span> <span class="k">import</span> <span class="n">unpack</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="p">(</span><span class="n">asarray</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">expand_dims</span><span class="p">,</span> <span class="n">fromfile</span><span class="p">,</span> <span class="n">iinfo</span><span class="p">,</span> <span class="n">NaN</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span>
+                   <span class="n">reshape</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">BLACKROCK_FORMAT</span> <span class="o">=</span> <span class="s1">&#39;int16&#39;</span>  <span class="c1"># by definition</span>
+<span class="n">blackrock_iinfo</span> <span class="o">=</span> <span class="n">iinfo</span><span class="p">(</span><span class="n">BLACKROCK_FORMAT</span><span class="p">)</span>
+<span class="n">N_BYTES</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">blackrock_iinfo</span><span class="o">.</span><span class="n">bits</span> <span class="o">/</span> <span class="mi">8</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BlackRock"><a class="viewcode-back" href="../../../api/phypno.ioeeg.blackrock.html#phypno.ioeeg.blackrock.BlackRock">[docs]</a><span class="k">class</span> <span class="nc">BlackRock</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Basic class to read the data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : path to file</span>
+<span class="sd">        the name of the filename or directory</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">BOData</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sess_begin</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sess_end</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factor</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="BlackRock.return_hdr"><a class="viewcode-back" href="../../../api/phypno.ioeeg.blackrock.html#phypno.ioeeg.blackrock.BlackRock.return_hdr">[docs]</a>    <span class="k">def</span> <span class="nf">return_hdr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the header for further use.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        trigger_bits : int, optional</span>
+<span class="sd">            8 or 16, read the triggers as one or two bytes</span>
+<span class="sd">        trigger_zero : bool, optional</span>
+<span class="sd">            read the trigger zero or not</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        subj_id : str</span>
+<span class="sd">            subject identification code</span>
+<span class="sd">        start_time : datetime</span>
+<span class="sd">            start time of the dataset</span>
+<span class="sd">        s_freq : float</span>
+<span class="sd">            sampling frequency</span>
+<span class="sd">        chan_name : list of str</span>
+<span class="sd">            list of all the channels</span>
+<span class="sd">        n_samples : int</span>
+<span class="sd">            number of samples in the dataset</span>
+<span class="sd">        orig : dict</span>
+<span class="sd">            additional information taken directly from the header</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The implementation needs to be updated for NEURALSG</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">file_header</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">file_header</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;NEURALEV&#39;</span><span class="p">:</span>
+            <span class="n">orig</span> <span class="o">=</span> <span class="n">_read_neuralev</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+
+            <span class="n">s_freq</span> <span class="o">=</span> <span class="n">orig</span><span class="p">[</span><span class="s1">&#39;SampleRes&#39;</span><span class="p">]</span>
+            <span class="n">n_samples</span> <span class="o">=</span> <span class="n">orig</span><span class="p">[</span><span class="s1">&#39;DataDuration&#39;</span><span class="p">]</span>
+            <span class="n">chan_name</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># TODO: digital channels here instead of notes</span>
+
+        <span class="k">elif</span> <span class="n">file_header</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;NEURALCD&#39;</span><span class="p">:</span>
+            <span class="n">orig</span> <span class="o">=</span> <span class="n">_read_neuralcd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+
+            <span class="n">s_freq</span> <span class="o">=</span> <span class="n">orig</span><span class="p">[</span><span class="s1">&#39;SamplingFreq&#39;</span><span class="p">]</span>
+            <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">orig</span><span class="p">[</span><span class="s1">&#39;DataPoints&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">orig</span><span class="p">[</span><span class="s1">&#39;Timestamps&#39;</span><span class="p">])</span>
+            <span class="n">chan_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">orig</span><span class="p">[</span><span class="s1">&#39;ElectrodesInfo&#39;</span><span class="p">]]</span>
+
+            <span class="c1"># INFO to read the data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">BOData</span> <span class="o">=</span> <span class="n">orig</span><span class="p">[</span><span class="s1">&#39;BOData&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sess_begin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sess_end</span> <span class="o">=</span> <span class="n">_calc_sess_intervals</span><span class="p">(</span><span class="n">orig</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factor</span> <span class="o">=</span> <span class="n">_convert_factor</span><span class="p">(</span><span class="n">orig</span><span class="p">[</span><span class="s1">&#39;ElectrodesInfo&#39;</span><span class="p">])</span>
+
+            <span class="n">nev_file</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.nev&#39;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">disable</span><span class="p">(</span><span class="n">WARNING</span><span class="p">)</span>
+                <span class="n">nev_orig</span> <span class="o">=</span> <span class="n">_read_neuralev</span><span class="p">(</span><span class="n">nev_file</span><span class="p">)</span>
+                <span class="n">disable</span><span class="p">(</span><span class="n">NOTSET</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nev_orig</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">orig</span><span class="p">)</span>  <span class="c1"># precedence to orig</span>
+                <span class="n">orig</span> <span class="o">=</span> <span class="n">nev_orig</span>
+
+        <span class="k">elif</span> <span class="n">file_header</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;NEURALSG&#39;</span><span class="p">:</span>
+            <span class="n">orig</span> <span class="o">=</span> <span class="n">_read_neuralsg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+            <span class="c1"># raise NotImplementedError(&#39;This implementation needs to be updated&#39;)</span>
+
+            <span class="n">s_freq</span> <span class="o">=</span> <span class="n">orig</span><span class="p">[</span><span class="s1">&#39;SamplingFreq&#39;</span><span class="p">]</span>
+            <span class="n">n_samples</span> <span class="o">=</span> <span class="n">orig</span><span class="p">[</span><span class="s1">&#39;DataPoints&#39;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span> <span class="o">=</span> <span class="n">n_samples</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factor</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">orig</span><span class="p">[</span><span class="s1">&#39;ChannelID&#39;</span><span class="p">]))</span>
+
+            <span class="c1"># make up names</span>
+            <span class="n">chan_name</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;chan</span><span class="si">{0:04d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">orig</span><span class="p">[</span><span class="s1">&#39;ChannelID&#39;</span><span class="p">]]</span>
+
+        <span class="n">subj_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">orig</span><span class="p">[</span><span class="s1">&#39;DateTime&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">subj_id</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">chan_name</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">orig</span></div>
+
+<div class="viewcode-block" id="BlackRock.return_dat"><a class="viewcode-back" href="../../../api/phypno.ioeeg.blackrock.html#phypno.ioeeg.blackrock.BlackRock.return_dat">[docs]</a>    <span class="k">def</span> <span class="nf">return_dat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">begsam</span><span class="p">,</span> <span class="n">endsam</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the data as 2D numpy.ndarray.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        chan : int or list</span>
+<span class="sd">            index (indices) of the channels to read</span>
+<span class="sd">        begsam : int</span>
+<span class="sd">            index of the first sample</span>
+<span class="sd">        endsam : int</span>
+<span class="sd">            index of the last sample</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            A 2d matrix, with dimension chan X samples</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.nev&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;NEV contains only header info, not data&#39;</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">_read_nsx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BOData</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sess_begin</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">sess_end</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor</span><span class="p">,</span> <span class="n">begsam</span><span class="p">,</span> <span class="n">endsam</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">chan</span><span class="p">,</span> <span class="p">:]</span></div>
+
+<div class="viewcode-block" id="BlackRock.return_markers"><a class="viewcode-back" href="../../../api/phypno.ioeeg.blackrock.html#phypno.ioeeg.blackrock.BlackRock.return_markers">[docs]</a>    <span class="k">def</span> <span class="nf">return_markers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger_bits</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">trigger_zero</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;We always read triggers as 16bit, but we convert them to 8 here</span>
+<span class="sd">        if requested.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nev_file</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.nev&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">markers</span> <span class="o">=</span> <span class="n">_read_neuralev</span><span class="p">(</span><span class="n">nev_file</span><span class="p">,</span> <span class="n">read_markers</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Contact Gio with error report below&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">err</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">trigger_bits</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+                <span class="n">to8</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">256</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">256</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">markers</span><span class="p">:</span>
+                    <span class="n">m</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to8</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">trigger_zero</span><span class="p">:</span>
+                <span class="n">no_zero</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">markers</span><span class="p">)</span> <span class="k">if</span> <span class="n">m</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+
+                <span class="n">markers_no_zero</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">no_zero</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">markers</span><span class="p">)</span> <span class="ow">and</span> <span class="n">markers</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+                        <span class="n">markers</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">markers</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="s1">&#39;start&#39;</span><span class="p">]</span>
+                    <span class="n">markers_no_zero</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">markers</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="k">return</span> <span class="n">markers_no_zero</span></div></div>
+
+
+<div class="viewcode-block" id="_read_nsx"><a class="viewcode-back" href="../../../api/phypno.ioeeg.blackrock.html#phypno.ioeeg.blackrock._read_nsx">[docs]</a><span class="k">def</span> <span class="nf">_read_nsx</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">BOData</span><span class="p">,</span> <span class="n">sess_begin</span><span class="p">,</span> <span class="n">sess_end</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">begsam</span><span class="p">,</span> <span class="n">endsam</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Tested on NEURALCD</span>
+
+<span class="sd">    It returns NaN if you select an interval outside of the data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_chan</span> <span class="o">=</span> <span class="n">factor</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">empty</span><span class="p">((</span><span class="n">n_chan</span><span class="p">,</span> <span class="n">endsam</span> <span class="o">-</span> <span class="n">begsam</span><span class="p">))</span>
+    <span class="n">dat</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">NaN</span><span class="p">)</span>
+
+    <span class="n">sess_to_read</span> <span class="o">=</span> <span class="n">where</span><span class="p">((</span><span class="n">begsam</span> <span class="o">&lt;</span> <span class="n">sess_end</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">endsam</span> <span class="o">&gt;</span> <span class="n">sess_begin</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">sess_to_read</span><span class="p">:</span>
+            <span class="n">begsam_sess</span> <span class="o">=</span> <span class="n">begsam</span> <span class="o">-</span> <span class="n">sess_begin</span><span class="p">[</span><span class="n">sess</span><span class="p">]</span>
+            <span class="n">endsam_sess</span> <span class="o">=</span> <span class="n">endsam</span> <span class="o">-</span> <span class="n">sess_begin</span><span class="p">[</span><span class="n">sess</span><span class="p">]</span>
+
+            <span class="n">begshift</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">if</span> <span class="n">begsam_sess</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">begsam_sess</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">begshift</span> <span class="o">=</span> <span class="n">sess_begin</span><span class="p">[</span><span class="n">sess</span><span class="p">]</span> <span class="o">-</span> <span class="n">begsam</span>
+
+            <span class="k">if</span> <span class="n">endsam_sess</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">sess_end</span><span class="p">[</span><span class="n">sess</span><span class="p">]</span> <span class="o">-</span> <span class="n">sess_begin</span><span class="p">[</span><span class="n">sess</span><span class="p">]):</span>
+                <span class="n">endsam_sess</span> <span class="o">=</span> <span class="p">(</span><span class="n">sess_end</span><span class="p">[</span><span class="n">sess</span><span class="p">]</span> <span class="o">-</span> <span class="n">sess_begin</span><span class="p">[</span><span class="n">sess</span><span class="p">])</span>
+
+            <span class="n">endshift</span> <span class="o">=</span> <span class="n">begshift</span> <span class="o">+</span> <span class="n">endsam_sess</span> <span class="o">-</span> <span class="n">begsam_sess</span>
+
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">BOData</span><span class="p">[</span><span class="n">sess</span><span class="p">],</span> <span class="n">SEEK_SET</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">n_chan</span> <span class="o">*</span> <span class="n">N_BYTES</span> <span class="o">*</span> <span class="n">begsam_sess</span><span class="p">,</span> <span class="n">SEEK_CUR</span><span class="p">)</span>
+
+            <span class="n">n_sam</span> <span class="o">=</span> <span class="n">endsam_sess</span> <span class="o">-</span> <span class="n">begsam_sess</span>
+            <span class="n">dat_in_file</span> <span class="o">=</span> <span class="n">fromfile</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">BLACKROCK_FORMAT</span><span class="p">,</span> <span class="n">n_chan</span> <span class="o">*</span> <span class="n">n_sam</span><span class="p">)</span>
+
+            <span class="n">dat</span><span class="p">[:,</span> <span class="n">begshift</span><span class="p">:</span><span class="n">endshift</span><span class="p">]</span> <span class="o">=</span> <span class="n">reshape</span><span class="p">(</span><span class="n">dat_in_file</span><span class="p">,</span> <span class="p">(</span><span class="n">n_chan</span><span class="p">,</span> <span class="n">n_sam</span><span class="p">),</span>
+                                                <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">expand_dims</span><span class="p">(</span><span class="n">factor</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">dat</span></div>
+
+
+<div class="viewcode-block" id="_read_neuralsg"><a class="viewcode-back" href="../../../api/phypno.ioeeg.blackrock.html#phypno.ioeeg.blackrock._read_neuralsg">[docs]</a><span class="k">def</span> <span class="nf">_read_neuralsg</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hdr</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;FileTypeID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;FileSpec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;2.1&#39;</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;SamplingLabel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_str</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;TimeRes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">30000</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;SamplingFreq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;TimeRes&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">n_chan</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;ChannelCount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_chan</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;ChannelID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;I&#39;</span> <span class="o">*</span> <span class="n">n_chan</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n_chan</span><span class="p">))</span>
+
+        <span class="n">BOData</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">SEEK_END</span><span class="p">)</span>
+        <span class="n">EOData</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+
+    <span class="c1"># we read the time information from the corresponding NEV file</span>
+    <span class="n">nev_filename</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.nev&#39;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">nev_filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">28</span><span class="p">)</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;H&#39;</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>
+
+    <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;DateTimeRaw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span>
+    <span class="n">lg</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;DateTime is in local time&#39;</span><span class="p">)</span>
+    <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;DateTime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                               <span class="n">time</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+
+    <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;DataPoints&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">EOData</span> <span class="o">-</span> <span class="n">BOData</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n_chan</span> <span class="o">*</span> <span class="n">N_BYTES</span><span class="p">))</span>
+    <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;BOData&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BOData</span>
+
+    <span class="k">return</span> <span class="n">hdr</span></div>
+
+
+<div class="viewcode-block" id="_read_neuralcd"><a class="viewcode-back" href="../../../api/phypno.ioeeg.blackrock.html#phypno.ioeeg.blackrock._read_neuralcd">[docs]</a><span class="k">def</span> <span class="nf">_read_neuralcd</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The time stamps are stored in UTC in the NSx files. However, time stamps</span>
+<span class="sd">    in the NEV files are stored as local time up to Central 6.03 included and</span>
+<span class="sd">    stored as UTC after Central 6.05. It&#39;s impossible to know the version of</span>
+<span class="sd">    Central from the header.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hdr</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;FileTypeID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+        <span class="n">BasicHdr</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">306</span><span class="p">)</span>
+        <span class="n">filespec</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;bb&#39;</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;FileSpec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filespec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">filespec</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;HeaderBytes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">6</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;SamplingLabel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_str</span><span class="p">(</span><span class="n">BasicHdr</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">22</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;Comment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_str</span><span class="p">(</span><span class="n">BasicHdr</span><span class="p">[</span><span class="mi">22</span><span class="p">:</span><span class="mi">278</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="s1">&#39;ignore&#39;</span><span class="p">))</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;TimeRes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="mi">282</span><span class="p">:</span><span class="mi">286</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;SamplingFreq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;TimeRes&#39;</span><span class="p">]</span> <span class="o">/</span>
+                                  <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;i&#39;</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="mi">278</span><span class="p">:</span><span class="mi">282</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;H&#39;</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="mi">286</span><span class="p">:</span><span class="mi">302</span><span class="p">])</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;DateTimeRaw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;DateTime is in UTC time&#39;</span><span class="p">)</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;DateTime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                                   <span class="n">time</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
+                                   <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;ChannelCount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="mi">302</span><span class="p">:</span><span class="mi">306</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">ExtHdrLength</span> <span class="o">=</span> <span class="mi">66</span>
+        <span class="n">readSize</span> <span class="o">=</span> <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;ChannelCount&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ExtHdrLength</span>
+        <span class="n">ExtHdr</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">readSize</span><span class="p">)</span>
+
+        <span class="n">ElectrodesInfo</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;ChannelCount&#39;</span><span class="p">]):</span>
+            <span class="n">i1</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">*</span> <span class="n">ExtHdrLength</span>
+            <span class="n">elec</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;Type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;Type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;CC&#39;</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;ElectrodeID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;H&#39;</span><span class="p">,</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">16</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_str</span><span class="p">(</span><span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;ConnectorBank&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;B&#39;</span><span class="p">,</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span>
+                                        <span class="nb">ord</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;ConnectorPin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;B&#39;</span><span class="p">,</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;MinDigiValue&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;h&#39;</span><span class="p">,</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;MaxDigiValue&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;h&#39;</span><span class="p">,</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;MinAnalogValue&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;h&#39;</span><span class="p">,</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;MaxAnalogValue&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;h&#39;</span><span class="p">,</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">16</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;AnalogUnits&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_str</span><span class="p">(</span><span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">4</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;HighFreqCorner&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">4</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;HighFreqOrder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;HighFilterType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;H&#39;</span><span class="p">,</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">4</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;LowFreqCorner&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">4</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;LowFreqOrder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+            <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;LowFilterType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;H&#39;</span><span class="p">,</span> <span class="n">ExtHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">ElectrodesInfo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elec</span><span class="p">)</span>
+
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;ElectrodesInfo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ElectrodesInfo</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;ChannelID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;ElectrodeID&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ElectrodesInfo</span><span class="p">]</span>
+
+        <span class="n">EOexH</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">SEEK_END</span><span class="p">)</span>
+        <span class="n">EOF</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">EOexH</span><span class="p">,</span> <span class="n">SEEK_SET</span><span class="p">)</span>
+        <span class="n">n_chan</span> <span class="o">=</span> <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;ChannelCount&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">EOF</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">EOFError</span><span class="p">(</span><span class="s1">&#39;File </span><span class="si">{0}</span><span class="s1"> does not seem to contain data &#39;</span>
+                           <span class="s1">&#39;(size </span><span class="si">{1}</span><span class="s1"> B)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">EOF</span><span class="p">))</span>
+
+        <span class="n">BOData</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">EOData</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">Timestamps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">DataPoints</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">while</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">EOF</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x01</span><span class="s1">&#39;</span><span class="p">:</span>
+
+            <span class="n">Timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="n">DataPoint</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">DataPoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DataPoint</span><span class="p">)</span>
+
+            <span class="n">BOData</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">())</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">N_BYTES</span> <span class="o">*</span> <span class="n">DataPoint</span> <span class="o">*</span> <span class="n">n_chan</span><span class="p">,</span> <span class="n">SEEK_CUR</span><span class="p">)</span>
+            <span class="n">EOData</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">())</span>
+
+        <span class="c1"># the last datapoint does not get updated, so it remains 0</span>
+        <span class="k">if</span> <span class="n">DataPoints</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="c1"># we need to update EOData, because it depends on DataPoint</span>
+            <span class="n">EOData</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">EOF</span>
+
+            <span class="c1"># we back compute the last DataPoint</span>
+            <span class="n">DataPoints</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">EOData</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">BOData</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">N_BYTES</span> <span class="o">/</span> <span class="n">n_chan</span><span class="p">)</span>
+
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;BOData&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BOData</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;EOData&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">EOData</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;Timestamps&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Timestamps</span>  <span class="c1"># sampled at &#39;TimeRes&#39; Hz, ie 30000</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;DataPoints&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DataPoints</span>
+
+    <span class="k">return</span> <span class="n">hdr</span></div>
+
+
+<div class="viewcode-block" id="_read_neuralev"><a class="viewcode-back" href="../../../api/phypno.ioeeg.blackrock.html#phypno.ioeeg.blackrock._read_neuralev">[docs]</a><span class="k">def</span> <span class="nf">_read_neuralev</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">read_markers</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">trigger_bits</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+                   <span class="n">trigger_zero</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read some information from NEV</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        path to NEV file</span>
+<span class="sd">    read_markers : bool</span>
+<span class="sd">        whether to read markers or not (it can get really large)</span>
+<span class="sd">    trigger_bits : int, optional</span>
+<span class="sd">        8 or 16, read the triggers as one or two bytes</span>
+<span class="sd">    trigger_zero : bool, optional</span>
+<span class="sd">        read the trigger zero or not</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    MetaTags : list of dict</span>
+<span class="sd">        which corresponds to MetaTags of openNEV</span>
+<span class="sd">    Markers : list of dict</span>
+<span class="sd">        markers in NEV file</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The conversion to DateTime in openNEV.m is not correct. They add a value of</span>
+<span class="sd">    2 to the day. Instead, they should add it to the index of the weekday</span>
+
+<span class="sd">    It returns triggers as strings (format of EDFBrowser), but it does not read</span>
+<span class="sd">    the othe types of events (waveforms, videos, etc).</span>
+
+<span class="sd">    The time stamps are stored in UTC in the NSx files. However, time stamps</span>
+<span class="sd">    in the NEV files are stored as local time up to Central 6.03 included and</span>
+<span class="sd">    stored as UTC after Central 6.05. It&#39;s impossible to know the version of</span>
+<span class="sd">    Central from the header.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hdr</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+        <span class="n">BasicHdr</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">336</span><span class="p">)</span>
+
+        <span class="n">i1</span> <span class="o">=</span> <span class="mi">8</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;FileTypeID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BasicHdr</span><span class="p">[:</span><span class="n">i1</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;FileTypeID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;NEURALEV&#39;</span>
+        <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+        <span class="n">filespec</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;bb&#39;</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;FileSpec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filespec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">filespec</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;Flags&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;H&#39;</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">4</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;HeaderOffset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">4</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;PacketBytes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">4</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;TimeRes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">4</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;SampleRes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">16</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;H&#39;</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;DateTimeRaw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;DateTime is in local time with Central version &lt;= 6.03&#39;</span>
+                   <span class="s1">&#39; and in UTC with Central version &gt; 6.05&#39;</span><span class="p">)</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;DateTime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                                   <span class="n">time</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">time</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+        <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">32</span>
+        <span class="c1"># hdr[&#39;Application&#39;] = _str(BasicHdr[i0:i1].decode(&#39;utf-8&#39;))</span>
+        <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">256</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;Comment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_str</span><span class="p">(</span><span class="n">BasicHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span>
+                                                     <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">))</span>
+        <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">4</span>
+        <span class="n">countExtHeader</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">BasicHdr</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># you can read subject name from sif</span>
+
+        <span class="c1"># Check data duration</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="o">-</span><span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;PacketBytes&#39;</span><span class="p">],</span> <span class="n">SEEK_END</span><span class="p">)</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;DataDuration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;DataDurationSec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;DataDuration&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;SampleRes&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Read the Extended Header</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">336</span><span class="p">)</span>
+        <span class="n">ElectrodesInfo</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">IOLabels</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">countExtHeader</span><span class="p">):</span>
+
+            <span class="n">ExtendedHeader</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+            <span class="n">i1</span> <span class="o">=</span> <span class="mi">8</span>
+            <span class="n">PacketID</span> <span class="o">=</span> <span class="n">ExtendedHeader</span><span class="p">[:</span><span class="n">i1</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">PacketID</span> <span class="o">==</span> <span class="s1">&#39;NEUEVWAV&#39;</span><span class="p">:</span>
+                <span class="n">elec</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;ElectrodeID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;H&#39;</span><span class="p">,</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;ConnectorBank&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">64</span><span class="p">)</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;ConnectorPin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">]</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;h&#39;</span><span class="p">,</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c1"># This is a workaround for the DigitalFactor overflow</span>
+                <span class="k">if</span> <span class="n">df</span> <span class="o">==</span> <span class="mi">21516</span><span class="p">:</span>
+                    <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;DigitalFactor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">152592.547</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;DigitalFactor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
+
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;EnergyThreshold&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;H&#39;</span><span class="p">,</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;HighThreshold&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;h&#39;</span><span class="p">,</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;LowThreshold&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;h&#39;</span><span class="p">,</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;Units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">]</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;WaveformBytes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">]</span>
+                <span class="n">ElectrodesInfo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elec</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">PacketID</span> <span class="o">==</span> <span class="s1">&#39;NEUEVLBL&#39;</span><span class="p">:</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="n">ElectrodeID</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;H&#39;</span><span class="p">,</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">_str</span><span class="p">(</span><span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i1</span><span class="p">:]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+                <span class="n">ElectrodesInfo</span><span class="p">[</span><span class="n">ElectrodeID</span><span class="p">][</span><span class="s1">&#39;ElectrodeLabel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+
+            <span class="k">elif</span> <span class="n">PacketID</span> <span class="o">==</span> <span class="s1">&#39;NEUEVFLT&#39;</span><span class="p">:</span>
+                <span class="n">elec</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="n">ElectrodeID</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;H&#39;</span><span class="p">,</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">4</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;HighFreqCorner&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">4</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;HighFreqOrder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;HighFilterType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;H&#39;</span><span class="p">,</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">4</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;LowFreqCorner&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">4</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;LowFreqOrder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;LowFilterType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;H&#39;</span><span class="p">,</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">ElectrodesInfo</span><span class="p">[</span><span class="n">ElectrodeID</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">elec</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">PacketID</span> <span class="o">==</span> <span class="s1">&#39;DIGLABEL&#39;</span><span class="p">:</span>
+                <span class="c1"># TODO: the order is not taken into account and probably wrong!</span>
+                <span class="n">iolabel</span> <span class="o">=</span> <span class="p">{}</span>
+
+                <span class="n">iolabel</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExtendedHeader</span><span class="p">[</span><span class="mi">24</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">_str</span><span class="p">(</span><span class="n">ExtendedHeader</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">25</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+                <span class="n">iolabel</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+                <span class="n">IOLabels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iolabel</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">PacketID</span> <span class="o">+</span> <span class="s1">&#39; not implemented yet&#39;</span><span class="p">)</span>
+
+        <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;ChannelID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;ElectrodeID&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ElectrodesInfo</span><span class="p">]</span>
+
+        <span class="n">fExtendedHeader</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="n">fData</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">SEEK_END</span><span class="p">)</span>
+        <span class="n">countDataPacket</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">fData</span> <span class="o">-</span> <span class="n">fExtendedHeader</span><span class="p">)</span> <span class="o">/</span> <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;PacketBytes&#39;</span><span class="p">])</span>
+
+        <span class="n">markers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">read_markers</span> <span class="ow">and</span> <span class="n">countDataPacket</span><span class="p">:</span>
+
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">fExtendedHeader</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">countDataPacket</span> <span class="o">*</span> <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;PacketBytes&#39;</span><span class="p">])</span>
+
+            <span class="n">DigiValues</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">countDataPacket</span><span class="p">):</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;PacketBytes&#39;</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">trigger_bits</span> <span class="o">==</span> <span class="mi">16</span><span class="p">:</span>
+                    <span class="n">tempDigiVals</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;H&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">8</span> <span class="o">+</span> <span class="n">i</span><span class="p">:</span><span class="mi">10</span> <span class="o">+</span> <span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tempDigiVals</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;H&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">8</span> <span class="o">+</span> <span class="n">i</span><span class="p">:</span><span class="mi">9</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="n">val</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span> <span class="o">+</span> <span class="n">i</span><span class="p">:</span><span class="mi">4</span> <span class="o">+</span> <span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
+                       <span class="s1">&#39;packetID&#39;</span><span class="p">:</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;H&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">4</span> <span class="o">+</span> <span class="n">i</span><span class="p">:</span><span class="mi">6</span> <span class="o">+</span> <span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
+                       <span class="s1">&#39;tempClassOrReason&#39;</span><span class="p">:</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;B&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">6</span> <span class="o">+</span> <span class="n">i</span><span class="p">:</span><span class="mi">7</span> <span class="o">+</span> <span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span>
+                       <span class="s1">&#39;tempDigiVals&#39;</span><span class="p">:</span> <span class="n">tempDigiVals</span><span class="p">}</span>
+
+                <span class="k">if</span> <span class="n">tempDigiVals</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="n">DigiValues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+            <span class="n">digserPacketID</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">not_serialdigital</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">DigiValues</span>
+                                 <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;packetID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">digserPacketID</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">not_serialdigital</span><span class="p">:</span>
+                <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Code not implemented to read PacketID &#39;</span> <span class="o">+</span>
+                         <span class="nb">str</span><span class="p">(</span><span class="n">not_serialdigital</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;packetID&#39;</span><span class="p">]))</span>
+
+            <span class="c1"># convert to markers</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">DigiValues</span><span class="p">:</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;tempDigiVals&#39;</span><span class="p">]),</span>
+                     <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;SampleRes&#39;</span><span class="p">],</span>
+                     <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;SampleRes&#39;</span><span class="p">],</span>
+                     <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">],</span>
+                     <span class="p">}</span>
+                <span class="n">markers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">read_markers</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">markers</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">hdr</span></div>
+
+
+<div class="viewcode-block" id="_str"><a class="viewcode-back" href="../../../api/phypno.ioeeg.blackrock.html#phypno.ioeeg.blackrock._str">[docs]</a><span class="k">def</span> <span class="nf">_str</span><span class="p">(</span><span class="n">t_in</span><span class="p">):</span>
+    <span class="n">t_out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">t_in</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">t_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">t_out</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_convert_factor"><a class="viewcode-back" href="../../../api/phypno.ioeeg.blackrock.html#phypno.ioeeg.blackrock._convert_factor">[docs]</a><span class="k">def</span> <span class="nf">_convert_factor</span><span class="p">(</span><span class="n">ElectrodesInfo</span><span class="p">):</span>
+
+    <span class="n">factor</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">elec</span> <span class="ow">in</span> <span class="n">ElectrodesInfo</span><span class="p">:</span>
+
+        <span class="c1"># have to be equal, so it&#39;s simple to calculate conversion factor</span>
+        <span class="k">assert</span> <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;MaxDigiValue&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="n">elec</span><span class="p">[</span><span class="s1">&#39;MinDigiValue&#39;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;MaxAnalogValue&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="n">elec</span><span class="p">[</span><span class="s1">&#39;MinAnalogValue&#39;</span><span class="p">]</span>
+
+        <span class="n">factor</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">elec</span><span class="p">[</span><span class="s1">&#39;MaxAnalogValue&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;MinAnalogValue&#39;</span><span class="p">])</span> <span class="o">/</span>
+                      <span class="p">(</span><span class="n">elec</span><span class="p">[</span><span class="s1">&#39;MaxDigiValue&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">elec</span><span class="p">[</span><span class="s1">&#39;MinDigiValue&#39;</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_calc_sess_intervals"><a class="viewcode-back" href="../../../api/phypno.ioeeg.blackrock.html#phypno.ioeeg.blackrock._calc_sess_intervals">[docs]</a><span class="k">def</span> <span class="nf">_calc_sess_intervals</span><span class="p">(</span><span class="n">hdr</span><span class="p">):</span>
+
+    <span class="n">sess_begin</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sess_end</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">n_sess</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;Timestamps&#39;</span><span class="p">])</span>
+
+    <span class="c1"># timestamps are always at 30 kHz, so we need to convert</span>
+    <span class="n">sampling_inverval</span> <span class="o">=</span> <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;TimeRes&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;SamplingFreq&#39;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_sess</span><span class="p">):</span>
+
+        <span class="n">sess_smp_begin</span> <span class="o">=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;DataPoints&#39;</span><span class="p">][:</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span>
+                          <span class="nb">sum</span><span class="p">(</span><span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;Timestamps&#39;</span><span class="p">][:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">sampling_inverval</span><span class="p">)</span>
+        <span class="n">sess_begin</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sess_smp_begin</span><span class="p">)</span>
+
+        <span class="n">sess_smp_end</span> <span class="o">=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;DataPoints&#39;</span><span class="p">][:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span>
+                        <span class="nb">sum</span><span class="p">(</span><span class="n">hdr</span><span class="p">[</span><span class="s1">&#39;Timestamps&#39;</span><span class="p">][:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">sampling_inverval</span><span class="p">)</span>
+        <span class="n">sess_end</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sess_smp_end</span><span class="p">)</span>
+
+    <span class="n">sess_begin</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">sess_begin</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">sess_end</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">sess_end</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">sess_begin</span><span class="p">,</span> <span class="n">sess_end</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

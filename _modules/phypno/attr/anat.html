@@ -1,0 +1,572 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.attr.anat &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.attr.anat</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.attr.anat</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module to read and return anatomical information, such as:</span>
+<span class="sd">    - surfaces, with class Surf</span>
+<span class="sd">    - brains, with class BrainSurf (both hemispheres)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">environ</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">re</span> <span class="k">import</span> <span class="nb">compile</span>
+<span class="kn">from</span> <span class="nn">struct</span> <span class="k">import</span> <span class="n">unpack</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">vstack</span><span class="p">,</span> <span class="n">around</span><span class="p">,</span> <span class="n">dot</span><span class="p">,</span> <span class="n">append</span><span class="p">,</span> <span class="n">reshape</span><span class="p">,</span>
+                   <span class="n">meshgrid</span><span class="p">,</span> <span class="n">asarray</span><span class="p">)</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">nibabel.freesurfer</span> <span class="k">import</span> <span class="n">load</span><span class="p">,</span> <span class="n">read_annot</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">lg</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;nibabel (optional dependency) is not installed. You will not &#39;</span>
+               <span class="s1">&#39;be able to read Freesurfer annotations and segmentations.&#39;</span><span class="p">)</span>
+
+
+<span class="n">FS_AFFINE</span> <span class="o">=</span> <span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">128</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">HEMISPHERES</span> <span class="o">=</span> <span class="s1">&#39;lh&#39;</span><span class="p">,</span> <span class="s1">&#39;rh&#39;</span>
+
+
+<div class="viewcode-block" id="_read_geometry"><a class="viewcode-back" href="../../../api/phypno.attr.anat.html#phypno.attr.anat._read_geometry">[docs]</a><span class="k">def</span> <span class="nf">_read_geometry</span><span class="p">(</span><span class="n">surf_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read a triangular format Freesurfer surface mesh.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    surf_file : str</span>
+<span class="sd">        path to surface file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    coords : numpy.ndarray</span>
+<span class="sd">        nvtx x 3 array of vertex (x, y, z) coordinates</span>
+<span class="sd">    faces : numpy.ndarray</span>
+<span class="sd">        nfaces x 3 array of defining mesh triangles</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function comes from nibabel, but it doesn&#39;t use numpy because numpy</span>
+<span class="sd">    doesn&#39;t return the correct values in Python 3.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">surf_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">filebytes</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="k">assert</span> <span class="n">filebytes</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xff\xff\xfe</span><span class="s1">&#39;</span>
+    <span class="n">i0</span> <span class="o">=</span> <span class="n">filebytes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x0A\x0A</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
+    <span class="n">i1</span> <span class="o">=</span> <span class="n">i0</span> <span class="o">+</span> <span class="mi">4</span>
+    <span class="n">vnum</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;i&#39;</span><span class="p">,</span> <span class="n">filebytes</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">i0</span> <span class="o">=</span> <span class="n">i1</span>
+    <span class="n">i1</span> <span class="o">+=</span> <span class="mi">4</span>
+    <span class="n">fnum</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;i&#39;</span><span class="p">,</span> <span class="n">filebytes</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">i0</span> <span class="o">=</span> <span class="n">i1</span>
+    <span class="n">i1</span> <span class="o">+=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">vnum</span> <span class="o">*</span> <span class="mi">3</span>
+    <span class="n">verts</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;f&#39;</span> <span class="o">*</span> <span class="n">vnum</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">filebytes</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])</span>
+    <span class="n">i0</span> <span class="o">=</span> <span class="n">i1</span>
+    <span class="n">i1</span> <span class="o">+=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">fnum</span> <span class="o">*</span> <span class="mi">3</span>
+    <span class="n">faces</span> <span class="o">=</span> <span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;i&#39;</span> <span class="o">*</span> <span class="n">fnum</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">filebytes</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])</span>
+
+    <span class="n">verts</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">verts</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">vnum</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">faces</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">faces</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">fnum</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">verts</span><span class="p">,</span> <span class="n">faces</span></div>
+
+
+<div class="viewcode-block" id="_find_neighboring_regions"><a class="viewcode-back" href="../../../api/phypno.attr.anat.html#phypno.attr.anat._find_neighboring_regions">[docs]</a><span class="k">def</span> <span class="nf">_find_neighboring_regions</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">mri_dat</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">approx</span><span class="p">,</span> <span class="n">exclude_regions</span><span class="p">):</span>
+
+    <span class="n">spot_size</span> <span class="o">=</span> <span class="n">approx</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">meshgrid</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">spot_size</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">spot_size</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">spot_size</span><span class="p">))</span>
+    <span class="n">neighb</span> <span class="o">=</span> <span class="n">vstack</span><span class="p">((</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">spot_size</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)),</span>
+                     <span class="n">reshape</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">spot_size</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)),</span>
+                     <span class="n">reshape</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">spot_size</span> <span class="o">**</span> <span class="mi">3</span><span class="p">))))</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">approx</span>
+    <span class="n">regions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">neighb</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">d_type</span> <span class="o">=</span> <span class="n">mri_dat</span><span class="p">[</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">neighb</span><span class="p">[</span><span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">neighb</span><span class="p">[</span><span class="n">p</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                         <span class="n">pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">neighb</span><span class="p">[</span><span class="n">p</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+        <span class="n">label_index</span> <span class="o">=</span> <span class="n">region</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">d_type</span><span class="p">)</span>
+        <span class="n">regions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">region</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">][</span><span class="n">label_index</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">exclude_regions</span><span class="p">:</span>
+        <span class="n">excluded</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exclude_regions</span><span class="p">))</span>
+        <span class="n">regions</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">regions</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">excluded</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="n">regions</span></div>
+
+
+<div class="viewcode-block" id="import_freesurfer_LUT"><a class="viewcode-back" href="../../../api/phypno.attr.anat.html#phypno.attr.anat.import_freesurfer_LUT">[docs]</a><span class="k">def</span> <span class="nf">import_freesurfer_LUT</span><span class="p">(</span><span class="n">fs_lut</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Import Look-up Table with colors and labels for anatomical regions.</span>
+
+<span class="sd">    It&#39;s necessary that Freesurfer is installed and that the environmental</span>
+<span class="sd">    variable &#39;FREESURFER_HOME&#39; is present.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fs_lut : str or Path</span>
+<span class="sd">        path to file called FreeSurferColorLUT.txt</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    idx : list of int</span>
+<span class="sd">        indices of regions</span>
+<span class="sd">    label : list of str</span>
+<span class="sd">        names of the brain regions</span>
+<span class="sd">    rgba : numpy.ndarray</span>
+<span class="sd">        one row is a brain region and the columns are the RGB + alpha colors</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">fs_lut</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Reading user-specified lookuptable </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fs_lut</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fs_home</span> <span class="o">=</span> <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;FREESURFER_HOME&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s1">&#39;Freesurfer is not installed or FREESURFER_HOME is &#39;</span>
+                          <span class="s1">&#39;not defined as environmental variable&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fs_lut</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fs_home</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;FreeSurferColorLUT.txt&#39;</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Reading lookuptable in FREESURFER_HOME </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fs_lut</span><span class="p">))</span>
+
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">rgba</span> <span class="o">=</span> <span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fs_lut</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;#&#39;</span> <span class="ow">or</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">t3</span><span class="p">,</span> <span class="n">t4</span><span class="p">,</span> <span class="n">t5</span><span class="p">)</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span>
+                                        <span class="nb">zip</span><span class="p">((</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
+                                        <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">())]</span>
+            <span class="n">idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
+            <span class="n">label</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t1</span><span class="p">)</span>
+            <span class="n">rgba</span> <span class="o">=</span> <span class="n">vstack</span><span class="p">((</span><span class="n">rgba</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">t2</span><span class="p">,</span> <span class="n">t3</span><span class="p">,</span> <span class="n">t4</span><span class="p">,</span> <span class="n">t5</span><span class="p">])))</span>
+
+    <span class="k">return</span> <span class="n">idx</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">rgba</span></div>
+
+
+<div class="viewcode-block" id="Surf"><a class="viewcode-back" href="../../../api/phypno.attr.anat.html#phypno.attr.anat.Surf">[docs]</a><span class="k">class</span> <span class="nc">Surf</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Provide class Surf, with the positions and connections of vertices.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    surf_file : str or Path</span>
+<span class="sd">        freesurfer file containing the surface</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    surf_file : path to file</span>
+<span class="sd">        freesurfer file containing the surface</span>
+<span class="sd">    vert : numpy.ndarray</span>
+<span class="sd">        vertices of the mesh</span>
+<span class="sd">    tri : numpy.ndarray</span>
+<span class="sd">        triangulation of the mesh</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surf_file</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surf_file</span> <span class="o">=</span> <span class="n">surf_file</span>
+        <span class="n">surf_vert</span><span class="p">,</span> <span class="n">surf_tri</span> <span class="o">=</span> <span class="n">_read_geometry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surf_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vert</span> <span class="o">=</span> <span class="n">surf_vert</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tri</span> <span class="o">=</span> <span class="n">surf_tri</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_vert</span> <span class="o">=</span> <span class="n">surf_vert</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Brain"><a class="viewcode-back" href="../../../api/phypno.attr.anat.html#phypno.attr.anat.Brain">[docs]</a><span class="k">class</span> <span class="nc">Brain</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class that contains the left and right hemispheres.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    freesurfer_dir : str</span>
+<span class="sd">        subject-specific directory created by freesurfer</span>
+<span class="sd">    surf_type : str</span>
+<span class="sd">        &#39;pial&#39;, &#39;smoothwm&#39;, &#39;inflated&#39;, &#39;white&#39;, or &#39;sphere&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freesurfer_dir</span><span class="p">,</span> <span class="n">surf_type</span><span class="o">=</span><span class="s1">&#39;pial&#39;</span><span class="p">):</span>
+
+        <span class="n">freesurfer_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">freesurfer_dir</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">hemi</span> <span class="ow">in</span> <span class="n">HEMISPHERES</span><span class="p">:</span>
+            <span class="n">surf_file</span> <span class="o">=</span> <span class="n">freesurfer_dir</span> <span class="o">/</span> <span class="s1">&#39;surf&#39;</span> <span class="o">/</span> <span class="p">(</span><span class="n">hemi</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">surf_type</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hemi</span><span class="p">,</span> <span class="n">Surf</span><span class="p">(</span><span class="n">surf_file</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Freesurfer"><a class="viewcode-back" href="../../../api/phypno.attr.anat.html#phypno.attr.anat.Freesurfer">[docs]</a><span class="k">class</span> <span class="nc">Freesurfer</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Provide class Freesurfer, with the information from freesurfer.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    freesurfer_dir : str</span>
+<span class="sd">        subject-specific directory created by freesurfer</span>
+<span class="sd">    fs_lut : str</span>
+<span class="sd">        path to file called FreeSurferColorLUT.txt</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    It&#39;s necessary that Freesurfer is installed and that the environmental</span>
+<span class="sd">    variable &#39;FREESURFER_HOME&#39; is present.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freesurfer_dir</span><span class="p">,</span> <span class="n">fs_lut</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">freesurfer_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">freesurfer_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">freesurfer_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">freesurfer_dir</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; does not exist&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dir</span> <span class="o">=</span> <span class="n">freesurfer_dir</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">lut</span> <span class="o">=</span> <span class="n">import_freesurfer_LUT</span><span class="p">(</span><span class="n">fs_lut</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lookuptable</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;index&#39;</span><span class="p">:</span> <span class="n">lut</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">lut</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                <span class="s1">&#39;RGBA&#39;</span><span class="p">:</span> <span class="n">lut</span><span class="p">[</span><span class="mi">2</span><span class="p">]}</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lookuptable</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Could not find lookup table (see below for explanation)&#39;</span>
+                       <span class="s1">&#39;. Some functions that rely on it might complain or &#39;</span>
+                       <span class="s1">&#39;crash.&#39;</span><span class="p">)</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Freesurfer.find_brain_region"><a class="viewcode-back" href="../../../api/phypno.attr.anat.html#phypno.attr.anat.Freesurfer.find_brain_region">[docs]</a>    <span class="k">def</span> <span class="nf">find_brain_region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abs_pos</span><span class="p">,</span> <span class="n">parc_type</span><span class="o">=</span><span class="s1">&#39;aparc&#39;</span><span class="p">,</span> <span class="n">max_approx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                          <span class="n">exclude_regions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Find the name of the brain region in which an electrode is located.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        abs_pos : numpy.ndarray</span>
+<span class="sd">            3x0 vector with the position of interest.</span>
+<span class="sd">        parc_type : str</span>
+<span class="sd">            &#39;aparc&#39;, &#39;aparc.a2009s&#39;, &#39;BA&#39;, &#39;BA.thresh&#39;, or &#39;aparc.DKTatlas40&#39;</span>
+<span class="sd">            &#39;aparc.DKTatlas40&#39; is only for recent freesurfer versions</span>
+<span class="sd">        max_approx : int, optional</span>
+<span class="sd">            max approximation to define position of the electrode.</span>
+<span class="sd">        exclude_regions : list of str or empty list</span>
+<span class="sd">            do not report regions if they contain these substrings. None means</span>
+<span class="sd">            that it does not exclude any region.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        It determines the possible brain region in which one electrode is</span>
+<span class="sd">        present, based on Freesurfer segmentation. You can imagine that</span>
+<span class="sd">        sometimes one electrode is not perfectly located within one region,</span>
+<span class="sd">        but it&#39;s a few mm away. The parameter &quot;approx&quot; specifies this tolerance</span>
+<span class="sd">        where each value is one mm. It keeps on searching in larger and larger</span>
+<span class="sd">        spots until it finds at least one region which is not white matter. If</span>
+<span class="sd">        there are multiple regions, it returns the region with the most</span>
+<span class="sd">        detection.</span>
+<span class="sd">        Minimal value is 0, which means only if the electrode is in the</span>
+<span class="sd">        precise location.</span>
+
+<span class="sd">        If you want to exclude white matter regions with &#39;aparc&#39;, use</span>
+<span class="sd">            exclude_regions = (&#39;White&#39;, &#39;WM&#39;, &#39;Unknown&#39;)</span>
+<span class="sd">        and with &#39;aparc.a2009s&#39;, use:</span>
+<span class="sd">            exclude_regions = (&#39;White-Matter&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># convert to freesurfer coordinates of the MRI</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">around</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">FS_AFFINE</span><span class="p">,</span> <span class="n">append</span><span class="p">(</span><span class="n">abs_pos</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))[:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Position in the MRI matrix: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pos</span><span class="p">))</span>
+
+        <span class="n">mri_dat</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_seg</span><span class="p">(</span><span class="n">parc_type</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">max_approx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">max_approx</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="k">for</span> <span class="n">approx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_approx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Trying approx </span><span class="si">{}</span><span class="s1"> out of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">approx</span><span class="p">,</span> <span class="n">max_approx</span><span class="p">))</span>
+            <span class="n">regions</span> <span class="o">=</span> <span class="n">_find_neighboring_regions</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">mri_dat</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">lookuptable</span><span class="p">,</span> <span class="n">approx</span><span class="p">,</span>
+                                                <span class="n">exclude_regions</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">regions</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">regions</span><span class="p">:</span>
+            <span class="n">c_regions</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">c_regions</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">approx</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;--not found--&#39;</span><span class="p">,</span> <span class="n">approx</span></div>
+
+<div class="viewcode-block" id="Freesurfer.read_label"><a class="viewcode-back" href="../../../api/phypno.attr.anat.html#phypno.attr.anat.Freesurfer.read_label">[docs]</a>    <span class="k">def</span> <span class="nf">read_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hemi</span><span class="p">,</span> <span class="n">parc_type</span><span class="o">=</span><span class="s1">&#39;aparc&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read the labels (annotations) for each hemisphere.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        hemi : str</span>
+<span class="sd">            &#39;lh&#39; or &#39;rh&#39;</span>
+<span class="sd">        parc_type : str</span>
+<span class="sd">            &#39;aparc&#39;, &#39;aparc.a2009s&#39;, &#39;BA&#39;, &#39;BA.thresh&#39;, or &#39;aparc.DKTatlas40&#39;</span>
+<span class="sd">            &#39;aparc.DKTatlas40&#39; is only for recent freesurfer versions</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            value at each vertex, indicating the label</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            RGB + alpha colors for each label</span>
+<span class="sd">        list of str</span>
+<span class="sd">            names of the labels</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parc_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir</span> <span class="o">/</span> <span class="s1">&#39;label&#39;</span> <span class="o">/</span> <span class="p">(</span><span class="n">hemi</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">parc_type</span> <span class="o">+</span> <span class="s1">&#39;.annot&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">vert_val</span><span class="p">,</span> <span class="n">region_color</span><span class="p">,</span> <span class="n">region_name</span> <span class="o">=</span> <span class="n">read_annot</span><span class="p">(</span><span class="n">parc_file</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;nibabel needs to be installed for this function&#39;</span><span class="p">)</span>
+        <span class="n">region_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">region_name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">vert_val</span><span class="p">,</span> <span class="n">region_color</span><span class="p">,</span> <span class="n">region_name</span></div>
+
+<div class="viewcode-block" id="Freesurfer.read_seg"><a class="viewcode-back" href="../../../api/phypno.attr.anat.html#phypno.attr.anat.Freesurfer.read_seg">[docs]</a>    <span class="k">def</span> <span class="nf">read_seg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parc_type</span><span class="o">=</span><span class="s1">&#39;aparc&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read the MRI segmentation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parc_type : str</span>
+<span class="sd">            &#39;aparc&#39; or &#39;aparc.a2009s&#39;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            3d matrix with values</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            4x4 affine matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">parc_type</span><span class="p">)</span>
+        <span class="n">seg_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir</span> <span class="o">/</span> <span class="s1">&#39;mri&#39;</span> <span class="o">/</span> <span class="p">(</span><span class="n">parc_type</span> <span class="o">+</span> <span class="s1">&#39;+aseg.mgz&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">seg_mri</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">seg_file</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;nibabel needs to be installed for this function&#39;</span><span class="p">)</span>
+        <span class="n">seg_aff</span> <span class="o">=</span> <span class="n">seg_mri</span><span class="o">.</span><span class="n">affine</span>
+        <span class="n">seg_dat</span> <span class="o">=</span> <span class="n">seg_mri</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">seg_dat</span><span class="p">,</span> <span class="n">seg_aff</span></div>
+
+<div class="viewcode-block" id="Freesurfer.read_brain"><a class="viewcode-back" href="../../../api/phypno.attr.anat.html#phypno.attr.anat.Freesurfer.read_brain">[docs]</a>    <span class="k">def</span> <span class="nf">read_brain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surf_type</span><span class="o">=</span><span class="s1">&#39;pial&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read the surface of both hemispheres.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        surf_type : str</span>
+<span class="sd">            &#39;pial&#39;, &#39;smoothwm&#39;, &#39;inflated&#39;, &#39;white&#39;, or &#39;sphere&#39;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        instance of Brain</span>
+<span class="sd">            the surfaces of both brain hemispheres</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Brain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="p">,</span> <span class="n">surf_type</span><span class="o">=</span><span class="n">surf_type</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

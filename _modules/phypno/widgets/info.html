@@ -1,0 +1,590 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.widgets.info &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.widgets.info</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.widgets.info</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Widget with general information about the dataset.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">basename</span><span class="p">,</span> <span class="n">dirname</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="n">QSettings</span><span class="p">,</span> <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="k">import</span> <span class="n">QIcon</span><span class="p">,</span> <span class="n">QKeySequence</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QAction</span><span class="p">,</span>
+                             <span class="n">QCheckBox</span><span class="p">,</span>
+                             <span class="n">QComboBox</span><span class="p">,</span>
+                             <span class="n">QDialog</span><span class="p">,</span>
+                             <span class="n">QDialogButtonBox</span><span class="p">,</span>
+                             <span class="n">QFileDialog</span><span class="p">,</span>
+                             <span class="n">QFormLayout</span><span class="p">,</span>
+                             <span class="n">QGroupBox</span><span class="p">,</span>
+                             <span class="n">QLabel</span><span class="p">,</span>
+                             <span class="n">QLineEdit</span><span class="p">,</span>
+                             <span class="n">QPushButton</span><span class="p">,</span>
+                             <span class="n">QVBoxLayout</span><span class="p">,</span>
+                             <span class="n">QWidget</span><span class="p">,</span>
+                             <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">..ioeeg</span> <span class="k">import</span> <span class="n">ieeg_org</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">short_strings</span><span class="p">,</span> <span class="n">ICON</span><span class="p">,</span> <span class="n">keep_recent_datasets</span><span class="p">,</span>
+                    <span class="n">choose_file_or_dir</span><span class="p">)</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">settings</span> <span class="o">=</span> <span class="n">QSettings</span><span class="p">(</span><span class="s2">&quot;phypno&quot;</span><span class="p">,</span> <span class="s2">&quot;scroll_data&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Info"><a class="viewcode-back" href="../../../api/phypno.widgets.info.html#phypno.widgets.info.Info">[docs]</a><span class="k">class</span> <span class="nc">Info</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display information about the dataset.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : instance of QMainWindow</span>
+<span class="sd">        the main window.</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        the full path of the file.</span>
+<span class="sd">    dataset : instance of phypno.Dataset</span>
+<span class="sd">        the dataset already read in.</span>
+<span class="sd">    markers : list</span>
+<span class="sd">        list of the markers in the dataset</span>
+
+<span class="sd">    idx_filename : QPushButton</span>
+<span class="sd">        button to select dataset / show current dataset</span>
+<span class="sd">    idx_s_freq : QLabel</span>
+<span class="sd">        show sampling frequency</span>
+<span class="sd">    idx_n_chan : QLabel</span>
+<span class="sd">        show number of channels</span>
+<span class="sd">    idx_start_time : QLabel</span>
+<span class="sd">        show start time of the dataset</span>
+<span class="sd">    idx_end_time : QLabel</span>
+<span class="sd">        show end time of the dataset</span>
+
+<span class="sd">    idx_amplitude : QLabel</span>
+<span class="sd">        show current amplitude</span>
+<span class="sd">    idx_distance : QLabel</span>
+<span class="sd">        show current distance between traces</span>
+<span class="sd">    idx_length : QLabel</span>
+<span class="sd">        show length of the time window</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># about the recordings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_filename</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_s_freq</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_n_chan</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_start_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_end_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># about the visualization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_amplitude</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_distance</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_length</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_action</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Info.create"><a class="viewcode-back" href="../../../api/phypno.widgets.info.html#phypno.widgets.info.Info.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create the widget layout with all the information.&quot;&quot;&quot;</span>
+        <span class="n">b0</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Dataset&#39;</span><span class="p">)</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">b0</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+
+        <span class="n">open_rec</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Open Dataset...&#39;</span><span class="p">)</span>
+        <span class="n">open_rec</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">)</span>
+        <span class="n">open_rec</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;Click here to open a new recording&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_filename</span> <span class="o">=</span> <span class="n">open_rec</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_s_freq</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_n_chan</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_start_time</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_end_time</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Filename:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_filename</span><span class="p">)</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Sampl. Freq:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_s_freq</span><span class="p">)</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;N. Channels:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_n_chan</span><span class="p">)</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Start Time: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_start_time</span><span class="p">)</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;End Time: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_end_time</span><span class="p">)</span>
+
+        <span class="n">b1</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;View&#39;</span><span class="p">)</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">b1</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_amplitude</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_distance</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_length</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Amplitude:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_amplitude</span><span class="p">)</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Distance:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_distance</span><span class="p">)</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Length:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_length</span><span class="p">)</span>
+
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">b0</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Info.create_action"><a class="viewcode-back" href="../../../api/phypno.widgets.info.html#phypno.widgets.info.Info.create_action">[docs]</a>    <span class="k">def</span> <span class="nf">create_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create actions associated with this widget.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        I think that this should be a function or a property.</span>
+
+<span class="sd">        The good thing about the property is that it is updated every time you</span>
+<span class="sd">        run it (for example, if you change some parameters in the settings).</span>
+<span class="sd">        The main drawback is that you cannot reference back to the QAction, as</span>
+<span class="sd">        it creates new ones every time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;open_rec&#39;</span><span class="p">]),</span> <span class="s1">&#39;Open Dataset...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">Open</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;open_dataset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">max_dataset_history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;max_dataset_history&#39;</span><span class="p">)</span>
+        <span class="n">recent_recs</span> <span class="o">=</span> <span class="n">keep_recent_datasets</span><span class="p">(</span><span class="n">max_dataset_history</span><span class="p">)</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">one_recent_rec</span> <span class="ow">in</span> <span class="n">recent_recs</span><span class="p">:</span>
+            <span class="n">act_recent</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">one_recent_rec</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">act_recent</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">,</span>
+                                                 <span class="n">one_recent_rec</span><span class="p">))</span>
+            <span class="n">act</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">act_recent</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;open_recent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">output</span></div>
+
+<div class="viewcode-block" id="Info.open_dataset"><a class="viewcode-back" href="../../../api/phypno.widgets.info.html#phypno.widgets.info.Info.open_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">open_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Open a new dataset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        recent : path to file</span>
+<span class="sd">            one of the recent datasets to read</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        recent was created by keep_recent_datasets. It has format:</span>
+<span class="sd">        STUDY (ieeg.org) when using remote data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">recent</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">recent</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;)&#39;</span><span class="p">:</span>  <span class="c1"># remote server name, as STUDY (ieeg.org)</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">recent</span><span class="p">[:</span><span class="n">recent</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">repo</span> <span class="o">=</span> <span class="n">recent</span><span class="p">[</span><span class="n">recent</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">username</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;remote/username&#39;</span><span class="p">)</span>
+                <span class="n">password</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;remote/password&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">username</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">password</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;no stored values for username and password for &#39;</span> <span class="o">+</span>
+                           <span class="n">repo</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="k">return</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">recent</span>
+                <span class="n">repo</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">repo</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dir_name</span> <span class="o">=</span> <span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                <span class="n">dir_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;recording_dir&#39;</span><span class="p">)</span>
+
+            <span class="n">file_or_dir</span> <span class="o">=</span> <span class="n">choose_file_or_dir</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">file_or_dir</span> <span class="o">==</span> <span class="s1">&#39;dir&#39;</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getExistingDirectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                                            <span class="s1">&#39;Open directory&#39;</span><span class="p">,</span>
+                                                            <span class="n">dir_name</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">file_or_dir</span> <span class="o">==</span> <span class="s1">&#39;file&#39;</span><span class="p">:</span>
+                <span class="n">filename</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getOpenFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Open file&#39;</span><span class="p">,</span>
+                                                          <span class="n">dir_name</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">file_or_dir</span> <span class="o">==</span> <span class="s1">&#39;remote&#39;</span><span class="p">:</span>
+                <span class="n">remote_dialog</span> <span class="o">=</span> <span class="n">Remote</span><span class="p">()</span>
+                <span class="n">answer</span> <span class="o">=</span> <span class="n">remote_dialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">answer</span> <span class="o">==</span> <span class="n">QDialog</span><span class="o">.</span><span class="n">Rejected</span><span class="p">:</span>
+                    <span class="k">return</span>
+
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">remote_dialog</span><span class="o">.</span><span class="n">subjid</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+                <span class="n">repo</span> <span class="o">=</span> <span class="n">remote_dialog</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+                <span class="n">username</span><span class="p">,</span> <span class="n">password</span> <span class="o">=</span> <span class="n">remote_dialog</span><span class="o">.</span><span class="n">output</span>
+
+            <span class="k">elif</span> <span class="n">file_or_dir</span> <span class="o">==</span> <span class="s1">&#39;abort&#39;</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;Reading dataset: &#39;</span> <span class="o">+</span>
+                                            <span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="n">repo</span>
+            <span class="k">if</span> <span class="n">repo</span> <span class="o">==</span> <span class="s1">&#39;ieeg.org&#39;</span><span class="p">:</span>
+                <span class="n">ieeg_org</span><span class="o">.</span><span class="n">SESS</span> <span class="o">=</span> <span class="n">ieeg_org</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+                                                 <span class="n">password_md5</span><span class="o">=</span><span class="n">password</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="n">repo</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;File &#39;</span> <span class="o">+</span> <span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="o">+</span>
+                                                <span class="s1">&#39; cannot be read&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_dataset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;chan_name&#39;</span><span class="p">])</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">read_markers</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No notes/markers present in the header of the file&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">update_dataset_marker</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Info.display_dataset"><a class="viewcode-back" href="../../../api/phypno.widgets.info.html#phypno.widgets.info.Info.display_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">display_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update the widget with information about the dataset.&quot;&quot;&quot;</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">header</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+        <span class="n">short_filename</span> <span class="o">=</span> <span class="n">short_strings</span><span class="p">(</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_filename</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">short_filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_s_freq</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;s_freq&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_n_chan</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;chan_name&#39;</span><span class="p">])))</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%b-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_start_time</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">start_time</span><span class="p">)</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;n_samples&#39;</span><span class="p">]</span>
+                                                    <span class="o">/</span> <span class="n">header</span><span class="p">[</span><span class="s1">&#39;s_freq&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_end_time</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">end_time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%b-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Info.display_view"><a class="viewcode-back" href="../../../api/phypno.widgets.info.html#phypno.widgets.info.Info.display_view">[docs]</a>    <span class="k">def</span> <span class="nf">display_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update information about the size of the traces.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_amplitude</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_scale&#39;</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_distance</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_length</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="Info.reset"><a class="viewcode-back" href="../../../api/phypno.widgets.info.html#phypno.widgets.info.Info.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reset widget to original state.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># about the recordings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_filename</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;Open Recordings...&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_s_freq</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_n_chan</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_start_time</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_end_time</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="c1"># about the visualization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_amplitude</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_distance</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_length</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Remote"><a class="viewcode-back" href="../../../api/phypno.widgets.info.html#phypno.widgets.info.Remote">[docs]</a><span class="k">class</span> <span class="nc">Remote</span><span class="p">(</span><span class="n">QDialog</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">bbox</span> <span class="o">=</span> <span class="n">QDialogButtonBox</span><span class="p">(</span><span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Ok</span> <span class="o">|</span> <span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Cancel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_ok</span> <span class="o">=</span> <span class="n">bbox</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Ok</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_cancel</span> <span class="o">=</span> <span class="n">bbox</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Cancel</span><span class="p">)</span>
+
+        <span class="n">bbox</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">button_clicked</span><span class="p">)</span>
+
+        <span class="n">username</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;remote/username&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;remote/password&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">password</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">password_md5</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">password_md5</span> <span class="o">=</span> <span class="n">password</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">QLineEdit</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">QLineEdit</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="o">.</span><span class="n">setEchoMode</span><span class="p">(</span><span class="n">QLineEdit</span><span class="o">.</span><span class="n">Password</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">remember</span> <span class="o">=</span> <span class="n">QCheckBox</span><span class="p">(</span><span class="s1">&#39;Store Values&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remember</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;Password is stored as unsalted md5 hash&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">password</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remember</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Unchecked</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remember</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">subjid</span> <span class="o">=</span> <span class="n">QLineEdit</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="s1">&#39;ieeg.org&#39;</span><span class="p">)</span>  <span class="c1"># not implemented, also not in settings</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Repository&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Username&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remember</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Subject ID&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjid</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">bbox</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Remote.button_clicked"><a class="viewcode-back" href="../../../api/phypno.widgets.info.html#phypno.widgets.info.Remote.button_clicked">[docs]</a>    <span class="k">def</span> <span class="nf">button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">button</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_ok</span><span class="p">:</span>
+
+            <span class="n">username</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+            <span class="n">new_password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">password_md5</span> <span class="o">==</span> <span class="n">new_password</span><span class="p">:</span>  <span class="c1"># it was not changed</span>
+                <span class="n">password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">password_md5</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">password</span> <span class="o">=</span> <span class="n">ieeg_org</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">new_password</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">remember</span><span class="o">.</span><span class="n">isChecked</span><span class="p">():</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s1">&#39;remote/username&#39;</span><span class="p">,</span> <span class="n">username</span><span class="p">)</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s1">&#39;remote/password&#39;</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;remote/username&#39;</span><span class="p">)</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;remote/password&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_cancel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reject</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

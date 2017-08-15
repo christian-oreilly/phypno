@@ -1,0 +1,521 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.widgets.channels module &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="phypno.widgets package" href="phypno.widgets.html"/>
+        <link rel="next" title="phypno.widgets.creation module" href="phypno.widgets.creation.html"/>
+        <link rel="prev" title="phypno.widgets package" href="phypno.widgets.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="phypno.html">Modules, classes, functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="phypno.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="phypno.attr.html">phypno.attr package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.detect.html">phypno.detect package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.ioeeg.html">phypno.ioeeg package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.source.html">phypno.source package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.trans.html">phypno.trans package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.utils.html">phypno.utils package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="phypno.widgets.html">phypno.widgets package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="phypno.widgets.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phypno.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="phypno.html">phypno package</a> &raquo;</li>
+        
+          <li><a href="phypno.widgets.html">phypno.widgets package</a> &raquo;</li>
+        
+      <li>phypno.widgets.channels module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/phypno.widgets.channels.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-phypno.widgets.channels">
+<span id="phypno-widgets-channels-module"></span><h1>phypno.widgets.channels module<a class="headerlink" href="#module-phypno.widgets.channels" title="Permalink to this headline">¶</a></h1>
+<p>Widget to define channels, montage and filters.</p>
+<dl class="class">
+<dt id="phypno.widgets.channels.Channels">
+<em class="property">class </em><code class="descclassname">phypno.widgets.channels.</code><code class="descname">Channels</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#Channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.Channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtWidgets.QWidget</span></code></p>
+<p>Widget with information about channel groups.</p>
+<dl class="attribute">
+<dt id="phypno.widgets.channels.Channels.parent">
+<code class="descname">parent</code><a class="headerlink" href="#phypno.widgets.channels.Channels.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QMainWindow</em> – the main window</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.channels.Channels.config">
+<code class="descname">config</code><a class="headerlink" href="#phypno.widgets.channels.Channels.config" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ConfigChannels</em> – preferences for this widget</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.channels.Channels.filename">
+<code class="descname">filename</code><a class="headerlink" href="#phypno.widgets.channels.Channels.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>path to file</em> – file with the channel groups</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.channels.Channels.groups">
+<code class="descname">groups</code><a class="headerlink" href="#phypno.widgets.channels.Channels.groups" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of dict</em> – each dict contains information about one channel group</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.channels.Channels.tabs">
+<code class="descname">tabs</code><a class="headerlink" href="#phypno.widgets.channels.Channels.tabs" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QTabWidget</em> – Widget that contains the tabs with channel groups</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.channels.Channels.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#Channels.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.Channels.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply changes to the plots.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.channels.Channels.color_group">
+<code class="descname">color_group</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#Channels.color_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.Channels.color_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the color of the group.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.channels.Channels.create">
+<code class="descname">create</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#Channels.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.Channels.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create Channels Widget</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.channels.Channels.create_action">
+<code class="descname">create_action</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#Channels.create_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.Channels.create_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create actions related to channel selection.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.channels.Channels.del_group">
+<code class="descname">del_group</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#Channels.del_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.Channels.del_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete current group.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.channels.Channels.load_channels">
+<code class="descname">load_channels</code><span class="sig-paren">(</span><em>debug_filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#Channels.load_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.Channels.load_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load channel groups from file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>debug_filename</strong> (<em>path to file</em>) – when debugging the function, you can open a channels file from the
+command line</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.channels.Channels.new_group">
+<code class="descname">new_group</code><span class="sig-paren">(</span><em>checked=False</em>, <em>test_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#Channels.new_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.Channels.new_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new channel group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>checked</strong> (<em>bool</em>) – comes from QAbstractButton.clicked</li>
+<li><strong>test_name</strong> (<em>str</em>) – used for testing purposes to avoid modal window</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Don’t call self.apply() just yet, only if the user wants it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.channels.Channels.read_group_info">
+<code class="descname">read_group_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#Channels.read_group_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.Channels.read_group_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get information about groups directly from the widget.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.channels.Channels.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#Channels.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.Channels.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset all the information of this widget.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.channels.Channels.save_channels">
+<code class="descname">save_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#Channels.save_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.Channels.save_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save channel groups to file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.widgets.channels.ChannelsGroup">
+<em class="property">class </em><code class="descclassname">phypno.widgets.channels.</code><code class="descname">ChannelsGroup</code><span class="sig-paren">(</span><em>chan_name</em>, <em>config_value</em>, <em>s_freq</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#ChannelsGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.ChannelsGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtWidgets.QWidget</span></code></p>
+<p>Tab inside the Channels widget.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>chan_name</strong> (<em>list of str</em>) – list of all the channels in the dataset</li>
+<li><strong>config_value</strong> (<em>dict</em>) – default values for the channels</li>
+<li><strong>s_freq</strong> (<em>int</em>) – sampling frequency (to define max of filter)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="phypno.widgets.channels.ChannelsGroup.chan_name">
+<code class="descname">chan_name</code><a class="headerlink" href="#phypno.widgets.channels.ChannelsGroup.chan_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of str</em> – list of all the channels in the dataset</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.channels.ChannelsGroup.idx_l0">
+<code class="descname">idx_l0</code><a class="headerlink" href="#phypno.widgets.channels.ChannelsGroup.idx_l0" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QListWidget</em> – list with the channels to plot</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.channels.ChannelsGroup.idx_l1">
+<code class="descname">idx_l1</code><a class="headerlink" href="#phypno.widgets.channels.ChannelsGroup.idx_l1" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QListWidget</em> – list with the channels to use as reference</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.channels.ChannelsGroup.idx_hp">
+<code class="descname">idx_hp</code><a class="headerlink" href="#phypno.widgets.channels.ChannelsGroup.idx_hp" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QDoubleSpinBox</em> – spin box to indicate the high-pass filter</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.channels.ChannelsGroup.idx_lp">
+<code class="descname">idx_lp</code><a class="headerlink" href="#phypno.widgets.channels.ChannelsGroup.idx_lp" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QDoubleSpinBox</em> – spin box to indicate the low-pass filter</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.channels.ChannelsGroup.idx_scale">
+<code class="descname">idx_scale</code><a class="headerlink" href="#phypno.widgets.channels.ChannelsGroup.idx_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QDoubleSpinBox</em> – spin_box to indicate the group-specific scaling</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.channels.ChannelsGroup.idx_reref">
+<code class="descname">idx_reref</code><a class="headerlink" href="#phypno.widgets.channels.ChannelsGroup.idx_reref" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QPushButton</em> – it triggers a selection of reference channels equal to the channels to
+plot.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.channels.ChannelsGroup.idx_color">
+<code class="descname">idx_color</code><a class="headerlink" href="#phypno.widgets.channels.ChannelsGroup.idx_color" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>QColor</em> – color of the traces beloning to this channel group (it could be a
+property of QWidget)</p>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>TODO: re-referencing should be more flexible, by allowing other types of
+referencing.</p>
+<p>Use config_value instead of config, because it’s easier to pass dict
+when loading channels montage.</p>
+<dl class="method">
+<dt id="phypno.widgets.channels.ChannelsGroup.add_channels_to_list">
+<code class="descname">add_channels_to_list</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#ChannelsGroup.add_channels_to_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.ChannelsGroup.add_channels_to_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create list of channels (one for those to plot, one for ref).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>l</strong> (<em>instance of QListWidget</em>) – one of the two lists (chan_to_plot or ref_chan)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.channels.ChannelsGroup.get_info">
+<code class="descname">get_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#ChannelsGroup.get_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.ChannelsGroup.get_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the information about the channel groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>dict</em> – information about this channel group</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The items in selectedItems() are ordered based on the user’s selection
+(which appears pretty random). It’s more consistent to use the same
+order of the main channel list. That’s why the additional for-loop
+is necessary. We don’t care about the order of the reference channels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.channels.ChannelsGroup.highlight_channels">
+<code class="descname">highlight_channels</code><span class="sig-paren">(</span><em>l</em>, <em>selected_chan</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#ChannelsGroup.highlight_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.ChannelsGroup.highlight_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Highlight channels in the list of channels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>selected_chan</strong> (<em>list of str</em>) – channels to indicate as selected.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.channels.ChannelsGroup.rereference">
+<code class="descname">rereference</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#ChannelsGroup.rereference"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.ChannelsGroup.rereference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Automatically highlight channels to use as reference, based on
+selected channels.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.widgets.channels.ConfigChannels">
+<em class="property">class </em><code class="descclassname">phypno.widgets.channels.</code><code class="descname">ConfigChannels</code><span class="sig-paren">(</span><em>update_widget</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#ConfigChannels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.ConfigChannels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="phypno.widgets.settings.html#phypno.widgets.settings.Config" title="phypno.widgets.settings.Config"><code class="xref py py-class docutils literal"><span class="pre">phypno.widgets.settings.Config</span></code></a></p>
+<p>Widget with preferences in Settings window for Channels.</p>
+<dl class="method">
+<dt id="phypno.widgets.channels.ConfigChannels.create_config">
+<code class="descname">create_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/channels.html#ConfigChannels.create_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.channels.ConfigChannels.create_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="phypno.widgets.creation.html" class="btn btn-neutral float-right" title="phypno.widgets.creation module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phypno.widgets.html" class="btn btn-neutral" title="phypno.widgets package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

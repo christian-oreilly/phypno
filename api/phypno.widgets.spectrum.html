@@ -1,0 +1,428 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.widgets.spectrum module &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="phypno.widgets package" href="phypno.widgets.html"/>
+        <link rel="next" title="phypno.widgets.traces module" href="phypno.widgets.traces.html"/>
+        <link rel="prev" title="phypno.widgets.settings module" href="phypno.widgets.settings.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="phypno.html">Modules, classes, functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="phypno.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="phypno.attr.html">phypno.attr package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.detect.html">phypno.detect package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.ioeeg.html">phypno.ioeeg package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.source.html">phypno.source package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.trans.html">phypno.trans package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.utils.html">phypno.utils package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="phypno.widgets.html">phypno.widgets package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="phypno.widgets.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phypno.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="phypno.html">phypno package</a> &raquo;</li>
+        
+          <li><a href="phypno.widgets.html">phypno.widgets package</a> &raquo;</li>
+        
+      <li>phypno.widgets.spectrum module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/phypno.widgets.spectrum.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-phypno.widgets.spectrum">
+<span id="phypno-widgets-spectrum-module"></span><h1>phypno.widgets.spectrum module<a class="headerlink" href="#module-phypno.widgets.spectrum" title="Permalink to this headline">¶</a></h1>
+<p>Widget to show power spectrum.</p>
+<dl class="class">
+<dt id="phypno.widgets.spectrum.ConfigSpectrum">
+<em class="property">class </em><code class="descclassname">phypno.widgets.spectrum.</code><code class="descname">ConfigSpectrum</code><span class="sig-paren">(</span><em>update_widget</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/spectrum.html#ConfigSpectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.spectrum.ConfigSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="phypno.widgets.settings.html#phypno.widgets.settings.Config" title="phypno.widgets.settings.Config"><code class="xref py py-class docutils literal"><span class="pre">phypno.widgets.settings.Config</span></code></a></p>
+<dl class="method">
+<dt id="phypno.widgets.spectrum.ConfigSpectrum.create_config">
+<code class="descname">create_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/spectrum.html#ConfigSpectrum.create_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.spectrum.ConfigSpectrum.create_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.widgets.spectrum.Spectrum">
+<em class="property">class </em><code class="descclassname">phypno.widgets.spectrum.</code><code class="descname">Spectrum</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/spectrum.html#Spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt5.QtWidgets.QWidget</span></code></p>
+<p>Plot the power spectrum for a specified channel.</p>
+<dl class="attribute">
+<dt id="phypno.widgets.spectrum.Spectrum.parent">
+<code class="descname">parent</code><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QMainWindow</em> – the main window.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.spectrum.Spectrum.x_limit">
+<code class="descname">x_limit</code><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.x_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple or list</em> – 2 values specifying the limit on x-axis</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.spectrum.Spectrum.y_limit">
+<code class="descname">y_limit</code><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.y_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple or list</em> – 2 values specifying the limit on y-axis</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.spectrum.Spectrum.log">
+<code class="descname">log</code><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.log" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – log-transform the data or not</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.spectrum.Spectrum.idx_chan">
+<code class="descname">idx_chan</code><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.idx_chan" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QComboBox</em> – the element with the list of channel names.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.spectrum.Spectrum.idx_x_min">
+<code class="descname">idx_x_min</code><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.idx_x_min" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QLineEdit</em> – value with min x value</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.spectrum.Spectrum.idx_x_max">
+<code class="descname">idx_x_max</code><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.idx_x_max" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QLineEdit</em> – value with max x value</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.spectrum.Spectrum.idx_y_min">
+<code class="descname">idx_y_min</code><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.idx_y_min" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QLineEdit</em> – value with min y value</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.spectrum.Spectrum.idx_y_max">
+<code class="descname">idx_y_max</code><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.idx_y_max" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QLineEdit</em> – value with max y value</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.spectrum.Spectrum.idx_log">
+<code class="descname">idx_log</code><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.idx_log" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QCheckBox</em> – widget that defines if log should be used or not</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.spectrum.Spectrum.idx_fig">
+<code class="descname">idx_fig</code><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.idx_fig" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QGraphicsView</em> – the view with the power spectrum</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.widgets.spectrum.Spectrum.scene">
+<code class="descname">scene</code><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.scene" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>instance of QGraphicsScene</em> – the scene with GraphicsItems</p>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>If data contains NaN, it doesn’t create any spectrum (feature or bug?).</p>
+<dl class="method">
+<dt id="phypno.widgets.spectrum.Spectrum.add_grid">
+<code class="descname">add_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/spectrum.html#Spectrum.add_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.add_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add axis and ticks to figure.</p>
+<p class="rubric">Notes</p>
+<p>I know that visvis and pyqtgraphs can do this in much simpler way, but
+those packages create too large a padding around the figure and this is
+pretty fast.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.spectrum.Spectrum.create">
+<code class="descname">create</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/spectrum.html#Spectrum.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create empty scene for power spectrum.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.spectrum.Spectrum.display">
+<code class="descname">display</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/spectrum.html#Spectrum.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make graphicsitem for spectrum figure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>ndarray</em>) – 1D vector containing the data only</li>
+<li><strong>function can be called by self.display_window</strong><strong> (</strong><strong>which reads the</strong> (<em>This</em>) – </li>
+<li><strong>for the selected channel</strong><strong>) or </strong><strong>by the mouse-events functions in</strong> (<a class="reference internal" href="phypno.datatype.html#phypno.datatype.Data.data" title="phypno.datatype.Data.data"><em>data</em></a>) – </li>
+<li><strong>(</strong><strong>which read chunks of data from the user-made selection</strong><strong>)</strong><strong></strong> (<a class="reference internal" href="phypno.widgets.traces.html#module-phypno.widgets.traces" title="phypno.widgets.traces"><em>traces</em></a>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.spectrum.Spectrum.display_window">
+<code class="descname">display_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/spectrum.html#Spectrum.display_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.display_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the channel name from QComboBox and plot its spectrum.</p>
+<p>This function is necessary it reads the data and it sends it to
+self.display. When the user selects a smaller chunk of data from the
+visible traces, then we don’t need to call this function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.spectrum.Spectrum.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/spectrum.html#Spectrum.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset widget as new</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.spectrum.Spectrum.resizeEvent">
+<code class="descname">resizeEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/spectrum.html#Spectrum.resizeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.resizeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the whole scene in view.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> (<em>instance of Qt.Event</em>) – not important</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.spectrum.Spectrum.show_channame">
+<code class="descname">show_channame</code><span class="sig-paren">(</span><em>chan_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/spectrum.html#Spectrum.show_channame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.show_channame" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="phypno.widgets.spectrum.Spectrum.update">
+<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/widgets/spectrum.html#Spectrum.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.widgets.spectrum.Spectrum.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add channel names to the combobox.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="phypno.widgets.traces.html" class="btn btn-neutral float-right" title="phypno.widgets.traces module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phypno.widgets.settings.html" class="btn btn-neutral" title="phypno.widgets.settings module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

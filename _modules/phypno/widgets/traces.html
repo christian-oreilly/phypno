@@ -1,0 +1,1136 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.widgets.traces &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.widgets.traces</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.widgets.traces</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Definition of the main widgets, with recordings.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="p">(</span><span class="nb">abs</span><span class="p">,</span> <span class="n">arange</span><span class="p">,</span> <span class="n">argmin</span><span class="p">,</span> <span class="n">asarray</span><span class="p">,</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">in1d</span><span class="p">,</span>
+                   <span class="nb">max</span><span class="p">,</span> <span class="nb">min</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">log2</span><span class="p">,</span> <span class="n">nanmean</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="n">power</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="n">QPointF</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QRectF</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="k">import</span> <span class="p">(</span><span class="n">QBrush</span><span class="p">,</span>
+                         <span class="n">QColor</span><span class="p">,</span>
+                         <span class="n">QIcon</span><span class="p">,</span>
+                         <span class="n">QKeySequence</span><span class="p">,</span>
+                         <span class="n">QPen</span><span class="p">,</span>
+                         <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QAction</span><span class="p">,</span>
+                             <span class="n">QFormLayout</span><span class="p">,</span>
+                             <span class="n">QGraphicsItem</span><span class="p">,</span>
+                             <span class="n">QGraphicsRectItem</span><span class="p">,</span>
+                             <span class="n">QGraphicsScene</span><span class="p">,</span>
+                             <span class="n">QGraphicsSimpleTextItem</span><span class="p">,</span>
+                             <span class="n">QGraphicsView</span><span class="p">,</span>
+                             <span class="n">QGroupBox</span><span class="p">,</span>
+                             <span class="n">QVBoxLayout</span><span class="p">,</span>
+                             <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">ChanTime</span>
+<span class="kn">from</span> <span class="nn">..trans</span> <span class="k">import</span> <span class="n">montage</span><span class="p">,</span> <span class="n">filter_</span>
+<span class="kn">from</span> <span class="nn">.settings</span> <span class="k">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">FormFloat</span><span class="p">,</span> <span class="n">FormInt</span><span class="p">,</span> <span class="n">FormBool</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">convert_name_to_color</span><span class="p">,</span>
+                    <span class="n">ICON</span><span class="p">,</span>
+                    <span class="n">LINE_COLOR</span><span class="p">,</span>
+                    <span class="n">LINE_WIDTH</span><span class="p">,</span>
+                    <span class="n">Path</span><span class="p">,</span>
+                    <span class="n">TextItem_with_BG</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># undo the chan + (group) naming</span>
+<span class="n">take_raw_name</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s1">&#39; (&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; (&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">NoPen</span> <span class="o">=</span> <span class="n">QPen</span><span class="p">()</span>
+<span class="n">NoPen</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">NoPen</span><span class="p">)</span>
+
+<span class="n">MINIMUM_N_SAMPLES</span> <span class="o">=</span> <span class="mi">32</span>  <span class="c1"># at least this number of samples to compute fft</span>
+
+
+<div class="viewcode-block" id="ConfigTraces"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.ConfigTraces">[docs]</a><span class="k">class</span> <span class="nc">ConfigTraces</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Widget with preferences in Settings window for Overview.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_widget</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;traces&#39;</span><span class="p">,</span> <span class="n">update_widget</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConfigTraces.create_config"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.ConfigTraces.create_config">[docs]</a>    <span class="k">def</span> <span class="nf">create_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">box0</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Signals&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;y_distance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormFloat</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;y_scale&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormFloat</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;label_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormFloat</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;n_time_labels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormInt</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;max_s_freq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormInt</span><span class="p">()</span>
+
+        <span class="n">form_layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">box0</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form_layout</span><span class="p">)</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Signal scaling&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;y_scale&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Distance between signals&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;y_distance&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Label width ratio&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;label_ratio&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Number of time labels&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;n_time_labels&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Maximum Sampling Frequency&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;max_s_freq&#39;</span><span class="p">])</span>
+
+        <span class="n">box1</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Grid&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;grid_x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormBool</span><span class="p">(</span><span class="s1">&#39;Grid on time axis&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;grid_xtick&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormFloat</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;grid_y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormBool</span><span class="p">(</span><span class="s1">&#39;Grid on voltage axis&#39;</span><span class="p">)</span>
+
+        <span class="n">form_layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">box1</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form_layout</span><span class="p">)</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;grid_x&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Tick every (s)&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;grid_xtick&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;grid_y&#39;</span><span class="p">])</span>
+
+        <span class="n">box2</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s1">&#39;Current Window&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;window_start&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormInt</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;window_length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormInt</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;window_step&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FormInt</span><span class="p">()</span>
+
+        <span class="n">form_layout</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+        <span class="n">box2</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form_layout</span><span class="p">)</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Window start time&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;window_start&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Window length&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;window_length&#39;</span><span class="p">])</span>
+        <span class="n">form_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="s1">&#39;Step size&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;window_step&#39;</span><span class="p">])</span>
+
+        <span class="n">main_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">box0</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">box1</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">box2</span><span class="p">)</span>
+        <span class="n">main_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_layout</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Traces"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces">[docs]</a><span class="k">class</span> <span class="nc">Traces</span><span class="p">(</span><span class="n">QGraphicsView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Main widget that contains the recordings to be plotted.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : instance of QMainWindow</span>
+<span class="sd">        the main window.</span>
+<span class="sd">    config : instance of ConfigTraces</span>
+<span class="sd">        settings for this widget</span>
+
+<span class="sd">    y_scrollbar_value : int</span>
+<span class="sd">        position of the vertical scrollbar</span>
+<span class="sd">    data : instance of ChanTime</span>
+<span class="sd">        filtered and reref&#39;ed data</span>
+
+<span class="sd">    chan : list of str</span>
+<span class="sd">        list of channels (labels and channel group)</span>
+<span class="sd">    chan_pos : list of int</span>
+<span class="sd">        y-position of each channel (based on value at 0)</span>
+<span class="sd">    chan_scale : list of float</span>
+<span class="sd">        scaling factor for each channel</span>
+<span class="sd">    time_pos : list of QPointF</span>
+<span class="sd">        we need to keep track of the position of time label during creation</span>
+<span class="sd">    sel_chan : int</span>
+<span class="sd">        index of self.chan of the first selected channel</span>
+<span class="sd">    sel_xy : tuple of 2 floats</span>
+<span class="sd">        x and y position of the first selected point</span>
+
+<span class="sd">    scene : instance of QGraphicsScene</span>
+<span class="sd">        the main scene.</span>
+<span class="sd">    idx_label : list of instance of QGraphicsSimpleTextItem</span>
+<span class="sd">        the channel labels on the y-axis</span>
+<span class="sd">    idx_time : list of instance of QGraphicsSimpleTextItem</span>
+<span class="sd">        the time labels on the x-axis</span>
+<span class="sd">    idx_sel : instance of QGraphicsRectItem</span>
+<span class="sd">        the rectangle showing the selection (both for selection and event)</span>
+<span class="sd">    idx_info : instance of QGraphicsSimpleTextItem</span>
+<span class="sd">        the rectangle showing the selection</span>
+<span class="sd">    idx_markers : list of QGraphicsRectItem</span>
+<span class="sd">        list of markers in the dataset</span>
+<span class="sd">    idx_annot : list of QGraphicsRectItem</span>
+<span class="sd">        list of user-made annotations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">ConfigTraces</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">update_position</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_scrollbar_value</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chan</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chan_pos</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># used later to find out which channel we&#39;re using</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chan_scale</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_pos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sel_chan</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_time</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_sel</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_info</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_markers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_action</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Traces.create_action"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.create_action">[docs]</a>    <span class="k">def</span> <span class="nf">create_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create actions associated with this widget.&quot;&quot;&quot;</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;step_prev&#39;</span><span class="p">]),</span> <span class="s1">&#39;Previous Step&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">MoveToPreviousChar</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step_prev</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;step_prev&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;step_next&#39;</span><span class="p">]),</span> <span class="s1">&#39;Next Step&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">MoveToNextChar</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step_next</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;step_next&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;page_prev&#39;</span><span class="p">]),</span> <span class="s1">&#39;Previous Page&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">MoveToPreviousPage</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page_prev</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;page_prev&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;page_next&#39;</span><span class="p">]),</span> <span class="s1">&#39;Next Page&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">MoveToNextPage</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page_next</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;page_next&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;zoomprev&#39;</span><span class="p">]),</span> <span class="s1">&#39;Wider Time Window&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">ZoomIn</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_more</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;X_more&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;zoomnext&#39;</span><span class="p">]),</span> <span class="s1">&#39;Narrower Time Window&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">ZoomOut</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_less</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;X_less&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;zoomin&#39;</span><span class="p">]),</span> <span class="s1">&#39;Larger Amplitude&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">MoveToPreviousLine</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_more</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;Y_less&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;zoomout&#39;</span><span class="p">]),</span> <span class="s1">&#39;Smaller Amplitude&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">MoveToNextLine</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_less</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;Y_more&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;ydist_more&#39;</span><span class="p">]),</span> <span class="s1">&#39;Larger Y Distance&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_wider</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;Y_wider&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;ydist_less&#39;</span><span class="p">]),</span> <span class="s1">&#39;Smaller Y Distance&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_tighter</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;Y_tighter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;chronometer&#39;</span><span class="p">]),</span> <span class="s1">&#39;6 Hours Earlier&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_time</span><span class="p">,</span> <span class="o">-</span><span class="mi">6</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;addtime_-6h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;chronometer&#39;</span><span class="p">]),</span> <span class="s1">&#39;1 Hour Earlier&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_time</span><span class="p">,</span> <span class="o">-</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;addtime_-1h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;chronometer&#39;</span><span class="p">]),</span> <span class="s1">&#39;10 Minutes Earlier&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_time</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;addtime_-10min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;chronometer&#39;</span><span class="p">]),</span> <span class="s1">&#39;10 Minutes Later&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_time</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;addtime_10min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;chronometer&#39;</span><span class="p">]),</span> <span class="s1">&#39;1 Hour Later&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_time</span><span class="p">,</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;addtime_1h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="n">QIcon</span><span class="p">(</span><span class="n">ICON</span><span class="p">[</span><span class="s1">&#39;chronometer&#39;</span><span class="p">]),</span> <span class="s1">&#39;6 Hours Later&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_time</span><span class="p">,</span> <span class="mi">6</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
+        <span class="n">actions</span><span class="p">[</span><span class="s1">&#39;addtime_6h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">actions</span></div>
+
+<div class="viewcode-block" id="Traces.read_data"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.read_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read the data to plot.&quot;&quot;&quot;</span>
+        <span class="n">window_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span>
+        <span class="n">window_end</span> <span class="o">=</span> <span class="n">window_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dataset</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">groups</span>
+
+        <span class="n">chan_to_read</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">one_grp</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">chan_to_read</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;chan_to_plot&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;ref_chan&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">chan_to_read</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">chan</span><span class="o">=</span><span class="n">chan_to_read</span><span class="p">,</span>
+                                 <span class="n">begtime</span><span class="o">=</span><span class="n">window_start</span><span class="p">,</span>
+                                 <span class="n">endtime</span><span class="o">=</span><span class="n">window_end</span><span class="p">)</span>
+
+        <span class="n">max_s_freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;max_s_freq&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">s_freq</span> <span class="o">&gt;</span> <span class="n">max_s_freq</span><span class="p">:</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">s_freq</span> <span class="o">/</span> <span class="n">max_s_freq</span><span class="p">)</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Decimate (no low-pass filter) at &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">q</span><span class="p">))</span>
+
+            <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="p">)]</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="p">)]</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">s_freq</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">s_freq</span> <span class="o">/</span> <span class="n">q</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">_create_data_to_plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.display"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Display the recordings.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_scrollbar_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">verticalScrollBar</span><span class="p">()</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_chan_labels</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_time_labels</span><span class="p">()</span>
+
+        <span class="n">window_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span>
+        <span class="n">window_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span>
+
+        <span class="n">time_height</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_time</span><span class="p">])</span>
+        <span class="n">label_width</span> <span class="o">=</span> <span class="n">window_length</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;label_ratio&#39;</span><span class="p">)</span>
+        <span class="n">scene_height</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">)</span> <span class="o">+</span>
+                        <span class="n">time_height</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="n">QGraphicsScene</span><span class="p">(</span><span class="n">window_start</span> <span class="o">-</span> <span class="n">label_width</span><span class="p">,</span>
+                                    <span class="mi">0</span><span class="p">,</span>
+                                    <span class="n">window_length</span> <span class="o">+</span> <span class="n">label_width</span><span class="p">,</span>
+                                    <span class="n">scene_height</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setScene</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_markers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_chan_labels</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_time_labels</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_traces</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_grid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_markers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_annotations</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">resizeEvent</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalScrollBar</span><span class="p">()</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_scrollbar_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">display_view</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">display_current</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Traces.create_chan_labels"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.create_chan_labels">[docs]</a>    <span class="k">def</span> <span class="nf">create_chan_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create the channel labels, but don&#39;t plot them yet.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        It&#39;s necessary to have the width of the labels, so that we can adjust</span>
+<span class="sd">        the main scene.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">one_grp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">one_label</span> <span class="ow">in</span> <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;chan_to_plot&#39;</span><span class="p">]:</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">QGraphicsSimpleTextItem</span><span class="p">(</span><span class="n">one_label</span><span class="p">)</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">QBrush</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">])))</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIgnoresTransformations</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.create_time_labels"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.create_time_labels">[docs]</a>    <span class="k">def</span> <span class="nf">create_time_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create the time labels, but don&#39;t plot them yet.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        It&#39;s necessary to have the height of the time labels, so that we can</span>
+<span class="sd">        adjust the main scene.</span>
+
+<span class="sd">        Not very robust, because it uses seconds as integers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">min_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">floor</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])))</span>
+        <span class="n">max_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ceil</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])))</span>
+        <span class="n">n_time_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;n_time_labels&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_time</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_pos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">one_time</span> <span class="ow">in</span> <span class="n">linspace</span><span class="p">(</span><span class="n">min_time</span><span class="p">,</span> <span class="n">max_time</span><span class="p">,</span> <span class="n">n_time_labels</span><span class="p">):</span>
+            <span class="n">x_label</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+</span>
+                       <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">one_time</span><span class="p">))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H:%M:%S&#39;</span><span class="p">)</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">QGraphicsSimpleTextItem</span><span class="p">(</span><span class="n">x_label</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIgnoresTransformations</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_pos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">QPointF</span><span class="p">(</span><span class="n">one_time</span><span class="p">,</span>
+                                         <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span><span class="p">)</span> <span class="o">*</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="Traces.add_chan_labels"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.add_chan_labels">[docs]</a>    <span class="k">def</span> <span class="nf">add_chan_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add channel labels on the left.&quot;&quot;&quot;</span>
+        <span class="n">window_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span>
+        <span class="n">window_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span>
+        <span class="n">label_width</span> <span class="o">=</span> <span class="n">window_length</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;label_ratio&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">one_label_item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">one_label_item</span><span class="p">)</span>
+            <span class="n">one_label_item</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">window_start</span> <span class="o">-</span> <span class="n">label_width</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="n">row</span> <span class="o">+</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.add_time_labels"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.add_time_labels">[docs]</a>    <span class="k">def</span> <span class="nf">add_time_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add time labels at the bottom.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">text</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_pos</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.add_traces"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.add_traces">[docs]</a>    <span class="k">def</span> <span class="nf">add_traces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add traces based on self.data.&quot;&quot;&quot;</span>
+        <span class="n">y_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chan</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chan_pos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chan_scale</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">one_grp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">one_chan</span> <span class="ow">in</span> <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;chan_to_plot&#39;</span><span class="p">]:</span>
+
+                <span class="c1"># channel name</span>
+                <span class="n">chan_name</span> <span class="o">=</span> <span class="n">one_chan</span> <span class="o">+</span> <span class="s1">&#39; (&#39;</span> <span class="o">+</span> <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+
+                <span class="c1"># trace</span>
+                <span class="n">dat</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="n">chan_name</span><span class="p">)</span> <span class="o">*</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_scale&#39;</span><span class="p">))</span>
+                <span class="n">dat</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># flip data, upside down</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addPath</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                               <span class="n">dat</span><span class="p">))</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]),</span> <span class="n">LINE_WIDTH</span><span class="p">))</span>
+
+                <span class="c1"># adjust position</span>
+                <span class="n">chan_pos</span> <span class="o">=</span> <span class="n">y_distance</span> <span class="o">*</span> <span class="n">row</span> <span class="o">+</span> <span class="n">y_distance</span> <span class="o">/</span> <span class="mi">2</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">chan_pos</span><span class="p">)</span>
+                <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chan_name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chan_scale</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;scale&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chan_pos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chan_pos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.display_grid"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.display_grid">[docs]</a>    <span class="k">def</span> <span class="nf">display_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Display grid on x-axis and y-axis.&quot;&quot;&quot;</span>
+        <span class="n">window_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span>
+        <span class="n">window_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span>
+        <span class="n">window_end</span> <span class="o">=</span> <span class="n">window_start</span> <span class="o">+</span> <span class="n">window_length</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;grid_x&#39;</span><span class="p">):</span>
+            <span class="n">x_tick</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;grid_xtick&#39;</span><span class="p">)</span>
+            <span class="n">x_ticks</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">window_start</span><span class="p">,</span> <span class="n">window_end</span> <span class="o">+</span> <span class="n">x_tick</span><span class="p">,</span> <span class="n">x_tick</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_ticks</span><span class="p">:</span>
+                <span class="n">x_pos</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
+                <span class="n">y_pos</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span><span class="p">)]</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addPath</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">))</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">LINE_COLOR</span><span class="p">),</span> <span class="n">LINE_WIDTH</span><span class="p">,</span>
+                                 <span class="n">Qt</span><span class="o">.</span><span class="n">DotLine</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;grid_y&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">one_label_item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span><span class="p">:</span>
+                <span class="n">x_pos</span> <span class="o">=</span> <span class="p">[</span><span class="n">window_start</span><span class="p">,</span> <span class="n">window_end</span><span class="p">]</span>
+                <span class="n">y_pos</span> <span class="o">=</span> <span class="p">[</span><span class="n">one_label_item</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">one_label_item</span><span class="o">.</span><span class="n">y</span><span class="p">()]</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addPath</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">))</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">LINE_COLOR</span><span class="p">),</span> <span class="n">LINE_WIDTH</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">DotLine</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Traces.display_markers"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.display_markers">[docs]</a>    <span class="k">def</span> <span class="nf">display_markers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add markers on top of first plot.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_markers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_markers</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">window_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span>
+        <span class="n">window_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span>
+        <span class="n">window_end</span> <span class="o">=</span> <span class="n">window_start</span> <span class="o">+</span> <span class="n">window_length</span>
+        <span class="n">y_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">)</span>
+
+        <span class="n">markers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">markers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;marker_show&#39;</span><span class="p">):</span>
+                <span class="n">markers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">markers</span>
+
+        <span class="k">for</span> <span class="n">mrk</span> <span class="ow">in</span> <span class="n">markers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">window_start</span> <span class="o">&lt;=</span> <span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">window_end</span> <span class="o">&gt;=</span> <span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]:</span>
+
+                <span class="n">mrk_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">window_start</span><span class="p">))</span>
+                <span class="n">mrk_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span> <span class="n">window_end</span><span class="p">))</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;marker_color&#39;</span><span class="p">))</span>
+
+                <span class="n">item</span> <span class="o">=</span> <span class="n">QGraphicsRectItem</span><span class="p">(</span><span class="n">mrk_start</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+                                         <span class="n">mrk_end</span> <span class="o">-</span> <span class="n">mrk_start</span><span class="p">,</span>
+                                         <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_distance</span><span class="p">)</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setZValue</span><span class="p">(</span><span class="o">-</span><span class="mi">9</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+                <span class="n">item</span> <span class="o">=</span> <span class="n">TextItem_with_BG</span><span class="p">(</span><span class="n">color</span><span class="o">.</span><span class="n">darker</span><span class="p">(</span><span class="mi">200</span><span class="p">))</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">mrk</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span>
+                            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span><span class="p">)</span> <span class="o">*</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">))</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIgnoresTransformations</span><span class="p">)</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setRotation</span><span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idx_markers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.display_annotations"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.display_annotations">[docs]</a>    <span class="k">def</span> <span class="nf">display_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark all the bookmarks/events, on top of first plot.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">window_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span>
+        <span class="n">window_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span>
+        <span class="n">window_end</span> <span class="o">=</span> <span class="n">window_start</span> <span class="o">+</span> <span class="n">window_length</span>
+        <span class="n">y_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">)</span>
+        <span class="n">raw_chan_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">take_raw_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">))</span>
+
+        <span class="n">bookmarks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">annot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;annot_show&#39;</span><span class="p">):</span>
+                <span class="n">bookmarks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">get_bookmarks</span><span class="p">()</span>
+                <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">get_selected_events</span><span class="p">((</span><span class="n">window_start</span><span class="p">,</span>
+                                                                <span class="n">window_end</span><span class="p">))</span>
+        <span class="n">annotations</span> <span class="o">=</span> <span class="n">bookmarks</span> <span class="o">+</span> <span class="n">events</span>
+
+        <span class="k">for</span> <span class="n">annot</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">window_start</span> <span class="o">&lt;=</span> <span class="n">annot</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">window_end</span> <span class="o">&gt;=</span> <span class="n">annot</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]:</span>
+
+                <span class="n">mrk_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">annot</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">window_start</span><span class="p">))</span>
+                <span class="n">mrk_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="n">annot</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span> <span class="n">window_end</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">annot</span> <span class="ow">in</span> <span class="n">bookmarks</span><span class="p">:</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;annot_bookmark_color&#39;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">annot</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">convert_name_to_color</span><span class="p">(</span><span class="n">annot</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">annot</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]:</span>
+                    <span class="n">h_annot</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_distance</span>
+                    <span class="n">y_annot</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">)</span>
+
+                    <span class="n">item</span> <span class="o">=</span> <span class="n">TextItem_with_BG</span><span class="p">(</span><span class="n">color</span><span class="o">.</span><span class="n">darker</span><span class="p">(</span><span class="mi">200</span><span class="p">))</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">annot</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">annot</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span>
+                                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_distance</span><span class="p">)</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIgnoresTransformations</span><span class="p">)</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">setRotation</span><span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="n">zvalue</span> <span class="o">=</span> <span class="o">-</span><span class="mi">8</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">h_annot</span> <span class="o">=</span> <span class="n">y_distance</span>
+                    <span class="c1"># find indices of channels with annotations</span>
+                    <span class="n">chan_idx_in_mrk</span> <span class="o">=</span> <span class="n">in1d</span><span class="p">(</span><span class="n">raw_chan_name</span><span class="p">,</span> <span class="n">annot</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">])</span>
+                    <span class="n">y_annot</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chan_pos</span><span class="p">)[</span><span class="n">chan_idx_in_mrk</span><span class="p">]</span>
+                    <span class="n">y_annot</span> <span class="o">-=</span> <span class="n">y_distance</span> <span class="o">/</span> <span class="mi">2</span>
+                    <span class="n">zvalue</span> <span class="o">=</span> <span class="o">-</span><span class="mi">7</span>
+
+                <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">y_annot</span><span class="p">:</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="n">QGraphicsRectItem</span><span class="p">(</span><span class="n">mrk_start</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span>
+                                             <span class="n">mrk_end</span> <span class="o">-</span> <span class="n">mrk_start</span><span class="p">,</span> <span class="n">h_annot</span><span class="p">)</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">setZValue</span><span class="p">(</span><span class="n">zvalue</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">idx_annot</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.step_prev"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.step_prev">[docs]</a>    <span class="k">def</span> <span class="nf">step_prev</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Go to the previous step.&quot;&quot;&quot;</span>
+        <span class="n">window_start</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span> <span class="o">-</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span> <span class="o">/</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_step&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="n">window_start</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.step_next"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.step_next">[docs]</a>    <span class="k">def</span> <span class="nf">step_next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Go to the next step.&quot;&quot;&quot;</span>
+        <span class="n">window_start</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span> <span class="o">+</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span> <span class="o">/</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_step&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="n">window_start</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.page_prev"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.page_prev">[docs]</a>    <span class="k">def</span> <span class="nf">page_prev</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Go to the previous page.&quot;&quot;&quot;</span>
+        <span class="n">window_start</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span> <span class="o">-</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="n">window_start</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.page_next"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.page_next">[docs]</a>    <span class="k">def</span> <span class="nf">page_next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Go to the next page.&quot;&quot;&quot;</span>
+        <span class="n">window_start</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span> <span class="o">+</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="n">window_start</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.add_time"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.add_time">[docs]</a>    <span class="k">def</span> <span class="nf">add_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extra_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Go to the predefined time forward.&quot;&quot;&quot;</span>
+        <span class="n">window_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_start&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">extra_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="n">window_start</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.X_more"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.X_more">[docs]</a>    <span class="k">def</span> <span class="nf">X_more</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Zoom in on the x-axis.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">update_position</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Traces.X_less"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.X_less">[docs]</a>    <span class="k">def</span> <span class="nf">X_less</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Zoom out on the x-axis.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">update_position</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Traces.X_length"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.X_length">[docs]</a>    <span class="k">def</span> <span class="nf">X_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_window_length</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use presets for length of the window.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;window_length&#39;</span><span class="p">,</span> <span class="n">new_window_length</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">overview</span><span class="o">.</span><span class="n">update_position</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Traces.Y_more"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.Y_more">[docs]</a>    <span class="k">def</span> <span class="nf">Y_more</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Increase the amplitude.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_scale&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_scale&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">display</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Traces.Y_less"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.Y_less">[docs]</a>    <span class="k">def</span> <span class="nf">Y_less</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Decrease the amplitude.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_scale&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_scale&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">display</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Traces.Y_ampl"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.Y_ampl">[docs]</a>    <span class="k">def</span> <span class="nf">Y_ampl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_y_scale</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make amplitude on Y axis using predefined values&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_scale&#39;</span><span class="p">,</span> <span class="n">new_y_scale</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">display</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Traces.Y_wider"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.Y_wider">[docs]</a>    <span class="k">def</span> <span class="nf">Y_wider</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Increase the distance of the lines.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">display</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Traces.Y_tighter"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.Y_tighter">[docs]</a>    <span class="k">def</span> <span class="nf">Y_tighter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Decrease the distance of the lines.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1.4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">display</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Traces.Y_dist"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.Y_dist">[docs]</a>    <span class="k">def</span> <span class="nf">Y_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_y_distance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use preset values for the distance between lines.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">,</span> <span class="n">new_y_distance</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">display</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Traces.mousePressEvent"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.mousePressEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mousePressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a marker or start selection</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        event : instance of QtCore.QEvent</span>
+<span class="sd">            it contains the position that was clicked.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">xy_scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span>
+        <span class="n">chan_idx</span> <span class="o">=</span> <span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chan_pos</span><span class="p">)</span> <span class="o">-</span> <span class="n">xy_scene</span><span class="o">.</span><span class="n">y</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sel_chan</span> <span class="o">=</span> <span class="n">chan_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span> <span class="o">=</span> <span class="p">(</span><span class="n">xy_scene</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">xy_scene</span><span class="o">.</span><span class="n">y</span><span class="p">())</span>
+
+        <span class="n">chk_marker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;new_bookmark&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span>
+        <span class="n">chk_event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;new_event&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">chk_marker</span> <span class="ow">or</span> <span class="n">chk_event</span><span class="p">):</span>
+            <span class="n">channame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sel_chan</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; in selected window&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">spectrum</span><span class="o">.</span><span class="n">show_channame</span><span class="p">(</span><span class="n">channame</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.mouseMoveEvent"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.mouseMoveEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mouseMoveEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;When normal selection, update power spectrum with current selection.</span>
+<span class="sd">        Otherwise, show the range of the new marker.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_sel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_sel</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_sel</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">chk_marker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;new_bookmark&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span>
+        <span class="n">chk_event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;new_event&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">chk_marker</span> <span class="ow">or</span> <span class="n">chk_event</span><span class="p">:</span>
+            <span class="n">xy_scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span>
+            <span class="n">y_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_distance&#39;</span><span class="p">)</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">QRectF</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                         <span class="mi">0</span><span class="p">,</span>
+                         <span class="n">xy_scene</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                         <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_distance</span><span class="p">)</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">QGraphicsRectItem</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">normalized</span><span class="p">())</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">NoPen</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">chk_marker</span><span class="p">:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;annot_bookmark_color&#39;</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">chk_event</span><span class="p">:</span>
+                <span class="n">eventtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">idx_eventtype</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="n">convert_name_to_color</span><span class="p">(</span><span class="n">eventtype</span><span class="p">)</span>
+
+            <span class="n">item</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">QBrush</span><span class="p">(</span><span class="n">color</span><span class="o">.</span><span class="n">lighter</span><span class="p">(</span><span class="mi">115</span><span class="p">)))</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setZValue</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_sel</span> <span class="o">=</span> <span class="n">item</span>
+            <span class="k">return</span>
+
+        <span class="n">xy_scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">QRectF</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                     <span class="n">xy_scene</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                     <span class="n">xy_scene</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_sel</span> <span class="o">=</span> <span class="n">QGraphicsRectItem</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">normalized</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_sel</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QPen</span><span class="p">(</span><span class="n">QColor</span><span class="p">(</span><span class="n">LINE_COLOR</span><span class="p">),</span> <span class="n">LINE_WIDTH</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_sel</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_info</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_info</span><span class="p">)</span>
+
+        <span class="n">duration</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:0.2f}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">xy_scene</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="c1"># get y-size, based on scaling too</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xy_scene</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;y_scale&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chan_scale</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sel_chan</span><span class="p">]</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:0.3f}</span><span class="s1">uV&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y</span> <span class="o">/</span> <span class="n">scale</span><span class="p">)</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="n">TextItem_with_BG</span><span class="p">()</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">duration</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">height</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_info</span> <span class="o">=</span> <span class="n">item</span>
+
+        <span class="n">trial</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="n">trial</span><span class="p">]</span>
+        <span class="n">beg_win</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy_scene</span><span class="o">.</span><span class="n">x</span><span class="p">()))</span>
+        <span class="n">end_win</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy_scene</span><span class="o">.</span><span class="n">x</span><span class="p">()))</span>
+        <span class="n">time_of_interest</span> <span class="o">=</span> <span class="n">time</span><span class="p">[(</span><span class="n">time</span> <span class="o">&gt;=</span> <span class="n">beg_win</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">time</span> <span class="o">&lt;</span> <span class="n">end_win</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_of_interest</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MINIMUM_N_SAMPLES</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="n">trial</span><span class="p">,</span>
+                                           <span class="n">chan</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chan</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sel_chan</span><span class="p">],</span>
+                                           <span class="n">time</span><span class="o">=</span><span class="n">time_of_interest</span><span class="p">)</span>
+            <span class="n">n_data</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">n_pad</span> <span class="o">=</span> <span class="p">(</span><span class="n">power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">ceil</span><span class="p">(</span><span class="n">log2</span><span class="p">(</span><span class="n">n_data</span><span class="p">)))</span> <span class="o">-</span> <span class="n">n_data</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pad</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_pad</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="n">floor</span><span class="p">(</span><span class="n">n_pad</span><span class="p">))),</span> <span class="s1">&#39;constant&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">spectrum</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.mouseReleaseEvent"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.mouseReleaseEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mouseReleaseEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a new event or marker, or show the previous power spectrum</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">chk_marker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;new_bookmark&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span>
+        <span class="n">chk_event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;new_event&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">chk_marker</span> <span class="ow">or</span> <span class="n">chk_event</span><span class="p">:</span>
+
+            <span class="n">x_in_scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+
+            <span class="c1"># it can happen that selection is empty (f.e. double-click)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># max resolution = sampling frequency</span>
+                <span class="c1"># in case there is no data</span>
+                <span class="n">s_freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;s_freq&#39;</span><span class="p">]</span>
+                <span class="n">at_s_freq</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">s_freq</span><span class="p">)</span> <span class="o">/</span> <span class="n">s_freq</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">at_s_freq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="n">at_s_freq</span><span class="p">(</span><span class="n">x_in_scene</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s1">&#39;min_marker_dur&#39;</span><span class="p">):</span>
+                    <span class="n">end</span> <span class="o">=</span> <span class="n">start</span>
+
+                <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">:</span>
+                    <span class="n">time</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">time</span> <span class="o">=</span> <span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">chk_marker</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">add_bookmark</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">chk_event</span><span class="p">:</span>
+                    <span class="n">eventtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">idx_eventtype</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="n">eventtype</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># normal selection</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_info</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_info</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_info</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="c1"># restore spectrum</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">spectrum</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">spectrum</span><span class="o">.</span><span class="n">display_window</span><span class="p">()</span>
+
+        <span class="c1"># general garbage collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sel_chan</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_sel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_sel</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_sel</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Traces.resizeEvent"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.resizeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">resizeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resize scene so that it fits the whole widget.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        event : instance of QtCore.QEvent</span>
+<span class="sd">            not important</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This function overwrites Qt function, therefore the non-standard</span>
+<span class="sd">        name. Argument also depends on Qt.</span>
+
+<span class="sd">        The function is used to change the scale of view, so that the scene</span>
+<span class="sd">        fits the whole scene. There are two problems that I could not fix: 1)</span>
+<span class="sd">        how to give the width of the label in absolute width, 2) how to strech</span>
+<span class="sd">        scene just enough that it doesn&#39;t trigger a scrollbar. However, it&#39;s</span>
+<span class="sd">        pretty good as it is now.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">width</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resetTransform</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">ratio</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Traces.reset"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces.Traces.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_scrollbar_value</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chan</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chan_pos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chan_scale</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sel_chan</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sel_xy</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_sel</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_info</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_label</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_time</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_pos</span> <span class="o">=</span> <span class="p">[]</span></div></div>
+
+
+<div class="viewcode-block" id="_create_data_to_plot"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces._create_data_to_plot">[docs]</a><span class="k">def</span> <span class="nf">_create_data_to_plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">chan_groups</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create data after montage and filtering.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : instance of ChanTime</span>
+<span class="sd">        the raw data</span>
+<span class="sd">    chan_groups : list of dict</span>
+<span class="sd">        information about channels to plot, to use as reference and about</span>
+<span class="sd">        filtering etc.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    instance of ChanTime</span>
+<span class="sd">        data ready to be plotted.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># chan_to_plot only gives the number of channels to plot, for prealloc</span>
+    <span class="n">chan_to_plot</span> <span class="o">=</span> <span class="p">[</span><span class="n">one_chan</span> <span class="k">for</span> <span class="n">one_grp</span> <span class="ow">in</span> <span class="n">chan_groups</span>
+                    <span class="k">for</span> <span class="n">one_chan</span> <span class="ow">in</span> <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;chan_to_plot&#39;</span><span class="p">]]</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">ChanTime</span><span class="p">()</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">s_freq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">s_freq</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">start_time</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">chan_to_plot</span><span class="p">),</span> <span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span>
+                           <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
+
+    <span class="n">all_chan_grp_name</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">i_ch</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">one_grp</span> <span class="ow">in</span> <span class="n">chan_groups</span><span class="p">:</span>
+
+        <span class="n">sel_data</span> <span class="o">=</span> <span class="n">_select_channels</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
+                                    <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;chan_to_plot&#39;</span><span class="p">]</span> <span class="o">+</span>
+                                    <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;ref_chan&#39;</span><span class="p">])</span>
+        <span class="n">data1</span> <span class="o">=</span> <span class="n">montage</span><span class="p">(</span><span class="n">sel_data</span><span class="p">,</span> <span class="n">ref_chan</span><span class="o">=</span><span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;ref_chan&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;hp&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data1</span> <span class="o">=</span> <span class="n">filter_</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">low_cut</span><span class="o">=</span><span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;hp&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;lp&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data1</span> <span class="o">=</span> <span class="n">filter_</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">high_cut</span><span class="o">=</span><span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;lp&#39;</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;chan_to_plot&#39;</span><span class="p">]:</span>
+            <span class="n">chan_grp_name</span> <span class="o">=</span> <span class="n">chan</span> <span class="o">+</span> <span class="s1">&#39; (&#39;</span> <span class="o">+</span> <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+            <span class="n">all_chan_grp_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chan_grp_name</span><span class="p">)</span>
+
+            <span class="n">dat</span> <span class="o">=</span> <span class="n">data1</span><span class="p">(</span><span class="n">chan</span><span class="o">=</span><span class="n">chan</span><span class="p">,</span> <span class="n">trial</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">dat</span> <span class="o">=</span> <span class="n">dat</span> <span class="o">-</span> <span class="n">nanmean</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i_ch</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">dat</span> <span class="o">*</span> <span class="n">one_grp</span><span class="p">[</span><span class="s1">&#39;scale&#39;</span><span class="p">]</span>
+            <span class="n">i_ch</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">output</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">all_chan_grp_name</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="_select_channels"><a class="viewcode-back" href="../../../api/phypno.widgets.traces.html#phypno.widgets.traces._select_channels">[docs]</a><span class="k">def</span> <span class="nf">_select_channels</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">channels</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Select channels.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : instance of ChanTime</span>
+<span class="sd">        data with all the channels</span>
+<span class="sd">    channels : list</span>
+<span class="sd">        channels of interest</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    instance of ChanTime</span>
+<span class="sd">        data with only channels of interest</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function does the same as phypno.trans.select, but it&#39;s much faster.</span>
+<span class="sd">    phypno.trans.Select needs to flexible for any data type, here we assume</span>
+<span class="sd">    that we have one trial, and that channel is the first dimension.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
+    <span class="n">chan_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">idx_chan</span> <span class="o">=</span> <span class="p">[</span><span class="n">chan_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i_chan</span><span class="p">)</span> <span class="k">for</span> <span class="n">i_chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">]</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">idx_chan</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

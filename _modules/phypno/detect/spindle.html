@@ -1,0 +1,1201 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.detect.spindle &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/phypno.html">Modules, classes, functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>phypno.detect.spindle</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for phypno.detect.spindle</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module to detect spindles.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="p">(</span><span class="n">absolute</span><span class="p">,</span> <span class="n">arange</span><span class="p">,</span> <span class="n">argmax</span><span class="p">,</span> <span class="n">asarray</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span>
+                   <span class="n">hstack</span><span class="p">,</span> <span class="n">insert</span><span class="p">,</span> <span class="n">invert</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">median</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span>
+                   <span class="n">pi</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">vstack</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="n">zeros</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="k">import</span> <span class="p">(</span><span class="n">argrelmax</span><span class="p">,</span> <span class="n">butter</span><span class="p">,</span> <span class="n">cheby2</span><span class="p">,</span> <span class="n">filtfilt</span><span class="p">,</span> <span class="n">fftconvolve</span><span class="p">,</span>
+                          <span class="n">hilbert</span><span class="p">,</span> <span class="n">periodogram</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">phypno.graphoelement</span> <span class="k">import</span> <span class="n">Spindles</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">MAX_FREQUENCY_OF_INTEREST</span> <span class="o">=</span> <span class="mi">50</span>
+
+
+<div class="viewcode-block" id="DetectSpindle"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.DetectSpindle">[docs]</a><span class="k">class</span> <span class="nc">DetectSpindle</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Design spindle detection on a single channel.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    method : str</span>
+<span class="sd">        one of the predefined methods (see below &#39;housestyle&#39;)</span>
+<span class="sd">    frequency : tuple of float</span>
+<span class="sd">        low and high frequency of spindle band</span>
+<span class="sd">    duration : tuple of float</span>
+<span class="sd">        min and max duration of spindles</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;UCSD&#39;</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">frequency</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">frequency</span> <span class="o">=</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">duration</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="n">frequency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">power_peaks</span> <span class="o">=</span> <span class="s1">&#39;interval&#39;</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;Ferrarelli2007&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">det_cheby2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+                               <span class="s1">&#39;freq&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">,</span>
+                               <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">det_thresh</span> <span class="o">=</span> <span class="mi">8</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sel_thresh</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;Nir2011&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">det_butter</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+                               <span class="s1">&#39;freq&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">,</span>
+                               <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">det_thresh</span> <span class="o">=</span> <span class="mi">3</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">moving_avg</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dur&#39;</span><span class="p">:</span>  <span class="o">.</span><span class="mi">4</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sel_thresh</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;Wamsley2012&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">det_wavelet</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;f0&#39;</span><span class="p">:</span> <span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">),</span>
+                                <span class="s1">&#39;sd&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span>
+                                <span class="s1">&#39;dur&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                                <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">det_thresh</span> <span class="o">=</span> <span class="mf">4.5</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">moving_avg</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dur&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">1</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sel_thresh</span> <span class="o">=</span> <span class="n">nan</span>  <span class="c1"># necessary for gui/detect</span>
+
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;UCSD&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">det_wavelet</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;freqs&#39;</span><span class="p">:</span> <span class="n">arange</span><span class="p">(</span><span class="n">frequency</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                <span class="n">frequency</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">),</span>
+                                <span class="s1">&#39;dur&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span>
+                                <span class="s1">&#39;win&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span>
+                                <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">det_thresh</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># wavelet_peak_thresh</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sel_wavelet</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;freqs&#39;</span><span class="p">:</span> <span class="n">arange</span><span class="p">(</span><span class="n">frequency</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                <span class="n">frequency</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">),</span>
+                                <span class="s1">&#39;dur&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span>
+                                <span class="s1">&#39;win&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span>
+                                <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sel_thresh</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ratio_thresh</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown method&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;detsp_</span><span class="si">{0}</span><span class="s1">_</span><span class="si">{1:02}</span><span class="s1">-</span><span class="si">{2:02}</span><span class="s1">Hz_</span><span class="si">{3:04.1f}</span><span class="s1">-</span><span class="si">{4:04.1f}</span><span class="s1">s&#39;</span>
+                <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">make_plots</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Detect spindles on the data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : instance of Data</span>
+<span class="sd">            data used for detection</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        instance of graphoelement.Spindles</span>
+<span class="sd">            description of the detected spindles</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">spindle</span> <span class="o">=</span> <span class="n">Spindles</span><span class="p">()</span>
+        <span class="n">spindle</span><span class="o">.</span><span class="n">chan_name</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">spindle</span><span class="o">.</span><span class="n">det_value</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;chan&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">spindle</span><span class="o">.</span><span class="n">sel_value</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">number_of</span><span class="p">(</span><span class="s1">&#39;chan&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">all_spindles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chan</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Detecting spindles on chan </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">chan</span><span class="p">)</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">hstack</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">])</span>
+            <span class="n">dat_orig</span> <span class="o">=</span> <span class="n">hstack</span><span class="p">(</span><span class="n">data</span><span class="p">(</span><span class="n">chan</span><span class="o">=</span><span class="n">chan</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;Ferrarelli2007&#39;</span><span class="p">:</span>
+                <span class="n">sp_in_chan</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">detect_Ferrarelli2007</span><span class="p">(</span><span class="n">dat_orig</span><span class="p">,</span>
+                                                           <span class="n">data</span><span class="o">.</span><span class="n">s_freq</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span>
+                                                           <span class="bp">self</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;Nir2011&#39;</span><span class="p">:</span>
+                <span class="n">sp_in_chan</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">detect_Nir2011</span><span class="p">(</span><span class="n">dat_orig</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">s_freq</span><span class="p">,</span>
+                                                    <span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;Wamsley2012&#39;</span><span class="p">:</span>
+                <span class="n">sp_in_chan</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">detect_Wamsley2012</span><span class="p">(</span><span class="n">dat_orig</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">s_freq</span><span class="p">,</span>
+                                                        <span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;UCSD&#39;</span><span class="p">:</span>
+                <span class="n">sp_in_chan</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">detect_UCSD</span><span class="p">(</span><span class="n">dat_orig</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">s_freq</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span>
+                                                 <span class="bp">self</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown method&#39;</span><span class="p">)</span>
+
+            <span class="n">spindle</span><span class="o">.</span><span class="n">det_value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s1">&#39;det_value&#39;</span><span class="p">]</span>
+            <span class="n">spindle</span><span class="o">.</span><span class="n">sel_value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s1">&#39;sel_value&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">sp_in_chan</span><span class="p">:</span>
+                <span class="n">sp</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="n">chan</span><span class="p">})</span>
+            <span class="n">all_spindles</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">sp_in_chan</span><span class="p">)</span>
+            <span class="c1"># end of loop over chan</span>
+
+        <span class="n">spindle</span><span class="o">.</span><span class="n">spindle</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">all_spindles</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">spindle</span></div>
+
+
+<div class="viewcode-block" id="detect_Ferrarelli2007"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.detect_Ferrarelli2007">[docs]</a><span class="k">def</span> <span class="nf">detect_Ferrarelli2007</span><span class="p">(</span><span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Spindle detection based on Ferrarelli et al. 2007</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat_orig : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the data for one channel</span>
+<span class="sd">    s_freq : float</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    time : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the time points for each sample</span>
+<span class="sd">    opts : instance of &#39;DetectSpindle&#39;</span>
+<span class="sd">        &#39;det_cheby2&#39; : dict</span>
+<span class="sd">            parameters for &#39;cheby2&#39;,</span>
+<span class="sd">        &#39;det_thresh&#39; : float</span>
+<span class="sd">            detection threshold</span>
+<span class="sd">        &#39;sel_thresh&#39; : float</span>
+<span class="sd">            selection threshold</span>
+<span class="sd">        &#39;duration&#39; : tuple of float</span>
+<span class="sd">            min and max duration of spindles</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of dict</span>
+<span class="sd">        list of detected spindles</span>
+<span class="sd">    dict</span>
+<span class="sd">        &#39;det_value&#39; with detection value, &#39;sel_value&#39; with selection value</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The original article does not specify a filter, but cheby2 seems the best</span>
+<span class="sd">    to me.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Ferrarelli, F. et al. Am. J. Psychiatry 164, 483-92 (2007).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dat_det</span> <span class="o">=</span> <span class="n">transform_signal</span><span class="p">(</span><span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;cheby2&#39;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">det_cheby2</span><span class="p">)</span>
+    <span class="n">det_value</span> <span class="o">=</span> <span class="n">define_threshold</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;mean+std&#39;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">det_thresh</span><span class="p">)</span>
+
+    <span class="n">sel_value</span> <span class="o">=</span> <span class="n">define_threshold</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;mean+std&#39;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">sel_thresh</span><span class="p">)</span>
+
+    <span class="n">dat_det</span> <span class="o">=</span> <span class="n">transform_signal</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;hilbert&#39;</span><span class="p">)</span>
+    <span class="n">dat_det</span> <span class="o">=</span> <span class="n">transform_signal</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;abs&#39;</span><span class="p">)</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="n">detect_events</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">,</span> <span class="n">det_value</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">select_events</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">,</span> <span class="n">sel_value</span><span class="p">)</span>
+
+        <span class="n">events</span> <span class="o">=</span> <span class="n">within_duration</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+
+        <span class="n">power_peaks</span> <span class="o">=</span> <span class="n">peak_in_power</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">power_peaks</span><span class="p">)</span>
+        <span class="n">sp_in_chan</span> <span class="o">=</span> <span class="n">make_spindles</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">power_peaks</span><span class="p">,</span> <span class="n">dat_det</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No spindle found&#39;</span><span class="p">)</span>
+        <span class="n">sp_in_chan</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;det_value&#39;</span><span class="p">:</span> <span class="n">det_value</span><span class="p">,</span> <span class="s1">&#39;sel_value&#39;</span><span class="p">:</span> <span class="n">sel_value</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">sp_in_chan</span><span class="p">,</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="detect_Nir2011"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.detect_Nir2011">[docs]</a><span class="k">def</span> <span class="nf">detect_Nir2011</span><span class="p">(</span><span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Spindle detection based on Nir et al. 2011</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat_orig : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the data for one channel</span>
+<span class="sd">    s_freq : float</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    time : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the time points for each sample</span>
+<span class="sd">    opts : instance of &#39;DetectSpindle&#39;</span>
+<span class="sd">        &#39;det_butter&#39; : dict</span>
+<span class="sd">            parameters for &#39;butter&#39;,</span>
+<span class="sd">        &#39;det_thresh&#39; : float</span>
+<span class="sd">            detection threshold</span>
+<span class="sd">        &#39;sel_thresh&#39; : float</span>
+<span class="sd">            selection threshold</span>
+<span class="sd">        &#39;duration&#39; : tuple of float</span>
+<span class="sd">            min and max duration of spindles</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of dict</span>
+<span class="sd">        list of detected spindles</span>
+<span class="sd">    dict</span>
+<span class="sd">        &#39;det_value&#39; with detection value, &#39;sel_value&#39; with selection value</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This paper also selects channels carefully:</span>
+<span class="sd">    &#39;First, the channels with spindle activity in NREM sleep were</span>
+<span class="sd">    chosen for further analysis.&#39;</span>
+
+<span class="sd">    &#39;Third, those channels, in which an increase in spectral power</span>
+<span class="sd">    within the detected events was restricted to the spindle-frequency</span>
+<span class="sd">    range (10-16 Hz) rather than broadband.&#39;</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Nir, Y. et al. Neuron 70, 153-69 (2011).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dat_det</span> <span class="o">=</span> <span class="n">transform_signal</span><span class="p">(</span><span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;butter&#39;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">det_butter</span><span class="p">)</span>
+    <span class="n">det_value</span> <span class="o">=</span> <span class="n">define_threshold</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;mean+std&#39;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">det_thresh</span><span class="p">)</span>
+
+    <span class="n">sel_value</span> <span class="o">=</span> <span class="n">define_threshold</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;mean+std&#39;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">sel_thresh</span><span class="p">)</span>
+
+    <span class="n">dat_det</span> <span class="o">=</span> <span class="n">transform_signal</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;hilbert&#39;</span><span class="p">)</span>
+    <span class="n">dat_det</span> <span class="o">=</span> <span class="n">transform_signal</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;abs&#39;</span><span class="p">)</span>
+    <span class="n">dat_det</span> <span class="o">=</span> <span class="n">transform_signal</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;moving_avg&#39;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">moving_avg</span><span class="p">)</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="n">detect_events</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">,</span> <span class="n">det_value</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">select_events</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">,</span> <span class="n">sel_value</span><span class="p">)</span>
+
+        <span class="n">events</span> <span class="o">=</span> <span class="n">within_duration</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+
+        <span class="n">power_peaks</span> <span class="o">=</span> <span class="n">peak_in_power</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">power_peaks</span><span class="p">)</span>
+        <span class="n">sp_in_chan</span> <span class="o">=</span> <span class="n">make_spindles</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">power_peaks</span><span class="p">,</span> <span class="n">dat_det</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No spindle found&#39;</span><span class="p">)</span>
+        <span class="n">sp_in_chan</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;det_value&#39;</span><span class="p">:</span> <span class="n">det_value</span><span class="p">,</span> <span class="s1">&#39;sel_value&#39;</span><span class="p">:</span> <span class="n">sel_value</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">sp_in_chan</span><span class="p">,</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="detect_Wamsley2012"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.detect_Wamsley2012">[docs]</a><span class="k">def</span> <span class="nf">detect_Wamsley2012</span><span class="p">(</span><span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Spindle detection based on Wamsley et al. 2012</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat_orig : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the data for one channel</span>
+<span class="sd">    s_freq : float</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    time : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the time points for each sample</span>
+<span class="sd">    opts : instance of &#39;DetectSpindle&#39;</span>
+<span class="sd">        &#39;det_wavelet&#39; : dict</span>
+<span class="sd">            parameters for &#39;morlet&#39;,</span>
+<span class="sd">        &#39;det_thresh&#39; : float</span>
+<span class="sd">            detection threshold</span>
+<span class="sd">        &#39;sel_thresh&#39; : nan</span>
+<span class="sd">            not used, but keep it for consistency with the other methods</span>
+<span class="sd">        &#39;duration&#39; : tuple of float</span>
+<span class="sd">            min and max duration of spindles</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of dict</span>
+<span class="sd">        list of detected spindles</span>
+<span class="sd">    dict</span>
+<span class="sd">        &#39;det_value&#39; with detection value, &#39;sel_value&#39; is nan (for consistency</span>
+<span class="sd">        with other methods)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Wamsley, E. J. et al. Biol. Psychiatry 71, 154-61 (2012).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dat_det</span> <span class="o">=</span> <span class="n">transform_signal</span><span class="p">(</span><span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;morlet&#39;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">det_wavelet</span><span class="p">)</span>
+    <span class="n">dat_det</span> <span class="o">=</span> <span class="n">transform_signal</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;abs&#39;</span><span class="p">)</span>
+
+    <span class="n">det_value</span> <span class="o">=</span> <span class="n">define_threshold</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">det_thresh</span><span class="p">)</span>
+
+    <span class="n">dat_det</span> <span class="o">=</span> <span class="n">transform_signal</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;moving_avg&#39;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">moving_avg</span><span class="p">)</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="n">detect_events</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">,</span> <span class="n">det_value</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">within_duration</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+
+        <span class="n">power_peaks</span> <span class="o">=</span> <span class="n">peak_in_power</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">power_peaks</span><span class="p">)</span>
+        <span class="n">sp_in_chan</span> <span class="o">=</span> <span class="n">make_spindles</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">power_peaks</span><span class="p">,</span> <span class="n">dat_det</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No spindle found&#39;</span><span class="p">)</span>
+        <span class="n">sp_in_chan</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;det_value&#39;</span><span class="p">:</span> <span class="n">det_value</span><span class="p">,</span> <span class="s1">&#39;sel_value&#39;</span><span class="p">:</span> <span class="n">nan</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">sp_in_chan</span><span class="p">,</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="detect_UCSD"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.detect_UCSD">[docs]</a><span class="k">def</span> <span class="nf">detect_UCSD</span><span class="p">(</span><span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Spindle detection based on the UCSD method</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat_orig : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the data for one channel</span>
+<span class="sd">    s_freq : float</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    time : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the time points for each sample</span>
+<span class="sd">    opts : instance of &#39;DetectSpindle&#39;</span>
+<span class="sd">        det_wavelet : dict</span>
+<span class="sd">            parameters for &#39;wavelet_real&#39;,</span>
+<span class="sd">        det_thres&#39; : float</span>
+<span class="sd">            detection threshold</span>
+<span class="sd">        sel_thresh : float</span>
+<span class="sd">            selection threshold</span>
+<span class="sd">        duration : tuple of float</span>
+<span class="sd">            min and max duration of spindles</span>
+<span class="sd">        frequency : tuple of float</span>
+<span class="sd">            low and high frequency of spindle band (for power ratio)</span>
+<span class="sd">        ratio_thresh : float</span>
+<span class="sd">            ratio between power inside and outside spindle band to accept them</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of dict</span>
+<span class="sd">        list of detected spindles</span>
+<span class="sd">    dict</span>
+<span class="sd">        &#39;det_value&#39; with detection value, &#39;sel_value&#39; is selection value</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dat_det</span> <span class="o">=</span> <span class="n">transform_signal</span><span class="p">(</span><span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;wavelet_real&#39;</span><span class="p">,</span>
+                               <span class="n">opts</span><span class="o">.</span><span class="n">det_wavelet</span><span class="p">)</span>
+
+    <span class="n">det_value</span> <span class="o">=</span> <span class="n">define_threshold</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;median+std&#39;</span><span class="p">,</span>
+                                 <span class="n">opts</span><span class="o">.</span><span class="n">det_thresh</span><span class="p">)</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="n">detect_events</span><span class="p">(</span><span class="n">dat_det</span><span class="p">,</span> <span class="s1">&#39;maxima&#39;</span><span class="p">,</span> <span class="n">det_value</span><span class="p">)</span>
+
+    <span class="n">dat_sel</span> <span class="o">=</span> <span class="n">transform_signal</span><span class="p">(</span><span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;wavelet_real&#39;</span><span class="p">,</span>
+                               <span class="n">opts</span><span class="o">.</span><span class="n">sel_wavelet</span><span class="p">)</span>
+    <span class="n">sel_value</span> <span class="o">=</span> <span class="n">define_threshold</span><span class="p">(</span><span class="n">dat_sel</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="s1">&#39;median+std&#39;</span><span class="p">,</span>
+                                 <span class="n">opts</span><span class="o">.</span><span class="n">sel_thresh</span><span class="p">)</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">select_events</span><span class="p">(</span><span class="n">dat_sel</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">,</span> <span class="n">sel_value</span><span class="p">)</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="n">within_duration</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="n">power_ratio</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">frequency</span><span class="p">,</span>
+                         <span class="n">opts</span><span class="o">.</span><span class="n">ratio_thresh</span><span class="p">)</span>
+
+    <span class="n">power_peaks</span> <span class="o">=</span> <span class="n">peak_in_power</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">dat_orig</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">power_peaks</span><span class="p">)</span>
+    <span class="n">sp_in_chan</span> <span class="o">=</span> <span class="n">make_spindles</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">power_peaks</span><span class="p">,</span> <span class="n">dat_det</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">)</span>
+
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;det_value&#39;</span><span class="p">:</span> <span class="n">det_value</span><span class="p">,</span> <span class="s1">&#39;sel_value&#39;</span><span class="p">:</span> <span class="n">sel_value</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">sp_in_chan</span><span class="p">,</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="transform_signal"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.transform_signal">[docs]</a><span class="k">def</span> <span class="nf">transform_signal</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">method_opt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Transform the data using different methods.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with all the data for one channel</span>
+<span class="sd">    s_freq : float</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    method : str</span>
+<span class="sd">        one of &#39;cheby2&#39;, &#39;butter&#39;, &#39;morlet&#39;, &#39;morlet_real&#39;, &#39;hilbert&#39;, &#39;abs&#39;,</span>
+<span class="sd">        &#39;moving_avg&#39;</span>
+<span class="sd">    method_opt : dict</span>
+<span class="sd">        depends on methods</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with all the data for one channel</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Wavelets pass only absolute values already, it does not make sense to store</span>
+<span class="sd">    the complex values.</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    cheby2 has parameters:</span>
+<span class="sd">        freq : tuple of float</span>
+<span class="sd">            high and low values for bandpass</span>
+<span class="sd">        order : int</span>
+<span class="sd">            filter order</span>
+
+<span class="sd">    butter has parameters:</span>
+<span class="sd">        freq : tuple of float</span>
+<span class="sd">            high and low values for bandpass</span>
+<span class="sd">        order : int</span>
+<span class="sd">            filter order</span>
+
+<span class="sd">    morlet has parameters:</span>
+<span class="sd">        f0 : float</span>
+<span class="sd">            center frequency in Hz</span>
+<span class="sd">        sd : float</span>
+<span class="sd">            standard deviation of frequency</span>
+<span class="sd">        dur : float</span>
+<span class="sd">            window length in number of standard deviations</span>
+
+<span class="sd">    morlet_real has parameters:</span>
+<span class="sd">        freqs : ndarray</span>
+<span class="sd">            vector of wavelet frequencies for spindle detection</span>
+<span class="sd">        dur : float</span>
+<span class="sd">            duration of the wavelet (sec)</span>
+<span class="sd">        width : float</span>
+<span class="sd">            wavelet width</span>
+<span class="sd">        win : float</span>
+<span class="sd">            moving average window length (sec) of wavelet convolution</span>
+
+<span class="sd">    moving_avg has parameters:</span>
+<span class="sd">        dur : float</span>
+<span class="sd">            duration of the window (sec)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;cheby2&#39;</span> <span class="o">==</span> <span class="n">method</span><span class="p">:</span>
+        <span class="n">freq</span> <span class="o">=</span> <span class="n">method_opt</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">method_opt</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span>
+
+        <span class="n">Rs</span> <span class="o">=</span> <span class="mi">80</span>
+        <span class="n">nyquist</span> <span class="o">=</span> <span class="n">s_freq</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">Wn</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span> <span class="o">/</span> <span class="n">nyquist</span>
+        <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">cheby2</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">Rs</span><span class="p">,</span> <span class="n">Wn</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="s1">&#39;bandpass&#39;</span><span class="p">)</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">filtfilt</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;butter&#39;</span> <span class="o">==</span> <span class="n">method</span><span class="p">:</span>
+        <span class="n">freq</span> <span class="o">=</span> <span class="n">method_opt</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">method_opt</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span>
+
+        <span class="n">nyquist</span> <span class="o">=</span> <span class="n">s_freq</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">Wn</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span> <span class="o">/</span> <span class="n">nyquist</span>
+        <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">Wn</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="s1">&#39;bandpass&#39;</span><span class="p">)</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">filtfilt</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;morlet&#39;</span> <span class="o">==</span> <span class="n">method</span><span class="p">:</span>
+        <span class="n">f0</span> <span class="o">=</span> <span class="n">method_opt</span><span class="p">[</span><span class="s1">&#39;f0&#39;</span><span class="p">]</span>
+        <span class="n">sd</span> <span class="o">=</span> <span class="n">method_opt</span><span class="p">[</span><span class="s1">&#39;sd&#39;</span><span class="p">]</span>
+        <span class="n">dur</span> <span class="o">=</span> <span class="n">method_opt</span><span class="p">[</span><span class="s1">&#39;dur&#39;</span><span class="p">]</span>
+
+        <span class="n">wm</span> <span class="o">=</span> <span class="n">_wmorlet</span><span class="p">(</span><span class="n">f0</span><span class="p">,</span> <span class="n">sd</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">dur</span><span class="p">)</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">absolute</span><span class="p">(</span><span class="n">fftconvolve</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">wm</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="s1">&#39;wavelet_real&#39;</span> <span class="o">==</span> <span class="n">method</span><span class="p">:</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">method_opt</span><span class="p">[</span><span class="s1">&#39;freqs&#39;</span><span class="p">]</span>
+        <span class="n">dur</span> <span class="o">=</span> <span class="n">method_opt</span><span class="p">[</span><span class="s1">&#39;dur&#39;</span><span class="p">]</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">method_opt</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span>
+        <span class="n">win</span> <span class="o">=</span> <span class="n">method_opt</span><span class="p">[</span><span class="s1">&#39;win&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">s_freq</span>
+
+        <span class="n">wm</span> <span class="o">=</span> <span class="n">_realwavelets</span><span class="p">(</span><span class="n">s_freq</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">dur</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+        <span class="n">tfr</span> <span class="o">=</span> <span class="n">empty</span><span class="p">((</span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">one_wm</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wm</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">fftconvolve</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">one_wm</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+            <span class="n">tfr</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tukeywin</span><span class="p">(</span><span class="n">win</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">)</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">tfr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;hilbert&#39;</span> <span class="o">==</span> <span class="n">method</span><span class="p">:</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">hilbert</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;abs&#39;</span> <span class="o">==</span> <span class="n">method</span><span class="p">:</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">absolute</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;moving_avg&#39;</span> <span class="o">==</span> <span class="n">method</span><span class="p">:</span>
+        <span class="n">dur</span> <span class="o">=</span> <span class="n">method_opt</span><span class="p">[</span><span class="s1">&#39;dur&#39;</span><span class="p">]</span>
+
+        <span class="n">flat</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">dur</span> <span class="o">*</span> <span class="n">s_freq</span><span class="p">))</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">fftconvolve</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">flat</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">flat</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dat</span></div>
+
+
+<div class="viewcode-block" id="define_threshold"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.define_threshold">[docs]</a><span class="k">def</span> <span class="nf">define_threshold</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the value of the threshold based on relative values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the data after selection-transformation</span>
+<span class="sd">    s_freq : float</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    method : str</span>
+<span class="sd">        one of &#39;mean&#39;, &#39;median&#39;, &#39;std&#39;, &#39;mean+std&#39;, &#39;median+std&#39;</span>
+<span class="sd">    value : float</span>
+<span class="sd">        value to multiply the values for</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        threshold in useful units.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="o">*</span> <span class="n">mean</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;median&#39;</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="o">*</span> <span class="n">median</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;std&#39;</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="o">*</span> <span class="n">std</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;mean+std&#39;</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span> <span class="o">+</span> <span class="n">value</span> <span class="o">*</span> <span class="n">std</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;median+std&#39;</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">median</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span> <span class="o">+</span> <span class="n">value</span> <span class="o">*</span> <span class="n">std</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="detect_events"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.detect_events">[docs]</a><span class="k">def</span> <span class="nf">detect_events</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Detect events using &#39;threshold&#39; or &#39;maxima&#39; method.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the data after selection-transformation</span>
+<span class="sd">    method : str</span>
+<span class="sd">        &#39;threshold&#39; or &#39;maxima&#39;</span>
+<span class="sd">    value : float</span>
+<span class="sd">        for &#39;threshold&#39;, it&#39;s the value of threshold for the event detection</span>
+<span class="sd">        for &#39;maxima&#39;, it&#39;s the distance in s from the peak to find a minimum</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 3 matrix with start, peak, end samples</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;threshold&#39;</span><span class="p">:</span>
+        <span class="n">above_det</span> <span class="o">=</span> <span class="n">dat</span> <span class="o">&gt;=</span> <span class="n">value</span>
+        <span class="n">detected</span> <span class="o">=</span> <span class="n">_detect_start_end</span><span class="p">(</span><span class="n">above_det</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">detected</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># add the location of the peak in the middle</span>
+        <span class="n">detected</span> <span class="o">=</span> <span class="n">insert</span><span class="p">(</span><span class="n">detected</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">detected</span><span class="p">:</span>
+            <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">argmax</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;maxima&#39;</span><span class="p">:</span>
+        <span class="n">peaks</span> <span class="o">=</span> <span class="n">argrelmax</span><span class="p">(</span><span class="n">dat</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">detected</span> <span class="o">=</span> <span class="n">vstack</span><span class="p">((</span><span class="n">peaks</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">peaks</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">detected</span> <span class="o">=</span> <span class="n">detected</span><span class="p">[</span><span class="n">dat</span><span class="p">[</span><span class="n">peaks</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">value</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="k">return</span> <span class="n">detected</span></div>
+
+
+<div class="viewcode-block" id="select_events"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.select_events">[docs]</a><span class="k">def</span> <span class="nf">select_events</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">detected</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Select start sample and end sample of the events.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the data after selection-transformation</span>
+<span class="sd">    detected : ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 3 matrix with start, peak, end samples</span>
+<span class="sd">    method : str</span>
+<span class="sd">        &#39;threshold&#39;</span>
+<span class="sd">    value : float</span>
+<span class="sd">        for &#39;threshold&#39;, it&#39;s the value of threshold for the spindle selection.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 3 matrix with start, peak, end samples</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;threshold&#39;</span><span class="p">:</span>
+        <span class="n">above_sel</span> <span class="o">=</span> <span class="n">dat</span> <span class="o">&gt;=</span> <span class="n">value</span>
+        <span class="n">detected</span> <span class="o">=</span> <span class="n">_select_period</span><span class="p">(</span><span class="n">detected</span><span class="p">,</span> <span class="n">above_sel</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">detected</span></div>
+
+
+<div class="viewcode-block" id="within_duration"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.within_duration">[docs]</a><span class="k">def</span> <span class="nf">within_duration</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">limits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check whether spindle is within time limits.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    events : ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 3 matrix with start, peak, end samples</span>
+<span class="sd">    time : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with time points</span>
+<span class="sd">    limits : tuple of float</span>
+<span class="sd">        low and high limit for spindle duration</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 3 matrix with start, peak, end samples</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">min_dur</span> <span class="o">=</span> <span class="n">time</span><span class="p">[</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time</span><span class="p">[</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">max_dur</span> <span class="o">=</span> <span class="n">time</span><span class="p">[</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time</span><span class="p">[</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">&lt;=</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">events</span><span class="p">[</span><span class="n">min_dur</span> <span class="o">&amp;</span> <span class="n">max_dur</span><span class="p">,</span> <span class="p">:]</span></div>
+
+
+<div class="viewcode-block" id="power_ratio"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.power_ratio">[docs]</a><span class="k">def</span> <span class="nf">power_ratio</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">dat</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">limits</span><span class="p">,</span> <span class="n">ratio_thresh</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Estimate the ratio in power between spindle band and lower frequencies.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    events : ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 3 matrix with start, peak, end samples</span>
+<span class="sd">    dat : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the original data</span>
+<span class="sd">    s_freq : float</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    limits : tuple of float</span>
+<span class="sd">        high and low frequencies for spindle band</span>
+<span class="sd">    ratio_thresh : float</span>
+<span class="sd">        ratio between spindle vs non-spindle amplitude</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 3 matrix with start, peak, end samples</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    In the original matlab script, it uses amplitude, not power.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">one_event</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">one_event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">one_event</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">x0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat</span><span class="p">):</span>
+            <span class="n">ratio</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f</span><span class="p">,</span> <span class="n">Pxx</span> <span class="o">=</span> <span class="n">periodogram</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="n">x0</span><span class="p">:</span><span class="n">x1</span><span class="p">],</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="s1">&#39;spectrum&#39;</span><span class="p">)</span>
+            <span class="n">Pxx</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">Pxx</span><span class="p">)</span>  <span class="c1"># use amplitude</span>
+
+            <span class="n">freq_sp</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span> <span class="o">&gt;=</span> <span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">f</span> <span class="o">&lt;=</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">freq_nonsp</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span> <span class="o">&lt;=</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">ratio</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">Pxx</span><span class="p">[</span><span class="n">freq_sp</span><span class="p">])</span> <span class="o">/</span> <span class="n">mean</span><span class="p">(</span><span class="n">Pxx</span><span class="p">[</span><span class="n">freq_nonsp</span><span class="p">])</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="n">ratio</span> <span class="o">&gt;</span> <span class="n">ratio_thresh</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="k">return</span> <span class="n">events</span></div>
+
+
+<div class="viewcode-block" id="peak_in_power"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.peak_in_power">[docs]</a><span class="k">def</span> <span class="nf">peak_in_power</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">dat</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Define peak in power of the signal.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    events : ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 3 matrix with start, peak, end samples</span>
+<span class="sd">    dat : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the original data</span>
+<span class="sd">    s_freq : float</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    method : str or None</span>
+<span class="sd">        &#39;peak&#39; or &#39;interval&#39;. If None, values will be all NaN</span>
+<span class="sd">    value : float</span>
+<span class="sd">        size of the window around peak, or nothing (for &#39;interval&#39;)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with peak frequency</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">diff</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>  <span class="c1"># remove 1/f</span>
+
+    <span class="n">peak</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">peak</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">nan</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">one_event</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;peak&#39;</span><span class="p">:</span>
+                <span class="n">x0</span> <span class="o">=</span> <span class="n">one_event</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">value</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">s_freq</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="n">one_event</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">value</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">s_freq</span>
+
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;interval&#39;</span><span class="p">:</span>
+                <span class="n">x0</span> <span class="o">=</span> <span class="n">one_event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="n">one_event</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">x0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">x1</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat</span><span class="p">):</span>
+                <span class="n">peak</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">nan</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">f</span><span class="p">,</span> <span class="n">Pxx</span> <span class="o">=</span> <span class="n">periodogram</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="n">x0</span><span class="p">:</span><span class="n">x1</span><span class="p">],</span> <span class="n">s_freq</span><span class="p">)</span>
+                <span class="n">idx_peak</span> <span class="o">=</span> <span class="n">Pxx</span><span class="p">[</span><span class="n">f</span> <span class="o">&lt;</span> <span class="n">MAX_FREQUENCY_OF_INTEREST</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+                <span class="n">peak</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">idx_peak</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">peak</span></div>
+
+
+<div class="viewcode-block" id="make_spindles"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.make_spindles">[docs]</a><span class="k">def</span> <span class="nf">make_spindles</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">power_peaks</span><span class="p">,</span> <span class="n">dat</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">s_freq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create dict for each spindle, based on events of time points.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    events : ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 3 matrix with start, peak, end samples, and peak frequency</span>
+<span class="sd">    power_peaks : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        peak in power spectrum for each event</span>
+<span class="sd">    dat : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the data after detection-transformation (to compute peak)</span>
+<span class="sd">    time : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with time points</span>
+<span class="sd">    s_freq : float</span>
+<span class="sd">        sampling frequency</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of dict</span>
+<span class="sd">        list of all the spindles, with information about start_time, peak_time,</span>
+<span class="sd">        end_time (s), peak_val (signal units), area_under_curve</span>
+<span class="sd">        (signal units * s), peak_freq (Hz)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">events</span> <span class="o">=</span> <span class="n">_remove_duplicate</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span>
+    <span class="n">power_peaks</span> <span class="o">=</span> <span class="n">power_peaks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="n">spindles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">one_peak</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">power_peaks</span><span class="p">):</span>
+        <span class="n">one_spindle</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_time&#39;</span><span class="p">:</span> <span class="n">time</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                       <span class="s1">&#39;end_time&#39;</span><span class="p">:</span> <span class="n">time</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+                       <span class="s1">&#39;peak_time&#39;</span><span class="p">:</span> <span class="n">time</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+                       <span class="s1">&#39;peak_val&#39;</span><span class="p">:</span> <span class="n">dat</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+                       <span class="s1">&#39;area_under_curve&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span> <span class="o">/</span> <span class="n">s_freq</span><span class="p">,</span>
+                       <span class="s1">&#39;peak_freq&#39;</span><span class="p">:</span> <span class="n">one_peak</span><span class="p">,</span>
+                       <span class="p">}</span>
+        <span class="n">spindles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_spindle</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">spindles</span></div>
+
+
+<div class="viewcode-block" id="_remove_duplicate"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle._remove_duplicate">[docs]</a><span class="k">def</span> <span class="nf">_remove_duplicate</span><span class="p">(</span><span class="n">old_events</span><span class="p">,</span> <span class="n">dat</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove duplicates from the events.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    old_events : ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 3 matrix with start, peak, end samples</span>
+<span class="sd">    dat : ndarray (dtype=&#39;float&#39;)</span>
+<span class="sd">        vector with the data after detection-transformation (to compute peak)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        vector of indices of the events to keep</span>
+<span class="sd">    ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 3 matrix with start, peak, end samples</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    old_events is assumed to be sorted. It only checks for the start time and</span>
+<span class="sd">    end time. When two (or more) events have the same start time and the same</span>
+<span class="sd">    end time, then it takes the largest peak.</span>
+
+<span class="sd">    There is no tolerance, indices need to be identical.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">diff_events</span> <span class="o">=</span> <span class="n">diff</span><span class="p">(</span><span class="n">old_events</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">dupl</span> <span class="o">=</span> <span class="n">where</span><span class="p">((</span><span class="n">diff_events</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">diff_events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">dupl</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># more convenient, it copies old_event first and then compares</span>
+
+    <span class="n">n_nondupl_events</span> <span class="o">=</span> <span class="n">old_events</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">dupl</span><span class="p">)</span>
+    <span class="n">new_events</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">n_nondupl_events</span><span class="p">,</span> <span class="n">old_events</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dupl</span><span class="p">):</span>
+        <span class="n">lg</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Removing &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dupl</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; duplicate events&#39;</span><span class="p">)</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i_old</span><span class="p">,</span> <span class="n">one_old_event</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">old_events</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i_old</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dupl</span><span class="p">:</span>
+            <span class="n">new_events</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">one_old_event</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i_old</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">peak_0</span> <span class="o">=</span> <span class="n">new_events</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">peak_1</span> <span class="o">=</span> <span class="n">one_old_event</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">dat</span><span class="p">[</span><span class="n">peak_0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">dat</span><span class="p">[</span><span class="n">peak_1</span><span class="p">]:</span>
+                <span class="n">new_events</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">peak_0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_events</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">peak_1</span>
+
+    <span class="k">return</span> <span class="n">indices</span><span class="p">,</span> <span class="n">new_events</span></div>
+
+
+<div class="viewcode-block" id="_detect_start_end"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle._detect_start_end">[docs]</a><span class="k">def</span> <span class="nf">_detect_start_end</span><span class="p">(</span><span class="n">true_values</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;From ndarray of bool values, return intervals of True values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    true_values : ndarray (dtype=&#39;bool&#39;)</span>
+<span class="sd">        array with bool values</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 2 matrix with starting and ending times.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">neg</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+    <span class="n">int_values</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">hstack</span><span class="p">((</span><span class="n">neg</span><span class="p">,</span> <span class="n">true_values</span><span class="p">,</span> <span class="n">neg</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+    <span class="n">cross_threshold</span> <span class="o">=</span> <span class="n">diff</span><span class="p">(</span><span class="n">int_values</span><span class="p">)</span>
+
+    <span class="n">event_starts</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">cross_threshold</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">event_ends</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">cross_threshold</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_starts</span><span class="p">):</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">vstack</span><span class="p">((</span><span class="n">event_starts</span><span class="p">,</span> <span class="n">event_ends</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">events</span></div>
+
+
+<div class="viewcode-block" id="_select_period"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle._select_period">[docs]</a><span class="k">def</span> <span class="nf">_select_period</span><span class="p">(</span><span class="n">detected</span><span class="p">,</span> <span class="n">true_values</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;For the detected values, we check when it goes below the selection.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    detected : ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 3 matrix with starting and ending times.</span>
+<span class="sd">    true_values : ndarray (dtype=&#39;bool&#39;)</span>
+<span class="sd">        array with bool values</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray (dtype=&#39;int&#39;)</span>
+<span class="sd">        N x 2 matrix with starting and ending times, but these periods are</span>
+<span class="sd">        usually larger than those of the input, because the selection window is</span>
+<span class="sd">        usually more lenient (lower threshold) than the detection window.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Both start and end time points are inclusive (not python convention, but</span>
+<span class="sd">    matlab convention) because these values are converted to time points later.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">true_values</span> <span class="o">=</span> <span class="n">invert</span><span class="p">(</span><span class="n">true_values</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">one_spindle</span> <span class="ow">in</span> <span class="n">detected</span><span class="p">:</span>
+        <span class="c1"># get the first time point when it goes above selection thres</span>
+        <span class="n">start_sel</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">true_values</span><span class="p">[:</span><span class="n">one_spindle</span><span class="p">[</span><span class="mi">0</span><span class="p">]])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">start_sel</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">one_spindle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_sel</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># get the last time point when it stays above selection thres</span>
+        <span class="n">end_sel</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">true_values</span><span class="p">[</span><span class="n">one_spindle</span><span class="p">[</span><span class="mi">2</span><span class="p">]:])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">end_sel</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">one_spindle</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">end_sel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">detected</span></div>
+
+
+<div class="viewcode-block" id="_wmorlet"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle._wmorlet">[docs]</a><span class="k">def</span> <span class="nf">_wmorlet</span><span class="p">(</span><span class="n">f0</span><span class="p">,</span> <span class="n">sd</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">ns</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    adapted from nitime</span>
+
+<span class="sd">    returns a complex morlet wavelet in the time domain</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        f0 : center frequency</span>
+<span class="sd">        sd : standard deviation of frequency</span>
+<span class="sd">        sampling_rate : samplingrate</span>
+<span class="sd">        ns : window length in number of standard deviations</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">sd</span><span class="p">)</span>
+    <span class="n">w_sz</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ns</span> <span class="o">*</span> <span class="n">st</span> <span class="o">*</span> <span class="n">sampling_rate</span><span class="p">))</span>  <span class="c1"># half time window size</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">w_sz</span><span class="p">,</span> <span class="n">w_sz</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">/</span> <span class="n">sampling_rate</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">st</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span><span class="mi">2</span><span class="n">j</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">f0</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">/</span>
+         <span class="n">sqrt</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">st</span> <span class="o">*</span> <span class="n">sampling_rate</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">w</span></div>
+
+
+<div class="viewcode-block" id="_realwavelets"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle._realwavelets">[docs]</a><span class="k">def</span> <span class="nf">_realwavelets</span><span class="p">(</span><span class="n">s_freq</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">dur</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create real wavelets, for UCSD.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    s_freq : int</span>
+<span class="sd">        sampling frequency</span>
+<span class="sd">    freqs : ndarray</span>
+<span class="sd">        vector with frequencies of interest</span>
+<span class="sd">    dur : float</span>
+<span class="sd">        duration of the wavelets in s</span>
+<span class="sd">    width : float</span>
+<span class="sd">        parameter controlling gaussian shape</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        wavelets</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">dur</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">dur</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">s_freq</span><span class="p">)</span>
+    <span class="n">wavelets</span> <span class="o">=</span> <span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">width</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">one_freq</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">freqs</span><span class="p">):</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">one_freq</span><span class="p">)</span>
+        <span class="n">wavelets</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">g</span>
+
+    <span class="k">return</span> <span class="n">wavelets</span></div>
+
+
+<div class="viewcode-block" id="tukeywin"><a class="viewcode-back" href="../../../api/phypno.detect.spindle.html#phypno.detect.spindle.tukeywin">[docs]</a><span class="k">def</span> <span class="nf">tukeywin</span><span class="p">(</span><span class="n">window_length</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Taken from http://leohart.wordpress.com/2006/01/29/hello-world/ &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">window_length</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="c1"># first condition 0 &lt;= x &lt; alpha/2</span>
+    <span class="n">first_condition</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">alpha</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">w</span><span class="p">[</span><span class="n">first_condition</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="n">alpha</span> <span class="o">*</span>
+                                        <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">first_condition</span><span class="p">]</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)))</span>
+
+    <span class="c1"># second condition already taken care of</span>
+
+    <span class="c1"># third condition 1 - alpha / 2 &lt;= x &lt;= 1</span>
+    <span class="n">third_condition</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">w</span><span class="p">[</span><span class="n">third_condition</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="n">alpha</span> <span class="o">*</span>
+                                        <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">third_condition</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">w</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

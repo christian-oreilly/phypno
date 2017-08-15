@@ -1,0 +1,507 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>phypno.attr.chan module &mdash; phypno 20.07 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="phypno 20.07 documentation" href="../index.html"/>
+        <link rel="up" title="phypno.attr package" href="phypno.attr.html"/>
+        <link rel="next" title="phypno.detect package" href="phypno.detect.html"/>
+        <link rel="prev" title="phypno.attr.annotations module" href="phypno.attr.annotations.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> phypno
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                20.07
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Phypno</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="phypno.html">Modules, classes, functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="phypno.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="phypno.attr.html">phypno.attr package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="phypno.attr.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.detect.html">phypno.detect package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.ioeeg.html">phypno.ioeeg package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.source.html">phypno.source package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.trans.html">phypno.trans package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.utils.html">phypno.utils package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phypno.widgets.html">phypno.widgets package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phypno.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gui/index.html">Graphical User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">TODO</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">phypno</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="phypno.html">phypno package</a> &raquo;</li>
+        
+          <li><a href="phypno.attr.html">phypno.attr package</a> &raquo;</li>
+        
+      <li>phypno.attr.chan module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/phypno.attr.chan.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-phypno.attr.chan">
+<span id="phypno-attr-chan-module"></span><h1>phypno.attr.chan module<a class="headerlink" href="#module-phypno.attr.chan" title="Permalink to this headline">¶</a></h1>
+<p>Module to work with channels.</p>
+<p>It provides a general class to work with channels. Channels is the general term
+that refers to the points where signal comes from, it’s an abstract concept.
+Electrodes, magnetometer, axiometers and gradiometers are the actual recording
+devices measuring the signal. For example, in the case of EEG, you need two
+electrodes to have one signal, where one signal is the difference between the
+two electrodes.</p>
+<p>In other words, the channel is where you want to plot the signal.</p>
+<dl class="class">
+<dt id="phypno.attr.chan.Chan">
+<em class="property">class </em><code class="descclassname">phypno.attr.chan.</code><code class="descname">Chan</code><span class="sig-paren">(</span><em>label</em>, <em>xyz=None</em>, <em>unit=None</em>, <em>attr=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/attr/chan.html#Chan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.attr.chan.Chan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Provide class Chan, for individual channels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>label</strong> (<em>str</em>) – name of the channel</li>
+<li><strong>xyz</strong> (<em>numpy.ndarray</em><em> or </em><em>list</em><em> or </em><em>tuple</em>) – 1d vector of 3 elements</li>
+<li><strong>chtype</strong> (<em>str</em><em>, </em><em>optional</em>) – channel type (can be any string)</li>
+<li><strong>unit</strong> (<em>str</em><em>, </em><em>optional</em>) – units, using SI</li>
+<li><strong>attr</strong> (<em>dict</em>) – dictionary where you can store additional information per channel. Use
+chan.attr.update({‘new_key’: new_value})</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="phypno.attr.chan.Channels">
+<em class="property">class </em><code class="descclassname">phypno.attr.chan.</code><code class="descname">Channels</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/attr/chan.html#Channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.attr.chan.Channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Provide class Chan, generic class for channel location.</p>
+<p>You can read from a file, and then you pass only one argument.
+Or you can directly assign the chan names and the coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>chan</strong> (<em>list of instance of Chan</em>) – list of channels (which are instances of Chan)</li>
+<li><strong>chan_input</strong> (<em>various formats</em>) – information about the channels</li>
+<li><strong>labels</strong> (<em>list of str</em>) – the name of the channel</li>
+<li><strong>coords</strong> (<em>numpy.ndarray</em>) – location in 3D, with shape (n_chan, 3)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="phypno.attr.chan.Channels.chan">
+<code class="descname">chan</code><a class="headerlink" href="#phypno.attr.chan.Channels.chan" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of instance of phypno.attr.chan.Chan</em> – list of channels</p>
+</dd></dl>
+
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">UnrecognizedFormat</span></code> – If the format is not recognized</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>chan_input can be a csv file without header and with format:
+label, x-pos, y-pos, z-pos
+or an sfp file without header and with format:
+label x-pos y-pos z-pos</p>
+<dl class="method">
+<dt id="phypno.attr.chan.Channels.export">
+<code class="descname">export</code><span class="sig-paren">(</span><em>elec_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/attr/chan.html#Channels.export"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.attr.chan.Channels.export" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export channel name and location to file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>elec_file</strong> (<em>str</em>) – path to file where to save csv</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phypno.attr.chan.Channels.n_chan">
+<code class="descname">n_chan</code><a class="headerlink" href="#phypno.attr.chan.Channels.n_chan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of channels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.attr.chan.Channels.return_attr">
+<code class="descname">return_attr</code><span class="sig-paren">(</span><em>attr</em>, <em>labels=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/attr/chan.html#Channels.return_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.attr.chan.Channels.return_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the attributes for each channels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>attr</strong> (<em>str</em>) – attribute specified in Chan.attr.keys()</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.attr.chan.Channels.return_label">
+<code class="descname">return_label</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/attr/chan.html#Channels.return_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.attr.chan.Channels.return_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the labels for all the channels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>list of str</em> – list of the channel labels.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.attr.chan.Channels.return_xy">
+<code class="descname">return_xy</code><span class="sig-paren">(</span><em>labels=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/attr/chan.html#Channels.return_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.attr.chan.Channels.return_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the location in xy for some channels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>labels</strong> (<em>list of str</em><em>, </em><em>optional</em>) – the names of the channels.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>numpy.ndarray</em> – a 2xn vector with the position of a channel.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Simplest implementation. We should at least use project onto a 2D plane</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="phypno.attr.chan.Channels.return_xyz">
+<code class="descname">return_xyz</code><span class="sig-paren">(</span><em>labels=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/attr/chan.html#Channels.return_xyz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.attr.chan.Channels.return_xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the location in xy for some channels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>labels</strong> (<em>list of str</em><em>, </em><em>optional</em>) – the names of the channels.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>numpy.ndarray</em> – a 3xn vector with the position of a channel.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.attr.chan._convert_unit">
+<code class="descclassname">phypno.attr.chan.</code><code class="descname">_convert_unit</code><span class="sig-paren">(</span><em>unit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/attr/chan.html#_convert_unit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.attr.chan._convert_unit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert different names into SI units.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unit</strong> (<em>str</em>) – unit to convert to SI</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>str</em> – unit in SI format.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>SI unit such as mV (milliVolt, mVolt), μV (microVolt, muV).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.attr.chan._read_separated_values">
+<code class="descclassname">phypno.attr.chan.</code><code class="descname">_read_separated_values</code><span class="sig-paren">(</span><em>elec_file</em>, <em>sep</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/attr/chan.html#_read_separated_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.attr.chan._read_separated_values" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">add documentation to _read_separated_values</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.attr.chan.assign_region_to_channels">
+<code class="descclassname">phypno.attr.chan.</code><code class="descname">assign_region_to_channels</code><span class="sig-paren">(</span><em>channels</em>, <em>anat</em>, <em>parc_type=’aparc’</em>, <em>max_approx=3</em>, <em>exclude_regions=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/attr/chan.html#assign_region_to_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.attr.chan.assign_region_to_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign a brain region based on the channel location.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>channels</strong> (<em>instance of phypno.attr.chan.Channels</em>) – channels to assign regions to</li>
+<li><strong>anat</strong> (<em>instance of phypno.attr.anat.Freesurfer</em>) – anatomical information taken from freesurfer.</li>
+<li><strong>parc_type</strong> (<em>str</em>) – ‘aparc’, ‘aparc.a2009s’, ‘BA’, ‘BA.thresh’, or ‘aparc.DKTatlas40’
+‘aparc.DKTatlas40’ is only for recent freesurfer versions</li>
+<li><strong>max_approx</strong> (<em>int</em><em>, </em><em>optional</em>) – approximation to define position of the electrode.</li>
+<li><strong>exclude_regions</strong> (<em>list of str</em><em> or </em><em>empty list</em>) – do not report regions if they contain these substrings. None means
+that it does not exclude any region. For example, to exclude white
+matter regions and unknown regions you can use
+exclude_regions=(‘White’, ‘WM’, ‘Unknown’)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>instance of phypno.attr.chan.Channels</em> – same instance as before, now Chan have attr ‘region’</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.attr.chan.detect_format">
+<code class="descclassname">phypno.attr.chan.</code><code class="descname">detect_format</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/attr/chan.html#detect_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.attr.chan.detect_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detect file format of the channels based on extension.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – name of the filename</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>str</em> – file format</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phypno.attr.chan.find_chan_in_region">
+<code class="descclassname">phypno.attr.chan.</code><code class="descname">find_chan_in_region</code><span class="sig-paren">(</span><em>channels</em>, <em>anat</em>, <em>region_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/phypno/attr/chan.html#find_chan_in_region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#phypno.attr.chan.find_chan_in_region" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find which channels are in a specific region.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>channels</strong> (<em>instance of phypno.attr.chan.Channels</em>) – channels, that have locations</li>
+<li><strong>anat</strong> (<em>instance of phypno.attr.anat.Freesurfer</em>) – anatomical information taken from freesurfer.</li>
+<li><strong>region_name</strong> (<em>str</em>) – the name of the region, according to FreeSurferColorLUT.txt</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>chan_in_region</strong> (<em>list of str</em>) – list of the channels that are in one region.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="phypno.detect.html" class="btn btn-neutral float-right" title="phypno.detect package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="phypno.attr.annotations.html" class="btn btn-neutral" title="phypno.attr.annotations module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013-2017, Gio Piantoni.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'20.07',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

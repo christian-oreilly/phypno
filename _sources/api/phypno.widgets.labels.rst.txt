@@ -1,0 +1,7 @@
+phypno\.widgets\.labels module
+==============================
+
+.. automodule:: phypno.widgets.labels
+    :members:
+    :undoc-members:
+    :show-inheritance:

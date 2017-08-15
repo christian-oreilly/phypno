@@ -1,0 +1,7 @@
+phypno\.widgets\.spectrum module
+================================
+
+.. automodule:: phypno.widgets.spectrum
+    :members:
+    :undoc-members:
+    :show-inheritance:
