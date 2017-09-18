@@ -1,3 +1,4 @@
+import io
 from datetime import datetime
 from glob import glob
 from logging import getLogger
@@ -154,7 +155,7 @@ class EgiMff:
             except IndexError:
                 endrec = len(x)
 
-            f = open(self._signal[one_signal], 'rb')
+            f = io.open(self._signal[one_signal], 'rb')
 
             i0 = 0
             for rec in range(begrec, endrec + 1):
